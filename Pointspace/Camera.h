@@ -8,6 +8,18 @@
 #include <GLFW/glfw3.h>
 #include "Shader.h"
 
+enum class ShaderType {
+	BASIC = 0,
+	SKYBOX = 1
+};
+
+enum class MovementType {
+	MOVE_FORWARD,
+	MOVE_BACKWARD,
+	MOVE_LEFT,
+	MOVE_RIGHT
+};
+
 class Camera
 {
 public:
@@ -19,9 +31,11 @@ public:
 	glm::mat4 ViewMatrix, ProjectionMatrix;
 	GLuint ProjectionMatrixLoc, ViewMatrixLoc, ModelMatrixLoc;
 
-	void SetupShader(const GLchar* _VertexShaderPath, const GLchar* _FragmentShaderPath);
-	Shader* MainShader = NULL;
+	void SetupShader(const GLchar* _VertexShaderPath, const GLchar* _FragmentShaderPath, ShaderType _Type);
+	Shader* BasicShader = NULL;
+	Shader* SkyboxShader = NULL;
 
-	void Update(glm::mat4 _ModelMatrix);
+	void UpdateScene(glm::mat4 _ModelMatrix);
+	void UpdateTransform(MovementType _Type);
 };
 

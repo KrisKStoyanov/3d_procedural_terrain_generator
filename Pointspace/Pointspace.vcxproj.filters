@@ -36,6 +36,9 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -53,12 +56,22 @@
     <ClInclude Include="Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\BasicFragmentShader.glsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\Shaders\BasicVertexShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="cpp.hint" />
+    <None Include="..\Shaders\SkyboxFragmentShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\SkyboxVertexShader.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

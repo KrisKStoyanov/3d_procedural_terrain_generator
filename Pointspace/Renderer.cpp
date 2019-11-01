@@ -33,7 +33,9 @@ bool Renderer::Init(const char* _Title, const int _Width, const int _Height)
 	glEnable(GL_DEPTH_TEST);
 
 	MainCamera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f), 60, _Width, _Height);
-	MainCamera->SetupShader("../Shaders/BasicVertexShader.glsl", "../Shaders/BasicFragmentShader.glsl");
+	MainCamera->SetupShader("../Shaders/BasicVertexShader.glsl", "../Shaders/BasicFragmentShader.glsl", ShaderType::BASIC);
+	MainCamera->SetupShader("../Shaders/SkyboxVertexShader.glsl", "../Shaders/SkyboxFragmentShader.glsl", ShaderType::SKYBOX);
+	MainCamera->BasicShader->Activate();
 	Setup();
 	return true;
 }
@@ -83,10 +85,22 @@ void Renderer::Update()
 		if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 			glfwSetWindowShouldClose(Window, GLFW_TRUE);
 		}
+		if (glfwGetKey(Window, GLFW_KEY_W) == GLFW_PRESS) {
+			MainCamera->UpdateTransform(MovementType::MOVE_FORWARD);
+		}
+		if (glfwGetKey(Window, GLFW_KEY_S) == GLFW_PRESS) {
+			MainCamera->UpdateTransform(MovementType::MOVE_BACKWARD);
+		}
+		if (glfwGetKey(Window, GLFW_KEY_A) == GLFW_PRESS) {
+			MainCamera->UpdateTransform(MovementType::MOVE_LEFT);
+		}
+		if (glfwGetKey(Window, GLFW_KEY_D) == GLFW_PRESS) {
+			MainCamera->UpdateTransform(MovementType::MOVE_RIGHT);
+		}
 		TestCube->ModelMatrix = glm::mat4(1.0f);
 		TestCube->ModelMatrix = glm::translate(TestCube->ModelMatrix, TestCube->Position);
 		TestCube->ModelMatrix = glm::rotate(TestCube->ModelMatrix, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-		MainCamera->Update(TestCube->ModelMatrix);
+		MainCamera->UpdateScene(TestCube->ModelMatrix);
 		Draw(TestCube->VAO, TestCube->IndexCollection.size());
 		//system("PAUSE");
 		//Meshes[0]->ModelMatrix = glm::mat4(1.0f);
@@ -100,7 +114,12 @@ void Renderer::Update()
 void Renderer::Terminate()
 {
 	if (MainCamera) {
-		MainCamera->MainShader->Clear();
+		if (MainCamera->BasicShader) {
+			MainCamera->BasicShader->Clear();
+		}
+		if (MainCamera->SkyboxShader) {
+			MainCamera->SkyboxShader->Clear();
+		}
 		delete MainCamera;
 	}
 
