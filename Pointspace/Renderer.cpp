@@ -29,14 +29,49 @@ bool Renderer::Init(const char* _Title, const int _Width, const int _Height)
 		fprintf(stderr, "Error: %s\n", glewGetErrorString(initState));
 	}
 
-	glClearColor(0.55f, 0.55f, 0.55f, 1.0f);
+	glClearColor(0.35f, 0.35f, 0.35f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
-	Update();
+
+	MainCamera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f), 60, _Width, _Height);
+	MainCamera->SetupShader("../Shaders/BasicVertexShader.glsl", "../Shaders/BasicFragmentShader.glsl");
+	Setup();
 	return true;
 }
 
 void Renderer::Setup()
 {
+	std::vector<Vertex> VertexCollection = {
+	{ 0.5f,  0.5f, 0.5f, 1.0f , 1.0f, 0.0f, 0.0f, 1.0f },
+	{ 0.5f, -0.5f, 0.5f, 1.0f , 1.0f, 1.0f, 0.0f, 1.0f },
+	{ -0.5f, -0.5f, 0.5f, 1.0f , 1.0f, 0.0f, 1.0f, 1.0f },
+	{ -0.5f,  0.5f, 0.5f, 1.0f , 0.0f, 1.0f, 1.0f, 1.0f },
+	{ 0.5f,  0.5f, -0.5f, 1.0f , 1.0f, 0.0f, 0.0f, 1.0f },
+	{ 0.5f, -0.5f, -0.5f, 1.0f , 1.0f, 1.0f, 0.0f, 1.0f },
+	{ -0.5f, -0.5f, -0.5f, 1.0f , 1.0f, 0.0f, 1.0f, 1.0f },
+	{ -0.5f,  0.5f, -0.5f, 1.0f , 0.0f, 1.0f, 1.0f, 1.0f }
+	};
+
+	std::vector<GLuint> IndexCollection = {
+		0,1,3, 1,2,3,
+		0,3,4, 4,7,3,
+		1,2,5, 5,6,2,
+		3,2,7, 7,2,6,
+		0,1,4, 4,5,1,
+		4,5,7, 5,6,7
+	};
+
+	TestCube = new Mesh(VertexCollection, IndexCollection, glm::vec3(0.0f, 0.0f, 0.0f));
+	//Mesh* TestCube = new Mesh(VertexCollection, IndexCollection, glm::vec3(0.0f, 0.0f, 0.0f));
+	//Meshes[0] = TestCube;
+
+	Update();
+}
+
+void Renderer::Draw(GLuint _VAO, GLuint _ElementCount)
+{
+	glBindVertexArray(_VAO);
+	glDrawElements(GL_TRIANGLES, _ElementCount, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 }
 
 void Renderer::Update()
@@ -48,12 +83,27 @@ void Renderer::Update()
 		if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 			glfwSetWindowShouldClose(Window, GLFW_TRUE);
 		}
+		TestCube->ModelMatrix = glm::mat4(1.0f);
+		TestCube->ModelMatrix = glm::translate(TestCube->ModelMatrix, TestCube->Position);
+		TestCube->ModelMatrix = glm::rotate(TestCube->ModelMatrix, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+		MainCamera->Update(TestCube->ModelMatrix);
+		Draw(TestCube->VAO, TestCube->IndexCollection.size());
+		//system("PAUSE");
+		//Meshes[0]->ModelMatrix = glm::mat4(1.0f);
+		//Meshes[0]->ModelMatrix = glm::translate(Meshes[0]->ModelMatrix, Meshes[0]->Position);
+		//MainCamera->Update(Meshes[0]->ModelMatrix);
+
 	}
 	Terminate();
 }
 
 void Renderer::Terminate()
 {
+	if (MainCamera) {
+		MainCamera->MainShader->Clear();
+		delete MainCamera;
+	}
+
 	glfwDestroyWindow(Window);
 	glfwTerminate();
 }
