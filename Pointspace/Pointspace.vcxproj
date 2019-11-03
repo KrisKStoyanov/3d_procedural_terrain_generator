@@ -40,7 +40,6 @@
     <None Include="..\Shaders\BasicVertexShader.glsl" />
     <None Include="..\Shaders\SkyboxFragmentShader.glsl" />
     <None Include="..\Shaders\SkyboxVertexShader.glsl" />
-    <None Include="cpp.hint" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

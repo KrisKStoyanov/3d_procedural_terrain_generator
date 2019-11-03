@@ -67,7 +67,6 @@
     <None Include="..\Shaders\BasicVertexShader.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="cpp.hint" />
     <None Include="..\Shaders\SkyboxFragmentShader.glsl">
       <Filter>Shaders</Filter>
     </None>

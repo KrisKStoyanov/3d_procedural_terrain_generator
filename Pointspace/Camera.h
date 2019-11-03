@@ -36,6 +36,11 @@ public:
 	Shader* SkyboxShader = NULL;
 
 	void UpdateScene(glm::mat4 _ModelMatrix);
-	void UpdateTransform(MovementType _Type);
+	void UpdateTransformKeyboard(MovementType _Type, float _DeltaTime);
+	void UpdateTransformMouse(GLfloat _CursorX, GLfloat _CursorY);
+
+	float LastMousePosX;
+	float LastMousePosY;
+	bool FirstMouse = true;
 };
 

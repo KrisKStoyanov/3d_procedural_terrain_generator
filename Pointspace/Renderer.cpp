@@ -8,6 +8,12 @@ Renderer::~Renderer()
 {
 }
 
+void mouse_callback(GLFWwindow* _Window, double _PosX, double _PosY) {
+	//update MainCamera 
+	Renderer R;
+	R.MainCamera->UpdateTransformMouse(_PosX, _PosY);
+}
+
 bool Renderer::Init(const char* _Title, const int _Width, const int _Height)
 {
 	if (!glfwInit()) {
@@ -36,6 +42,15 @@ bool Renderer::Init(const char* _Title, const int _Width, const int _Height)
 	MainCamera->SetupShader("../Shaders/BasicVertexShader.glsl", "../Shaders/BasicFragmentShader.glsl", ShaderType::BASIC);
 	MainCamera->SetupShader("../Shaders/SkyboxVertexShader.glsl", "../Shaders/SkyboxFragmentShader.glsl", ShaderType::SKYBOX);
 	MainCamera->BasicShader->Activate();
+	//glfwSetCursorPosCallback(Window, [](GLFWwindow* _Window, double _CursorX, double _CursorY) {
+	//		MainCamera->UpdateTransformMouse(_CursorX, _CursorY);
+	//	});
+
+	//glfwSetCursorPosCallback(Window, [](GLFWwindow* _Window, double _CursorX, double _CursorY){
+
+	//});
+
+	/*glfwSetCursorPosCallback(Window, );*/
 	Setup();
 	return true;
 }
@@ -63,8 +78,36 @@ void Renderer::Setup()
 	};
 
 	TestCube = new Mesh(VertexCollection, IndexCollection, glm::vec3(0.0f, 0.0f, 0.0f));
-	//Mesh* TestCube = new Mesh(VertexCollection, IndexCollection, glm::vec3(0.0f, 0.0f, 0.0f));
-	//Meshes[0] = TestCube;
+	
+	float terrain[5][5] = {};
+	for (int x = 0; x < 5; ++x) {
+		for (int z = 0; z < 5; ++z) {
+			terrain[x][z] = 0;
+		}
+	}
+
+	glm::vec4 terrainVertPos[5 * 5] = {};
+	int i = 0;
+	for (int z = 0; z < 5; ++z) {
+		for (int x = 0; x < 5; ++x) {
+			terrainVertPos[i] = glm::vec4((float)x, terrain[x][z], (float)z, 1.0);
+			i++;
+		}
+	}
+	i = 0;
+	unsigned int terrainIndexData[4][10];
+
+	for (int z = 0; z < 5 - 1; z++) {
+		i = z * 5;
+		for (int x = 0; x < 5 * 2; x += 2) {
+			terrainIndexData[z][x] = i;
+			i++;
+		}
+		for (int x = 1; x < 5 * 2 + 1; x += 2) {
+			terrainIndexData[z][x] = i;
+			i++;
+		}
+	}
 
 	Update();
 }
@@ -78,7 +121,12 @@ void Renderer::Draw(GLuint _VAO, GLuint _ElementCount)
 
 void Renderer::Update()
 {
+	float DeltaTime = 0.0f;
+	float LastFrame = 0.0f;
 	while (!glfwWindowShouldClose(Window)) {
+		float CurrentFrame = glfwGetTime();
+		DeltaTime = CurrentFrame - LastFrame;
+		LastFrame = CurrentFrame;
 		glfwSwapBuffers(Window);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glfwPollEvents();
@@ -86,16 +134,16 @@ void Renderer::Update()
 			glfwSetWindowShouldClose(Window, GLFW_TRUE);
 		}
 		if (glfwGetKey(Window, GLFW_KEY_W) == GLFW_PRESS) {
-			MainCamera->UpdateTransform(MovementType::MOVE_FORWARD);
+			MainCamera->UpdateTransformKeyboard(MovementType::MOVE_FORWARD, DeltaTime);
 		}
 		if (glfwGetKey(Window, GLFW_KEY_S) == GLFW_PRESS) {
-			MainCamera->UpdateTransform(MovementType::MOVE_BACKWARD);
+			MainCamera->UpdateTransformKeyboard(MovementType::MOVE_BACKWARD, DeltaTime);
 		}
 		if (glfwGetKey(Window, GLFW_KEY_A) == GLFW_PRESS) {
-			MainCamera->UpdateTransform(MovementType::MOVE_LEFT);
+			MainCamera->UpdateTransformKeyboard(MovementType::MOVE_LEFT, DeltaTime);
 		}
 		if (glfwGetKey(Window, GLFW_KEY_D) == GLFW_PRESS) {
-			MainCamera->UpdateTransform(MovementType::MOVE_RIGHT);
+			MainCamera->UpdateTransformKeyboard(MovementType::MOVE_RIGHT, DeltaTime);
 		}
 		TestCube->ModelMatrix = glm::mat4(1.0f);
 		TestCube->ModelMatrix = glm::translate(TestCube->ModelMatrix, TestCube->Position);
