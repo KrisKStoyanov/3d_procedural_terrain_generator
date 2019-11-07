@@ -11,6 +11,7 @@
 #include "Vertex.h"
 #include "Mesh.h"
 #include "Camera.h"
+#include "Skybox.h"
 
 class Renderer
 {
@@ -22,17 +23,24 @@ public:
 		const int _Width,
 		const int _Height);
 	void Setup();
-	void Draw(GLuint _VAO, GLuint _ElementCount);
+	void Draw(Camera* _Camera, Mesh* _Mesh, Shader* _Shader);
 	void Update();
 	void Terminate();
+
+	Shader* SetupShader(const GLchar* _VertexShaderPath, const GLchar* _FragmentShaderPath);
+	Shader* ModelShader = NULL;
 
 	GLFWwindow* Window = NULL;
 	Camera* MainCamera = NULL;
 	Mesh* TestCube = NULL;
+	Mesh* TerrainMesh = NULL;
+	Skybox* MainSkybox = NULL;
 
 	void ConfigTerrain();
 	void ConfigTrees();
 	void ConfigClouds();
 	void ConfigWater();
+
+	double PosX, PosY;
 };
 

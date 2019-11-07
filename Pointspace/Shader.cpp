@@ -63,7 +63,6 @@ Shader::Shader(const GLchar* _VertexShaderPath, const GLchar* _FragmentShaderPat
 
 Shader::~Shader()
 {
-
 }
 
 std::string Shader::ReadFile(const GLchar* _FilePath)
@@ -75,29 +74,13 @@ std::string Shader::ReadFile(const GLchar* _FilePath)
 	FileBuffer << FileParser.rdbuf();
 	FileParser.close();
 	std::string FileContent = FileBuffer.str();
-	return FileContent;	
+	return FileContent;
 }
 
-void Shader::PrintShaderLog(GLuint _ShaderID)
+void Shader::Clear()
 {
-	if (glIsShader(_ShaderID)) {
-		int InfoLogLength = 0;
-		int MaxLength = InfoLogLength;
-
-		glGetShaderiv(_ShaderID, GL_INFO_LOG_LENGTH, &MaxLength);
-
-		char* InfoLog = new char[MaxLength];
-
-		glGetShaderInfoLog(_ShaderID, MaxLength, &InfoLogLength, InfoLog);
-		if (InfoLogLength > 0) {
-			fprintf(stdout, "%s\n", InfoLog);
-		}
-
-		delete[] InfoLog;
-	}
-	else {
-		fprintf(stdout, "%d is not a valid shader ID\n", _ShaderID);
-	}
+	glUseProgram(0);
+	glDeleteProgram(ProgramID);
 }
 
 void Shader::PrintProgramLog(GLuint _ProgramID)
@@ -122,18 +105,25 @@ void Shader::PrintProgramLog(GLuint _ProgramID)
 	}
 }
 
-void Shader::Activate()
+void Shader::PrintShaderLog(GLuint _ShaderID)
 {
-	glUseProgram(ProgramID);
+	if (glIsShader(_ShaderID)) {
+		int InfoLogLength = 0;
+		int MaxLength = InfoLogLength;
+
+		glGetShaderiv(_ShaderID, GL_INFO_LOG_LENGTH, &MaxLength);
+
+		char* InfoLog = new char[MaxLength];
+
+		glGetShaderInfoLog(_ShaderID, MaxLength, &InfoLogLength, InfoLog);
+		if (InfoLogLength > 0) {
+			fprintf(stdout, "%s\n", InfoLog);
+		}
+
+		delete[] InfoLog;
+	}
+	else {
+		fprintf(stdout, "%d is not a valid shader ID\n", _ShaderID);
+	}
 }
 
-void Shader::Deactivate()
-{
-	glUseProgram(0);
-}
-
-void Shader::Clear()
-{
-	glUseProgram(0);
-	glDeleteProgram(ProgramID);
-}
