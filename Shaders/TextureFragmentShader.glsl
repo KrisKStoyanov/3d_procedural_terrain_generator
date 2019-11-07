@@ -59,8 +59,8 @@ void main() {
 	vec3 ViewDir = normalize(ViewPos - ExFragPos);
 
 	vec3 CombinedC = ComputeDirLight(g_DirLight, NormalDir, ViewDir);
-	CombinedC += ComputePointLight(g_PointLight, NormalDir, ExFragPos, ViewDir);
-	CombinedC += ComputeSpotLight(g_SpotLight, NormalDir, ExFragPos, ViewDir);
+	//CombinedC += ComputePointLight(g_PointLight, NormalDir, ExFragPos, ViewDir);
+	//CombinedC += ComputeSpotLight(g_SpotLight, NormalDir, ExFragPos, ViewDir);
 
 	FragColor = vec4(CombinedC, 1.0f);
 }

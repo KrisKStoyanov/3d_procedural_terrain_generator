@@ -54,8 +54,8 @@ void Renderer::Setup()
 	};
 	MainSkybox = new Skybox(SkyboxCubemapFaces, "../Shaders/SkyboxVertexShader.glsl", "../Shaders/SkyboxFragmentShader.glsl");
 	DirLight = new Light(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f));
-	PointLight = new Light(glm::vec3(0.7f, 0.2f, 2.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
-	SpotLight = new Light(MainCamera->Position, MainCamera->Front, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.0f)));
+	//PointLight = new Light(glm::vec3(0.7f, 0.2f, 2.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
+	//SpotLight = new Light(MainCamera->Position, MainCamera->Front, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.0f)));
 
 	ConfigTerrain();
 	Update();
@@ -193,28 +193,35 @@ void Renderer::Draw(Camera* _Camera, Mesh* _Mesh, Shader* _Shader)
 	}
 	_Shader->SetFloat("g_Material.Shininess", 64.0f);
 
-	_Shader->SetVec3("g_DirLight.Position", DirLight->Position);
-	_Shader->SetVec3("g_DirLight.AmbientC", DirLight->AmbientC);
-	_Shader->SetVec3("g_DirLight.DiffuseC", DirLight->DiffuseC);
-	_Shader->SetVec3("g_DirLight.SpecularC", DirLight->SpecularC);
+	if (DirLight) {
+		_Shader->SetVec3("g_DirLight.Direction", DirLight->Direction);
+		_Shader->SetVec3("g_DirLight.AmbientC", DirLight->AmbientC);
+		_Shader->SetVec3("g_DirLight.DiffuseC", DirLight->DiffuseC);
+		_Shader->SetVec3("g_DirLight.SpecularC", DirLight->SpecularC);
+	}
 
-	_Shader->SetVec3("g_PointLight.Position", PointLight->Position);
-	_Shader->SetVec3("g_PointLight.AmbientC", PointLight->AmbientC);
-	_Shader->SetVec3("g_PointLight.DiffuseC", PointLight->DiffuseC);
-	_Shader->SetVec3("g_PointLight.SpecularC", PointLight->SpecularC);
-	_Shader->SetFloat("g_PointLight.ConstantA", PointLight->ConstantA);
-	_Shader->SetFloat("g_PointLight.LinearA", PointLight->LinearA);
-	_Shader->SetFloat("g_PointLight.QuadraticA", PointLight->QuadraticA);
+	if (PointLight) {
+		_Shader->SetVec3("g_PointLight.Position", PointLight->Position);
+		_Shader->SetVec3("g_PointLight.AmbientC", PointLight->AmbientC);
+		_Shader->SetVec3("g_PointLight.DiffuseC", PointLight->DiffuseC);
+		_Shader->SetVec3("g_PointLight.SpecularC", PointLight->SpecularC);
+		_Shader->SetFloat("g_PointLight.ConstantA", PointLight->ConstantA);
+		_Shader->SetFloat("g_PointLight.LinearA", PointLight->LinearA);
+		_Shader->SetFloat("g_PointLight.QuadraticA", PointLight->QuadraticA);
+	}
 
-	_Shader->SetVec3("g_SpotLight.Position", PointLight->Position);
-	_Shader->SetVec3("g_SpotLight.AmbientC", PointLight->AmbientC);
-	_Shader->SetVec3("g_SpotLight.DiffuseC", PointLight->DiffuseC);
-	_Shader->SetVec3("g_SpotLight.SpecularC", PointLight->SpecularC);
-	_Shader->SetFloat("g_SpotLight.ConstantA", PointLight->ConstantA);
-	_Shader->SetFloat("g_SpotLight.LinearA", PointLight->LinearA);
-	_Shader->SetFloat("g_SpotLight.QuadraticA", PointLight->QuadraticA);
-	_Shader->SetFloat("g_SpotLight.CutOff", SpotLight->CutOff);
-	_Shader->SetFloat("g_SpotLight.OuterCutOff", SpotLight->OuterCutOff);
+	if (SpotLight) {
+		_Shader->SetVec3("g_SpotLight.Position", SpotLight->Position);
+		_Shader->SetVec3("g_SpotLight.Direction", SpotLight->Direction);
+		_Shader->SetVec3("g_SpotLight.AmbientC", SpotLight->AmbientC);
+		_Shader->SetVec3("g_SpotLight.DiffuseC", SpotLight->DiffuseC);
+		_Shader->SetVec3("g_SpotLight.SpecularC", SpotLight->SpecularC);
+		_Shader->SetFloat("g_SpotLight.ConstantA", SpotLight->ConstantA);
+		_Shader->SetFloat("g_SpotLight.LinearA", SpotLight->LinearA);
+		_Shader->SetFloat("g_SpotLight.QuadraticA", SpotLight->QuadraticA);
+		_Shader->SetFloat("g_SpotLight.CutOff", SpotLight->CutOff);
+		_Shader->SetFloat("g_SpotLight.OuterCutOff", SpotLight->OuterCutOff);
+	}
 
 	glBindVertexArray(_Mesh->VAO);
 	glDrawElements(GL_TRIANGLES, _Mesh->IndexCollection.size(), GL_UNSIGNED_INT, 0);
