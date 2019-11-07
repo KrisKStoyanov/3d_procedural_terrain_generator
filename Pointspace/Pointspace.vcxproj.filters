@@ -45,6 +45,12 @@
     <ClCompile Include="stb_image.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -71,6 +77,12 @@
     <ClInclude Include="stb_image.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\BasicFragmentShader.glsl">
@@ -83,6 +95,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\Shaders\SkyboxVertexShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\TextureFragmentShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\TextureVertexShader.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

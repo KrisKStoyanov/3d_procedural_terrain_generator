@@ -1,24 +1,22 @@
 #include "Texture.h"
 
-Texture::Texture(const char* _Path, std::string _Directory)
+Texture::Texture(const char* _Path)
 {
-	ID = TextureFromFile(_Path, _Directory);
+	ID = TextureFromFile(_Path);
 }
 
 Texture::~Texture()
 {
 }
 
-GLint TextureFromFile(const char* _Path, std::string _Directory)
+GLint TextureFromFile(const char* _Path)
 {
-	std::string filename = std::string(_Path);
-	filename = _Directory + '/' + filename;
 
 	GLuint textureID;
 	glGenTextures(1, &textureID);
 
 	int width, height, nrComponents;
-	unsigned char* data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+	unsigned char* data = stbi_load(_Path, &width, &height, &nrComponents, 0);
 	if (data)
 	{
 		GLenum format = GL_RGBA;

@@ -12,6 +12,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "Skybox.h"
+#include "Light.h"
 
 class Renderer
 {
@@ -35,6 +36,9 @@ public:
 	Mesh* TestCube = NULL;
 	Mesh* TerrainMesh = NULL;
 	Skybox* MainSkybox = NULL;
+	Light* DirLight = NULL;
+	Light* PointLight = NULL;
+	Light* SpotLight = NULL;
 
 	void ConfigTerrain();
 	void ConfigTrees();

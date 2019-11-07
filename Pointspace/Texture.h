@@ -8,12 +8,12 @@
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
 
-GLint TextureFromFile(const char* _Path, std::string _Directory);
+GLint TextureFromFile(const char* _Path);
 
 class Texture
 {
 public:
-	Texture(const char* _Path, std::string _Directory);
+	Texture(const char* _Path);
 	~Texture();
 	GLuint ID;
 	std::string Type;
