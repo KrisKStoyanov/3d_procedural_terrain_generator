@@ -10,10 +10,11 @@
 class Vertex
 {
 public:
-	Vertex(glm::vec4 _Coords, glm::vec4 _Colors);
+	Vertex(glm::vec3 _Coords, glm::vec3 _Normal, glm::vec2 _TexCoords);
 	Vertex();
 	~Vertex();
-	glm::vec4 Coords;
-	glm::vec4 Colors;
+	glm::vec3 Coords;
+	glm::vec3 Normal;
+	glm::vec2 TexCoords;
 };
 

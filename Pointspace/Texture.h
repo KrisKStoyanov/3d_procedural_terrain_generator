@@ -10,12 +10,18 @@
 
 GLint TextureFromFile(const char* _Path);
 
+enum class TextureType {
+	DIFFUSE,
+	SPECULAR
+};
+
 class Texture
 {
 public:
-	Texture(const char* _Path);
+	Texture(const char* _Path, TextureType _Type);
 	~Texture();
 	GLuint ID;
-	std::string Type;
+	TextureType Type;
+	std::string Path;
 };
 

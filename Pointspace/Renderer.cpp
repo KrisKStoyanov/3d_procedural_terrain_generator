@@ -42,29 +42,7 @@ bool Renderer::Init(const char* _Title, const int _Width, const int _Height)
 
 void Renderer::Setup()
 {
-	std::vector<Vertex> VertexCollection = {
-	{ { 0.5f,  0.5f, 0.5f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-	{ { 0.5f, -0.5f, 0.5f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f } },
-	{ { -0.5f, -0.5f, 0.5f, 1.0f }, { 1.0f, 0.0f, 1.0f, 1.0f } },
-	{ { -0.5f,  0.5f, 0.5f, 1.0f }, { 0.0f, 1.0f, 1.0f, 1.0f } },
-	{ { 0.5f,  0.5f, -0.5f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f } },
-	{ { 0.5f, -0.5f, -0.5f, 1.0f }, { 1.0f, 1.0f, 0.0f, 1.0f } },
-	{ { -0.5f, -0.5f, -0.5f, 1.0f }, { 1.0f, 0.0f, 1.0f, 1.0f } },
-	{ { -0.5f,  0.5f, -0.5f, 1.0f }, { 0.0f, 1.0f, 1.0f, 1.0f } }
-	};
-
-	std::vector<GLuint> IndexCollection = {
-		0,1,3, 1,2,3,
-		0,3,4, 4,7,3,
-		1,2,5, 5,6,2,
-		3,2,7, 7,2,6,
-		0,1,4, 4,5,1,
-		4,5,7, 5,6,7
-	};
-
-	TestCube = new Mesh(VertexCollection, IndexCollection, glm::vec3(0.0f, 0.0f, -5.0f));
-
-	ModelShader = SetupShader("../Shaders/BasicVertexShader.glsl", "../Shaders/BasicFragmentShader.glsl");
+	ModelShader = SetupShader("../Shaders/TextureVertexShader.glsl", "../Shaders/TextureFragmentShader.glsl");
 	std::vector<std::string> SkyboxCubemapFaces
 	{
 		"../External Resources/Skybox/miramar_ft.tga",
@@ -139,7 +117,7 @@ void Renderer::ConfigTerrain()
 		for (int z = 0; z < RowLength; z++)
 		{
 			// Set the coords (1st 4 elements) and a default colour of black (2nd 4 elements) 
-			terrainVertices[i] = Vertex({ glm::vec4((float)x, terrain[x][z], (float)z, 1.0), glm::vec4(0.0, 0.0, 0.0, 1.0) });
+			terrainVertices[i] = Vertex({ glm::vec3((float)x, terrain[x][z], (float)z), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f,0.0f) });
 			i++;
 		}
 	}
@@ -210,8 +188,18 @@ void Renderer::Draw(Camera* _Camera, Mesh* _Mesh, Shader* _Shader)
 	_Shader->SetVec3("ViewPos", MainCamera->Position);
 	for (GLuint j = 0; j < _Mesh->TextureCollection.size(); ++j) {
 		glActiveTexture(GL_TEXTURE0 + j);
-		std::string type = _Mesh->TextureCollection[j].Type;
-		_Shader->SetInt("g_Material." + type, j);
+		std::string typeName;
+		switch (_Mesh->TextureCollection[j].Type) {
+		case(TextureType::DIFFUSE):
+			typeName = "DiffuseMap";
+			break;
+		case(TextureType::SPECULAR):
+			typeName = "SpecularMap";
+			break;
+		default:
+			break;
+		}
+		_Shader->SetInt("g_Material." + typeName, j);
 		glBindTexture(GL_TEXTURE_2D, _Mesh->TextureCollection[j].ID);
 	}
 	_Shader->SetFloat("g_Material.Shininess", 64.0f);
@@ -277,9 +265,6 @@ void Renderer::Update()
 			Draw(MainCamera, TerrainMesh, ModelShader);
 		}
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		if (TestCube != NULL) {
-			Draw(MainCamera, TestCube, ModelShader);
-		}
 		glDepthFunc(GL_LEQUAL);
 		MainSkybox->Draw(MainCamera);
 		glDepthFunc(GL_LESS);

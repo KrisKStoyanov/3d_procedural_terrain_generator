@@ -1,7 +1,9 @@
 #include "Texture.h"
 
-Texture::Texture(const char* _Path)
+Texture::Texture(const char* _Path, TextureType _Type)
 {
+	Path = _Path;
+	Type = _Type;
 	ID = TextureFromFile(_Path);
 }
 
@@ -11,7 +13,6 @@ Texture::~Texture()
 
 GLint TextureFromFile(const char* _Path)
 {
-
 	GLuint textureID;
 	glGenTextures(1, &textureID);
 

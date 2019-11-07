@@ -17,5 +17,4 @@ void main() {
 	ExNormal = mat3(transpose(inverse(ModelMatrix))) * VertexNormal;
 	ExVertexUV = VertexUV;
 	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(VertexPos, 1.0f);
-	//gl_Position = VertexPos;
 }

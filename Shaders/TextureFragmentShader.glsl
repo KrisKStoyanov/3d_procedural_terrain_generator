@@ -3,10 +3,7 @@ precision highp float;
 out vec4 FragColor;
 
 struct Material {
-	sampler2D DiffuseMap;
-	sampler2D SpecularMap;
-	sampler2D NormalMap;
-	sampler2D HeightMap;
+	sampler2D TextureMap;
 	float Shininess;
 };
 
@@ -37,7 +34,7 @@ struct SpotLight {
 	float ConstantA;
 	float LinearA;
 	float QuadraticA;
-	
+
 	vec3 AmbientC;
 	vec3 DiffuseC;
 	vec3 SpecularC;
@@ -53,9 +50,9 @@ uniform DirLight g_DirLight;
 uniform PointLight g_PointLight;
 uniform SpotLight g_SpotLight;
 
-vec3 ComputeDirLight(DirLight _Light, vec3 _Normal, vec3 _ViewDir);
-vec3 ComputePointLight(PointLight _Light, vec3 _Normal, vec3 _FragPos, vec3 _ViewDir);
-vec3 ComputeSpotLight(SpotLight _Light, vec3 _Normal, vec3 _FragPos, vec3 _ViewDir);
+vec3 ComputeDirLight(DirLight _Light, vec3 _NormalDir, vec3 _ViewDir);
+vec3 ComputePointLight(PointLight _Light, vec3 _NormalDir, vec3 _FragPos, vec3 _ViewDir);
+vec3 ComputeSpotLight(SpotLight _Light, vec3 _NormalDir, vec3 _FragPos, vec3 _ViewDir);
 
 void main() {
 	vec3 NormalDir = normalize(ExNormal);
@@ -75,11 +72,11 @@ vec3 ComputeDirLight(DirLight _Light, vec3 _NormalDir, vec3 _ViewDir)
 	float diffuseScalar = max(dot(_NormalDir, lightDir), 0.0);
 	// specular shading
 	vec3 reflectDir = reflect(-lightDir, _NormalDir);
-	float specularScalar = pow(max(dot(_ViewDir, reflectDir), 0.0), g_Material.shininess);
+	float specularScalar = pow(max(dot(_ViewDir, reflectDir), 0.0), g_Material.Shininess);
 	// combine results
-	vec3 ambient = _Light.AmbientC * vec3(texture(g_Material.DiffuseMap, ExVertexUV));
-	vec3 diffuse = _Light.DiffuseC * diffuseScalar * vec3(texture(g_Material.DiffuseMap, ExVertexUV));
-	vec3 specular = _Light.SpecularC * specularScalar * vec3(texture(g_Material.SpecularMap, ExVertexUV));
+	vec3 ambient = _Light.AmbientC * vec3(texture(g_Material.TextureMap, ExVertexUV));
+	vec3 diffuse = _Light.DiffuseC * diffuseScalar * vec3(texture(g_Material.TextureMap, ExVertexUV));
+	vec3 specular = _Light.SpecularC * specularScalar * vec3(texture(g_Material.TextureMap, ExVertexUV));
 	return (ambient + diffuse + specular);
 }
 
@@ -90,14 +87,14 @@ vec3 ComputePointLight(PointLight _Light, vec3 _NormalDir, vec3 _FragPos, vec3 _
 	float diffuseScalar = max(dot(_NormalDir, lightDir), 0.0);
 	// specular shading
 	vec3 reflectDir = reflect(-lightDir, _NormalDir);
-	float specularScalar = pow(max(dot(_ViewDir, reflectDir), 0.0), g_Material.shininess);
+	float specularScalar = pow(max(dot(_ViewDir, reflectDir), 0.0), g_Material.Shininess);
 	// attenuation
-	float distance = length(_Light.ConstantA - fragPos);
+	float distance = length(_Light.ConstantA - _FragPos);
 	float attenuation = 1.0 / (_Light.ConstantA + _Light.LinearA * distance + _Light.QuadraticA * (distance * distance));
 	// combine results
-	vec3 ambient = _Light.AmbientC * vec3(texture(g_Material.DiffuseMap, ExVertexUV));
-	vec3 diffuse = _Light.DiffuseC * diffuseScalar * vec3(texture(g_Material.DiffuseMap, ExVertexUV));
-	vec3 specular = _Light.SpecularC * specularScalar * vec3(texture(g_Material.SpecularMap, ExVertexUV));
+	vec3 ambient = _Light.AmbientC * vec3(texture(g_Material.TextureMap, ExVertexUV));
+	vec3 diffuse = _Light.DiffuseC * diffuseScalar * vec3(texture(g_Material.TextureMap, ExVertexUV));
+	vec3 specular = _Light.SpecularC * specularScalar * vec3(texture(g_Material.TextureMap, ExVertexUV));
 	ambient *= attenuation;
 	diffuse *= attenuation;
 	specular *= attenuation;
@@ -106,7 +103,7 @@ vec3 ComputePointLight(PointLight _Light, vec3 _NormalDir, vec3 _FragPos, vec3 _
 
 vec3 ComputeSpotLight(SpotLight _Light, vec3 _NormalDir, vec3 _FragPos, vec3 _ViewDir)
 {
-	vec3 lightDir = normalize(_Light.position - _FragPos);
+	vec3 lightDir = normalize(_Light.Position - _FragPos);
 	// diffuse shading
 	float diffuseScalar = max(dot(_NormalDir, lightDir), 0.0);
 	// specular shading
@@ -120,9 +117,9 @@ vec3 ComputeSpotLight(SpotLight _Light, vec3 _NormalDir, vec3 _FragPos, vec3 _Vi
 	float epsilon = _Light.CutOff - _Light.OuterCutOff;
 	float intensity = clamp((theta - _Light.OuterCutOff) / epsilon, 0.0, 1.0);
 	// combine results
-	vec3 ambient = _Light.AmbientC * vec3(texture(g_Material.DiffuseMap, TexCoords));
-	vec3 diffuse = _Light.DiffuseC * diffuseScalar * vec3(texture(g_Material.DiffuseMap, TexCoords));
-	vec3 specular = _Light.SpecularC * specularScalar * vec3(texture(g_Material.SpecularC, TexCoords));
+	vec3 ambient = _Light.AmbientC * vec3(texture(g_Material.TextureMap, ExVertexUV));
+	vec3 diffuse = _Light.DiffuseC * diffuseScalar * vec3(texture(g_Material.TextureMap, ExVertexUV));
+	vec3 specular = _Light.SpecularC * specularScalar * vec3(texture(g_Material.TextureMap, ExVertexUV));
 	ambient *= attenuation * intensity;
 	diffuse *= attenuation * intensity;
 	specular *= attenuation * intensity;

@@ -33,7 +33,6 @@ public:
 
 	GLFWwindow* Window = NULL;
 	Camera* MainCamera = NULL;
-	Mesh* TestCube = NULL;
 	Mesh* TerrainMesh = NULL;
 	Skybox* MainSkybox = NULL;
 	Light* DirLight = NULL;
