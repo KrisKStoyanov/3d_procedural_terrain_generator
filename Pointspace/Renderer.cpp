@@ -188,18 +188,7 @@ void Renderer::Draw(Camera* _Camera, Mesh* _Mesh, Shader* _Shader)
 	_Shader->SetVec3("ViewPos", MainCamera->Position);
 	for (GLuint j = 0; j < _Mesh->TextureCollection.size(); ++j) {
 		glActiveTexture(GL_TEXTURE0 + j);
-		std::string typeName;
-		switch (_Mesh->TextureCollection[j].Type) {
-		case(TextureType::DIFFUSE):
-			typeName = "DiffuseMap";
-			break;
-		case(TextureType::SPECULAR):
-			typeName = "SpecularMap";
-			break;
-		default:
-			break;
-		}
-		_Shader->SetInt("g_Material." + typeName, j);
+		_Shader->SetInt("g_Material.TextureMap", j);
 		glBindTexture(GL_TEXTURE_2D, _Mesh->TextureCollection[j].ID);
 	}
 	_Shader->SetFloat("g_Material.Shininess", 64.0f);
