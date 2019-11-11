@@ -63,6 +63,7 @@ Shader::Shader(const GLchar* _VertexShaderPath, const GLchar* _FragmentShaderPat
 
 Shader::~Shader()
 {
+	Clear();
 }
 
 std::string Shader::ReadFile(const GLchar* _FilePath)

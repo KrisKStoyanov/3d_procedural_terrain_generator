@@ -81,6 +81,7 @@ Skybox::Skybox(std::vector<std::string> _FaceTexturePaths, const GLchar* _Vertex
 
 Skybox::~Skybox()
 {
+	Clear();
 }
 
 void Skybox::Draw(Camera* _Camera)

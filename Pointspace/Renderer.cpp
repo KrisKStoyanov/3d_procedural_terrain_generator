@@ -42,7 +42,7 @@ bool Renderer::Init(const char* _Title, const int _Width, const int _Height)
 
 void Renderer::Setup()
 {
-	ModelShader = SetupShader("../Shaders/TextureVertexShader.glsl", "../Shaders/TextureFragmentShader.glsl");
+	ModelShader = new Shader("../Shaders/vertexShader.glsl", "../Shaders/fragmentShader.glsl");
 	std::vector<std::string> SkyboxCubemapFaces
 	{
 		"../External Resources/Skybox/miramar_ft.tga",
@@ -53,7 +53,7 @@ void Renderer::Setup()
 		"../External Resources/Skybox/miramar_lf.tga"
 	};
 	MainSkybox = new Skybox(SkyboxCubemapFaces, "../Shaders/SkyboxVertexShader.glsl", "../Shaders/SkyboxFragmentShader.glsl");
-	DirLight = new Light(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(0.5f, 0.5f, 0.5f));
+	
 	//PointLight = new Light(glm::vec3(0.7f, 0.2f, 2.0f), glm::vec3(0.05f, 0.05f, 0.05f), glm::vec3(0.8f, 0.8f, 0.8f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f);
 	//SpotLight = new Light(MainCamera->Position, MainCamera->Front, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.0f)));
 
@@ -63,17 +63,17 @@ void Renderer::Setup()
 
 void Renderer::ConfigTerrain()
 {
-	const int RowLength = 5;
-	std::vector<Vertex> terrainVertices(RowLength * RowLength);
-	const int numStripsRequired = RowLength - 1;
-	const int verticesPerStrip = 2 * RowLength;
-	std::vector<GLuint> terrainIndices(numStripsRequired * verticesPerStrip + (RowLength-2)*2);
-	GLuint terrainIndexData[numStripsRequired][verticesPerStrip];
-
-	float terrain[RowLength][RowLength] = {};
-	for (int x = 0; x < RowLength; x++)
+	const int rowLength = 10;
+	const int numStripsRequired = rowLength - 1;
+	const int verticesPerStrip = 2 * rowLength;
+	const int indexCount =  numStripsRequired * verticesPerStrip + (rowLength - 2) * 2;
+	std::vector<Vertex> terrainVertices(rowLength * rowLength);
+	std::vector<unsigned int> terrainIndices(indexCount);
+	
+	float terrain[rowLength][rowLength] = {};
+	for (int x = 0; x < rowLength; x++)
 	{
-		for (int z = 0; z < RowLength; z++)
+		for (int z = 0; z < rowLength; z++)
 		{
 			terrain[x][z] = 0;
 		}
@@ -81,85 +81,40 @@ void Renderer::ConfigTerrain()
 
 	srand(1);
 
-	//Initialization:
-	//terrain[0][0] = -1 + (float)rand() / ((float)RAND_MAX / 2);
-	//terrain[0][MAP_SIZE-1] = -1 + (float)rand() / ((float)RAND_MAX / 2);
-	//terrain[MAP_SIZE-1][0] = -1 + (float)rand() / ((float)RAND_MAX / 2);
-	//terrain[MAP_SIZE - 1][MAP_SIZE - 1] = -1 + (float)rand() / ((float)RAND_MAX / 2);
-
-	float step_size = RowLength - 1;
+	float step_size = rowLength - 1;
 	float rand_max = 2;
 	float H = 1;
-
-	//while (step_size > 1) {
-	//	for (int x = 0; x < RowLength - 1; x += step_size) {
-	//		for (int y = 0; y < RowLength - 1; y += step_size) {
-	//			float avgSum = (terrain[x][y] + terrain[(int)(x + step_size)][y] + terrain[x][(int)(y + step_size)] + terrain[(int)(x + step_size)][(int)(y + step_size)]) / 4;
-	//			terrain[(int)(x + step_size / 2)][(int)(y + step_size / 2)] = avgSum + (-1 + (float)rand() / ((float)RAND_MAX / rand_max));
-	//		}
-	//	}
-	//	for (int x = 0; x < RowLength - 1; x += step_size) {
-	//		for (int y = 0; y < RowLength - 1; y += step_size) {
-	//			float avgSum = (terrain[(int)(x + step_size/2)][y] + terrain[x][(int)(y + step_size/2)] + terrain[(int)(x + step_size)][(int)(y + step_size/2)] + terrain[(int)(x + step_size/2)][(int)(y + step_size)]) / 4;
-	//			terrain[x][y] = avgSum + (-1 + (float)rand() / ((float)RAND_MAX / rand_max));
-	//		}
-	//	}
-	//	rand_max = rand_max * glm::pow(2, -H);
-	//	step_size = step_size / 2;
-	//}
-	// TODO: Add your code here to calculate the height values of the terrain using the Diamond square algorithm
-
+	int i = 0;
 
 	// Intialise vertex array
-	int i = 0;
-	for (int x = 0; x < RowLength; x++)
+	for (int z = 0; z < rowLength; z++)
 	{
-		for (int z = 0; z < RowLength; z++)
+		for (int x = 0; x < rowLength; x++)
 		{
 			// Set the coords (1st 4 elements) and a default colour of black (2nd 4 elements) 
-			terrainVertices[i] = Vertex({ glm::vec3((float)x, terrain[x][z], (float)z), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f,0.0f) });
+			terrainVertices[i] = Vertex(glm::vec4((float)x, terrain[z][x], (float)z, 1.0));
 			i++;
 		}
 	}
 
-	i = 0;
-	for (int z = 0; z < numStripsRequired; z++)
-	{
-		i = z * RowLength;
-		for (int x = 0; x < verticesPerStrip; x += 2)
-		{
-			terrainIndexData[z][x] = i;
-			i++;
+	int IndexLow = 0;
+	int IndexHigh = rowLength;
+	bool tweaked = false;
+	for (int i = 0; i < indexCount; i += 2) {
+		if (IndexHigh % rowLength == 0 && IndexHigh > rowLength && !tweaked) {
+			terrainIndices[i] = terrainIndices[i - 1];
+			terrainIndices[i + 1] = IndexLow;
+			tweaked = true;
 		}
-		for (int x = 1; x < RowLength * 2 + 1; x += 2)
-		{
-			terrainIndexData[z][x] = i;
-			i++;
+		else {
+			terrainIndices[i] = IndexLow;
+			terrainIndices[i + 1] = IndexHigh;
+			IndexLow++;
+			IndexHigh++;
+			tweaked = false;
 		}
 	}
-
-	i = 0;
-	for (int z = 0; z < numStripsRequired; z++)
-	{
-		i = z * RowLength;
-		for (int x = 0; x < verticesPerStrip; x+=2) {
-			terrainIndices[x + z * verticesPerStrip] = i;
-			i++;
-		}
-		for (int x = 1; x < verticesPerStrip + 1; x += 2) {
-			terrainIndices[x + z * verticesPerStrip] = i;
-			i++;
-		}
-		terrainIndices[verticesPerStrip + z * verticesPerStrip + 1] = terrainIndices[verticesPerStrip + z * verticesPerStrip];
-	}
-
-	//for (int i = 0; i < numStripsRequired * verticesPerStrip;) {
-	//	terrainIndices[i] = a;
-	//	terrainIndices[i + 1] = a + MAP_SIZE;
-	//	a++;
-	//	i += 2;
-	//}
-
+	
 	TerrainMesh = new Mesh(terrainVertices, terrainIndices ,glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
@@ -181,50 +136,22 @@ void Renderer::Draw(Camera* _Camera, Mesh* _Mesh, Shader* _Shader)
 	_Mesh->ModelMatrix = glm::mat4(1.0f);
 	_Mesh->ModelMatrix = glm::translate(_Mesh->ModelMatrix, _Mesh->Position);
 
-	_Shader->SetMat4("ProjectionMatrix", MainCamera->ProjectionMatrix);
-	_Shader->SetMat4("ViewMatrix", MainCamera->ViewMatrix);
-	_Shader->SetMat4("ModelMatrix", _Mesh->ModelMatrix);
+	_Shader->SetMat4("projMat", MainCamera->ProjectionMatrix);
+	_Shader->SetMat4("viewMat", MainCamera->ViewMatrix);
+	_Shader->SetMat4("modelMat", _Mesh->ModelMatrix);
 
-	_Shader->SetVec3("ViewPos", MainCamera->Position);
-	for (GLuint j = 0; j < _Mesh->TextureCollection.size(); ++j) {
-		glActiveTexture(GL_TEXTURE0 + j);
-		_Shader->SetInt("g_Material.TextureMap", j);
-		glBindTexture(GL_TEXTURE_2D, _Mesh->TextureCollection[j].ID);
-	}
-	_Shader->SetFloat("g_Material.Shininess", 64.0f);
+	//_Shader->SetVec3("light0.ambCols", DirLight->AmbientC);
+	//_Shader->SetVec3("light0.difCols", DirLight->DiffuseC);
+	//_Shader->SetVec3("light0.specCols", DirLight->SpecularC);
+	//_Shader->SetVec3("light0.coords", DirLight->Direction);
 
-	if (DirLight) {
-		_Shader->SetVec3("g_DirLight.Direction", DirLight->Direction);
-		_Shader->SetVec3("g_DirLight.AmbientC", DirLight->AmbientC);
-		_Shader->SetVec3("g_DirLight.DiffuseC", DirLight->DiffuseC);
-		_Shader->SetVec3("g_DirLight.SpecularC", DirLight->SpecularC);
-	}
-
-	if (PointLight) {
-		_Shader->SetVec3("g_PointLight.Position", PointLight->Position);
-		_Shader->SetVec3("g_PointLight.AmbientC", PointLight->AmbientC);
-		_Shader->SetVec3("g_PointLight.DiffuseC", PointLight->DiffuseC);
-		_Shader->SetVec3("g_PointLight.SpecularC", PointLight->SpecularC);
-		_Shader->SetFloat("g_PointLight.ConstantA", PointLight->ConstantA);
-		_Shader->SetFloat("g_PointLight.LinearA", PointLight->LinearA);
-		_Shader->SetFloat("g_PointLight.QuadraticA", PointLight->QuadraticA);
-	}
-
-	if (SpotLight) {
-		_Shader->SetVec3("g_SpotLight.Position", SpotLight->Position);
-		_Shader->SetVec3("g_SpotLight.Direction", SpotLight->Direction);
-		_Shader->SetVec3("g_SpotLight.AmbientC", SpotLight->AmbientC);
-		_Shader->SetVec3("g_SpotLight.DiffuseC", SpotLight->DiffuseC);
-		_Shader->SetVec3("g_SpotLight.SpecularC", SpotLight->SpecularC);
-		_Shader->SetFloat("g_SpotLight.ConstantA", SpotLight->ConstantA);
-		_Shader->SetFloat("g_SpotLight.LinearA", SpotLight->LinearA);
-		_Shader->SetFloat("g_SpotLight.QuadraticA", SpotLight->QuadraticA);
-		_Shader->SetFloat("g_SpotLight.CutOff", SpotLight->CutOff);
-		_Shader->SetFloat("g_SpotLight.OuterCutOff", SpotLight->OuterCutOff);
-	}
+	//_Shader->SetVec3("terrainFandB.ambRefl", _Mesh->m_Material->AmbientC);
+	//_Shader->SetVec3("terrainFandB.difRefl", _Mesh->m_Material->DiffuseC);
+	//_Shader->SetVec3("terrainFandB.specRefl", _Mesh->m_Material->SpecularC);
+	//_Shader->SetFloat("terrainFandB.shininess", _Mesh->m_Material->Shininess);
 
 	glBindVertexArray(_Mesh->VAO);
-	glDrawElements(GL_TRIANGLES, _Mesh->IndexCollection.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLE_STRIP, _Mesh->IndexCollection.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
 
@@ -275,24 +202,12 @@ void Renderer::Terminate()
 	}
 
 	if (ModelShader) {
-		ModelShader->Clear();
-		ModelShader = nullptr;
+		delete ModelShader;
 	}
 	if (MainSkybox) {
-		MainSkybox->Clear();
-		MainSkybox = nullptr;
+		delete MainSkybox;
 	}
 
 	glfwDestroyWindow(Window);
 	glfwTerminate();
-}
-
-Shader* Renderer::SetupShader(const GLchar* _VertexShaderPath, const GLchar* _FragmentShaderPath)
-{
-	Shader* TempShader = new Shader(_VertexShaderPath, _FragmentShaderPath);
-	if (TempShader == NULL) {
-		printf("Failed to create shader!\nVertex shader filepath:%s\nFragment shader filepath:%s\n", _VertexShaderPath, _FragmentShaderPath);
-		return NULL;
-	}
-	return TempShader;
 }

@@ -12,7 +12,6 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "Skybox.h"
-#include "Light.h"
 
 class Renderer
 {
@@ -28,16 +27,12 @@ public:
 	void Update();
 	void Terminate();
 
-	Shader* SetupShader(const GLchar* _VertexShaderPath, const GLchar* _FragmentShaderPath);
 	Shader* ModelShader = NULL;
 
 	GLFWwindow* Window = NULL;
 	Camera* MainCamera = NULL;
 	Mesh* TerrainMesh = NULL;
 	Skybox* MainSkybox = NULL;
-	Light* DirLight = NULL;
-	Light* PointLight = NULL;
-	Light* SpotLight = NULL;
 
 	void ConfigTerrain();
 	void ConfigTrees();

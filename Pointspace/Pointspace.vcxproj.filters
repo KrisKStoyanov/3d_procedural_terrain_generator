@@ -36,19 +36,10 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Skybox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stb_image.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,39 +59,24 @@
     <ClInclude Include="Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Skybox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Shaders\BasicFragmentShader.glsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="..\Shaders\BasicVertexShader.glsl">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\Shaders\SkyboxFragmentShader.glsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\Shaders\SkyboxVertexShader.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\Shaders\TextureFragmentShader.glsl">
+    <None Include="..\Shaders\fragmentShader.glsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\Shaders\TextureVertexShader.glsl">
+    <None Include="..\Shaders\vertexShader.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
