@@ -63,59 +63,97 @@ void Renderer::Setup()
 
 void Renderer::ConfigTerrain()
 {
-	const int rowLength = 10;
-	const int numStripsRequired = rowLength - 1;
-	const int verticesPerStrip = 2 * rowLength;
-	const int indexCount =  numStripsRequired * verticesPerStrip + (rowLength - 2) * 2;
-	std::vector<Vertex> terrainVertices(rowLength * rowLength);
-	std::vector<unsigned int> terrainIndices(indexCount);
+	const int RowLength = 5;
+	const int NumStrips = RowLength - 1;
+	const int VerticesPerStrip = 2 * RowLength;
+	const int IndexCount = NumStrips * VerticesPerStrip + (RowLength - 2) * 2;
+	std::vector<Vertex> TerrainVertexCollection(RowLength * RowLength);
+	std::vector<unsigned int> TerrainIndexCollection(IndexCount);
 	
-	float terrain[rowLength][rowLength] = {};
-	for (int x = 0; x < rowLength; x++)
+	//Build Height Map
+	float HeightMap[RowLength][RowLength] = {};
+	for (int x = 0; x < RowLength; x++)
 	{
-		for (int z = 0; z < rowLength; z++)
+		for (int z = 0; z < RowLength; z++)
 		{
-			terrain[x][z] = 0;
+			HeightMap[x][z] = 0;
 		}
 	}
 
-	srand(1);
+	//Perform Diamond Square Algorithm
+	srand(4);
 
-	float step_size = rowLength - 1;
-	float rand_max = 2;
-	float H = 1;
+	//terrain[0][0] = -1 + (float)rand() / ((float)RAND_MAX / 2);
+	//terrain[0][MAP_SIZE-1] = -1 + (float)rand() / ((float)RAND_MAX / 2);
+	//terrain[MAP_SIZE-1][0] = -1 + (float)rand() / ((float)RAND_MAX / 2);
+	//terrain[MAP_SIZE - 1][MAP_SIZE - 1] = -1 + (float)rand() / ((float)RAND_MAX / 2);
+
+	HeightMap[0][0] = -1 + (float)rand() / ((float)RAND_MAX / 2);
+	HeightMap[0][RowLength - 1] = -1 + (float)rand() / ((float)RAND_MAX / 2);
+	HeightMap[RowLength - 1][0] = -1 + (float)rand() / ((float)RAND_MAX / 2);
+	HeightMap[RowLength - 1][RowLength - 1] = -1 + (float)rand() / ((float)RAND_MAX / 2);
+
+	float StepSize = RowLength - 1;
+	int CompatibleLength = RowLength % 2 == 0 ? RowLength : RowLength - 1;
+	while (StepSize > 1) {
+		//Perform Diamond step
+		for (int x = 0; x < CompatibleLength; x += StepSize) {
+			for (int z = 0; z < CompatibleLength; z += StepSize) {
+				HeightMap[x + (int)StepSize / 2][z + (int)StepSize / 2] = 
+					HeightMap[x][z] + HeightMap[(int)(x+StepSize)][z] + HeightMap[x][(int)(z+StepSize)] + HeightMap[(int)(x+StepSize)][(int)(z+StepSize)]
+					+ ((float)rand() / ((float)RAND_MAX / 1));
+			}
+		}
+
+		//Perform Square step
+		for (int x = 0; x < RowLength - 1; x += StepSize) {
+			for (int z = 0; z < RowLength - 1; z += StepSize) {
+				float TopLeftValue = HeightMap[x][z];
+				float TopRightValue = HeightMap[(int)(x + StepSize)][z];
+				float BottomLeftValue = HeightMap[x][(int)(z + StepSize)];
+				float BottomRightValue = HeightMap[(int)(x + StepSize)][(int)(z + StepSize)];
+				float MiddleValue = HeightMap[(int)(x + StepSize / 2)][(int)(z + StepSize / 2)];
+				HeightMap[x + (int)(StepSize/2)][z] = (TopLeftValue + TopRightValue + MiddleValue) / 3 + ((float)rand() / ((float)RAND_MAX / 1));
+				HeightMap[x][z + (int)(StepSize / 2)] = (TopLeftValue + BottomLeftValue + MiddleValue) / 3 + ((float)rand() / ((float)RAND_MAX / 1));
+				HeightMap[(int)(x + StepSize)][z + (int)(StepSize / 2)] = (TopRightValue + BottomRightValue + MiddleValue) / 3 + ((float)rand() / ((float)RAND_MAX / 1));
+				HeightMap[x + (int)(StepSize / 2)][z + (int)(StepSize)] = (BottomLeftValue + BottomRightValue + MiddleValue) / 3 + ((float)rand() / ((float)RAND_MAX / 1));
+			}
+		}
+		StepSize /= 2;
+	}
+
+	// Build VertexCollection
 	int i = 0;
-
-	// Intialise vertex array
-	for (int z = 0; z < rowLength; z++)
+	for (int z = 0; z < RowLength; z++)
 	{
-		for (int x = 0; x < rowLength; x++)
+		for (int x = 0; x < RowLength; x++)
 		{
 			// Set the coords (1st 4 elements) and a default colour of black (2nd 4 elements) 
-			terrainVertices[i] = Vertex(glm::vec4((float)x, terrain[z][x], (float)z, 1.0));
+			TerrainVertexCollection[i] = Vertex(glm::vec4((float)x, HeightMap[z][x], (float)z, 1.0));
 			i++;
 		}
 	}
 
+	//Build Index Collection
 	int IndexLow = 0;
-	int IndexHigh = rowLength;
-	bool tweaked = false;
-	for (int i = 0; i < indexCount; i += 2) {
-		if (IndexHigh % rowLength == 0 && IndexHigh > rowLength && !tweaked) {
-			terrainIndices[i] = terrainIndices[i - 1];
-			terrainIndices[i + 1] = IndexLow;
-			tweaked = true;
+	int IndexHigh = RowLength;
+	bool Tweaked = false;
+	for (int i = 0; i < IndexCount; i += 2) {
+		if (IndexHigh % RowLength == 0 && IndexHigh > RowLength && !Tweaked) {
+			TerrainIndexCollection[i] = TerrainIndexCollection[i - 1];
+			TerrainIndexCollection[i + 1] = IndexLow;
+			Tweaked = true;
 		}
 		else {
-			terrainIndices[i] = IndexLow;
-			terrainIndices[i + 1] = IndexHigh;
+			TerrainIndexCollection[i] = IndexLow;
+			TerrainIndexCollection[i + 1] = IndexHigh;
 			IndexLow++;
 			IndexHigh++;
-			tweaked = false;
+			Tweaked = false;
 		}
 	}
 	
-	TerrainMesh = new Mesh(terrainVertices, terrainIndices ,glm::vec3(0.0f, 0.0f, 0.0f));
+	TerrainMesh = new Mesh(TerrainVertexCollection, TerrainIndexCollection,glm::vec3(0.0f, 0.0f, 0.0f));
 }
 
 void Renderer::ConfigTrees()
@@ -183,7 +221,7 @@ void Renderer::Update()
 		}
 		glfwGetCursorPos(Window, &PosX, &PosY);
 		MainCamera->UpdateTransformMouse(PosX, -PosY);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		if (TerrainMesh != NULL) {
 			Draw(MainCamera, TerrainMesh, ModelShader);
 		}
