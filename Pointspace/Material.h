@@ -14,11 +14,11 @@
 class Material
 {
 public:
-	Material();
+	Material(glm::vec4 _AmbientC, glm::vec4 _DiffuseC, glm::vec4 _SpecularC, float _Shininess);
 	~Material();
-	glm::vec3 AmbientC;
-	glm::vec3 DiffuseC;
-	glm::vec3 SpecularC;
+	glm::vec4 AmbientC;
+	glm::vec4 DiffuseC;
+	glm::vec4 SpecularC;
 	float Shininess;
 };
 

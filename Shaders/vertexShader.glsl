@@ -1,7 +1,7 @@
-#version 420 core
+#version 450 core
 
 layout(location=0) in vec4 vCoords;
-//layout(location=1) in vec3 vNormal;
+layout(location=1) in vec3 vNormal;
 //layout(location = 2) in vec2 vTexCoords;
 
 uniform mat4 projMat;
@@ -13,8 +13,8 @@ out vec3 normalExport;
 
 void main(void)
 {
-	//normalExport = vNormal;
-	//normalExport = normalize(normalMat * normalExport);
+	normalExport = vNormal;
+	normalExport = normalize(normalMat * normalExport);
    
    gl_Position = projMat * viewMat * modelMat * vCoords;
 }

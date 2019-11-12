@@ -12,6 +12,7 @@
 #include "Mesh.h"
 #include "Camera.h"
 #include "Skybox.h"
+#include "Light.h"
 
 class Renderer
 {
@@ -33,6 +34,13 @@ public:
 	Camera* MainCamera = NULL;
 	Mesh* TerrainMesh = NULL;
 	Skybox* MainSkybox = NULL;
+
+	Light* DirLight = NULL;
+
+	glm::vec4 SceneAmbColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
+	glm::mat3 NormalMatrix = glm::mat3(1.0f);
+
+	glm::vec3 WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	void ConfigTerrain();
 	void ConfigTrees();

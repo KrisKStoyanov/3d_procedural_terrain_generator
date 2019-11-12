@@ -15,7 +15,7 @@ public:
 	Vertex();
 	~Vertex();
 	glm::vec4 Coords;
-	glm::vec3 Normal;
+	glm::vec3 Normal = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec2 TexCoords;
 };
 

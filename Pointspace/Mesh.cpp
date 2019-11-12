@@ -16,15 +16,15 @@ Mesh::Mesh(std::vector<Vertex> _VertexCollection, std::vector<unsigned int> _Ind
 
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(_VertexCollection[0]), (void*)0);
 	glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(_VertexCollection[0]), (GLvoid*)sizeof(_VertexCollection[0].Coords));
-	//glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(_VertexCollection[0]), (GLvoid*)sizeof(_VertexCollection[0].Coords));
+	glEnableVertexAttribArray(1);
 	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(_VertexCollection[0]), (GLvoid*)(sizeof(_VertexCollection[0].Coords) + sizeof(_VertexCollection[0].Normal)));
 	//glEnableVertexAttribArray(2);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glDisableVertexAttribArray(0);
-	//glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(1);
 	//glDisableVertexAttribArray(2);
 
 	VertexCollection = _VertexCollection;

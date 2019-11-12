@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Vertex.h"
+#include "Material.h"
 
 class Mesh
 {
@@ -10,6 +11,8 @@ public:
 
 	std::vector<Vertex> VertexCollection;
 	std::vector<unsigned int> IndexCollection;
+
+	Material* m_Material = NULL;
 
 	GLuint VAO = 0, VBO = 0, IBO = 0;
 	glm::mat4 ModelMatrix = glm::mat4(1.0f);

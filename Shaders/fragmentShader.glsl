@@ -1,8 +1,8 @@
-#version 430 core
+#version 450 core
 
 in vec3 normalExport;
 
-out vec4 colorsExport;
+out vec4 FragColor;
 
 struct Light
 {
@@ -30,9 +30,9 @@ vec4 fAndBDif;
 
 void main(void)
 {
-   //normal = normalize(normalExport);
-   //lightDirection = normalize(vec3(light0.coords));
-   //fAndBDif = max(dot(normal, lightDirection), 0.0f) * (light0.difCols *
-   //terrainFandB.difRefl); 
-   colorsExport =  vec4(1.0,1.0,1.0,1.0);  
+	normal = normalize(normalExport);
+	lightDirection = normalize(vec3(light0.coords));
+	fAndBDif = max(dot(normal, lightDirection), 0.0f) * (light0.difCols *
+		terrainFandB.difRefl);
+	FragColor = vec4(vec3(min(fAndBDif, vec4(1.0))), 1.0);
 }
