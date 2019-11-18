@@ -1,6 +1,7 @@
 #version 450 core
 
 in vec3 normalExport;
+in vec2 texCoordsExport;
 
 out vec4 FragColor;
 
@@ -28,11 +29,14 @@ uniform Material terrainFandB;
 vec3 normal, lightDirection;
 vec4 fAndBDif;
 
+uniform sampler2D texSampler;
+
 void main(void)
 {
-	normal = normalize(normalExport);
 	lightDirection = normalize(vec3(light0.coords));
-	fAndBDif = max(dot(normal, lightDirection), 0.0f) * (light0.difCols *
+	fAndBDif = max(dot(normalExport, lightDirection), 0.0f) * (light0.difCols *
 		terrainFandB.difRefl);
-	FragColor = vec4(vec3(min(fAndBDif, vec4(1.0))), 1.0);
+
+	vec4 fieldTexColor = texture(texSampler, texCoordsExport);
+	FragColor = fieldTexColor * fAndBDif;
 }

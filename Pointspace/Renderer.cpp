@@ -33,8 +33,8 @@ bool Renderer::Init(const char* _Title, const int _Width, const int _Height)
 
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 
 	MainCamera = new Camera(glm::vec3(0.0f, 1.0f, 5.0f), 60, _Width, _Height);
 
@@ -63,140 +63,150 @@ void Renderer::Setup()
 	Update();
 }
 
+void Renderer::DiamondStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _rowLength)
+{
+	int halfstepSize = _stepSize / 2;
+	float avg = 0;
+	int counter = 0;
+
+	//Top left
+	if (_x - halfstepSize >= 0 && _z - halfstepSize >= 0) {
+		avg += _heightMap[_x - halfstepSize][_z - halfstepSize];
+		counter++;
+	}
+
+	//Top right
+	if (_x + halfstepSize < _rowLength && _z - halfstepSize >= 0) {
+		avg += _heightMap[_x + halfstepSize][_z - halfstepSize];
+		counter++;
+	}
+
+	//Bottom left
+	if (_x - halfstepSize >= 0 && _z + halfstepSize < _rowLength) {
+		avg += _heightMap[_x - halfstepSize][_z + halfstepSize];
+		counter++;
+	}
+
+	//Bottom right
+	if (_x + halfstepSize < _rowLength && _z + halfstepSize < _rowLength) {
+		avg += _heightMap[_x + halfstepSize][_z + halfstepSize];
+		counter++;
+	}
+	_heightMap[_x][_z] += avg / counter + (_randomRange - static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
+}
+
+void Renderer::SquareStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize)
+{
+	int halfstepSize = _stepSize / 2;
+	float avg = 0;
+	int counter = 0;
+
+	//Right
+	if (_x + halfstepSize < _mapSize) {
+		avg += _heightMap[_x + halfstepSize][_z];
+		counter++;
+	}
+
+	//Left
+	if (_x - halfstepSize >= 0) {
+		avg += _heightMap[_x - halfstepSize][_z];
+		counter++;
+	}
+
+	//Bottom
+	if (_z + halfstepSize < _mapSize) {
+		avg += _heightMap[_x][_z + halfstepSize];
+		counter++;
+	}
+
+	//Top
+	if (_z - halfstepSize >= 0) {
+		avg += _heightMap[_x][_z - halfstepSize];
+		counter++;
+	}
+	_heightMap[_x][_z] += avg / counter + (_randomRange - static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
+}
+
 void Renderer::ConfigTerrain()
 {
 	//5, 33, 65
-	const int RowLength = 33;
-	float MaxRandVal = 1;
-	const int NumStrips = RowLength - 1;
-	const int VerticesPerStrip = 2 * RowLength;
-	const int IndexCount = NumStrips * VerticesPerStrip + (RowLength - 2) * 2;
-	std::vector<Vertex> TerrainVertexCollection(RowLength * RowLength);
-	std::vector<unsigned int> TerrainIndexCollection(IndexCount);
-	
+	const int rowLength = 5;
+	//Max corresponds to inverse min value
+	float minRandVal = 2.0f;
+	const int numStrips = rowLength - 1;
+	const int verticesPerStrip = 2 * rowLength;
+	const int indexCount = numStrips * verticesPerStrip + (rowLength - 2) * 2;
+	std::vector<Vertex> terrainVertexCollection(rowLength * rowLength);
+	std::vector<unsigned int> terrainIndexCollection(indexCount);
+
 	//Build Height Map
-	float HeightMap[RowLength][RowLength] = {};
-	for (int x = 0; x < RowLength; x++)
-	{
-		for (int z = 0; z < RowLength; z++)
-		{
-			HeightMap[x][z] = 0;
-		}
+	float** heightMap = new float* [rowLength];
+	for (int i(0); i < rowLength; ++i) {
+		heightMap[i] = new float[rowLength];
 	}
 
+	for (int x(0); x < rowLength; ++x) {
+		for (int z(0); z < rowLength; ++z) {
+			heightMap[x][z] = 0;
+		}
+	}
 	//Perform Diamond Square Algorithm
-	srand(4);
+	srand(323);
 
-	HeightMap[0][0] = (-MaxRandVal + (float)(rand() / (float)RAND_MAX / MaxRandVal * 2));
-	HeightMap[0][RowLength - 1] = (-MaxRandVal + (float)(rand() / (float)RAND_MAX / MaxRandVal * 2));
-	HeightMap[RowLength - 1][0] = (-MaxRandVal + (float)(rand() / (float)RAND_MAX / MaxRandVal * 2));
-	HeightMap[RowLength - 1][RowLength - 1] = (-MaxRandVal + (float)(rand() / (float)RAND_MAX / MaxRandVal * 2));
+	float test = (minRandVal - static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
 
-	int StepSize = RowLength - 1;
-	//int CompatibleLength = RowLength % 2 == 0 ? RowLength : RowLength - 1;
-	int CompatibleLength = RowLength - 1;
-	int Counter = 0;
-	int H = 1;
-
-	float H1 = 0, H3 = 0, H5 = 0, H7 = 0, H9 = 0;
-	float H2 = 0, H4 = 0, H6 = 0, H8 = 0;
-
-	//[H1][-][H2][-][H3]
-	//[-][-][-][-][-]
-	//[H4][-][H5][-][H6]
-	//[-][-][-][-][-]
-	//[H7][-][H8][-][H9]
-
-	while (StepSize > 1) {
-		//Perform Diamond step
-		for (int x = 0; x < CompatibleLength; x += StepSize) {
-			for (int z = 0; z < CompatibleLength; z += StepSize) {
-				H1 = HeightMap[x][z];
-				H3 = HeightMap[x + StepSize][z];
-				H7 = HeightMap[x][z + StepSize];
-				H9 = HeightMap[x + StepSize][z + StepSize];
-				H5 = (H1 + H3 + H7 + H9) / 4 + (-MaxRandVal + (float)rand() / ((float)RAND_MAX / MaxRandVal));
-				HeightMap[x + StepSize / 2][z + StepSize / 2] += H5;
-				//	HeightMap[x][z] + HeightMap[(int)(x+StepSize)][z] + HeightMap[x][(int)(z+StepSize)] + HeightMap[(int)(x+StepSize)][(int)(z+StepSize)]
-				//	+ ((float)rand() / ((float)RAND_MAX / 1));
+	int stepSize = rowLength - 1;
+	int compatibleLength = rowLength - 1;
+	float H = 1;
+	//heightMap[0][0] = (-minRandVal + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
+	//heightMap[stepSize][0] = (-minRandVal + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
+	//heightMap[0][stepSize] = (-minRandVal + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
+	//heightMap[stepSize][stepSize] = (-minRandVal + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
+	while (stepSize > 1) {
+		for (int x = 0; x < compatibleLength; x += stepSize) {
+			for (int z = 0; z < compatibleLength; z += stepSize) {
+				DiamondStep(heightMap, x + stepSize/2, z + stepSize/2, stepSize, minRandVal, rowLength);
 			}
 		}
 
-		//Perform Square step
-		for (int x = 0; x < RowLength - 1; x += StepSize) {
-			for (int z = 0; z < RowLength - 1; z += StepSize) {
-
-				H2 = (H1 + H3 + H5) / 3 + (-MaxRandVal + (float)rand() / ((float)RAND_MAX / MaxRandVal));
-				H4 = (H1 + H5 + H7) / 3 + (-MaxRandVal + (float)rand() / ((float)RAND_MAX / MaxRandVal));
-				H6 = (H3 + H5 + H9) / 3 + (-MaxRandVal + (float)rand() / ((float)RAND_MAX / MaxRandVal));
-				H8 = (H7 + H5 + H9) / 3 + (-MaxRandVal + (float)rand() / ((float)RAND_MAX / MaxRandVal));
-
-				HeightMap[x + StepSize / 2][z] += H2;
-				HeightMap[x][z + StepSize / 2] += H4;
-				HeightMap[x + StepSize][z + StepSize / 2] += H6;
-				HeightMap[x + StepSize / 2][z + StepSize] += H8;
-				//float TopLeftValue = HeightMap[x][z];
-				//float TopRightValue = HeightMap[(int)(x + StepSize)][z];
-				//float BottomLeftValue = HeightMap[x][(int)(z + StepSize)];
-				//float BottomRightValue = HeightMap[(int)(x + StepSize)][(int)(z + StepSize)];
-				//float MiddleValue = HeightMap[(int)(x + StepSize / 2)][(int)(z + StepSize / 2)];
-				/*Counter = 0;
-				H1 = HeightMap[x][z];
-				Counter++;
-				H2 = HeightMap[x + StepSize][z];
-				Counter++;
-				H3 = HeightMap[x + StepSize / 2][z + StepSize / 2];
-				Counter++;
-				if (z - StepSize / 2 < 0) {
-					H4 = 0;
-				}
-				else {
-					H4 = HeightMap[x][z - StepSize / 2];
-					Counter++;
-				}
-				HeightMap[x + (int)(StepSize / 2)][z] = (H1 + H2 + H3 + H4) / (float)(Counter) + ((float)rand() / ((float)RAND_MAX / 1));
-
-
-				if (z + StepSize / 2 < 0) {
-					HeightMap[x][z + StepSize / 2];
-				}
-				else {
-					HeightMap[x][z - StepSize / 2];
-				}
-
-				if (z - StepSize / 2 < 0) {
-					HeightMap[x][z];
-				}
-
-				if (x + StepSize / 2 > RowLength) {
-					HeightMap[x][z];
-				}*/
-				/*HeightMap[x + (int)(StepSize / 2)][z] = (TopLeftValue + TopRightValue + MiddleValue) / 3 + ((float)rand() / ((float)RAND_MAX / 1));
-				HeightMap[x + (int)(StepSize/2)][z] = (TopLeftValue + TopRightValue + MiddleValue) / 3 + ((float)rand() / ((float)RAND_MAX / 1));
-				HeightMap[x][z + (int)(StepSize / 2)] = (TopLeftValue + BottomLeftValue + MiddleValue) / 3 + ((float)rand() / ((float)RAND_MAX / 1));
-				HeightMap[(int)(x + StepSize)][z + (int)(StepSize / 2)] = (TopRightValue + BottomRightValue + MiddleValue) / 3 + ((float)rand() / ((float)RAND_MAX / 1));
-				HeightMap[x + (int)(StepSize / 2)][z + (int)(StepSize)] = (BottomLeftValue + BottomRightValue + MiddleValue) / 3 + ((float)rand() / ((float)RAND_MAX / 1));*/
-				//}
+		for (int x = 0; x < compatibleLength; x += stepSize) {
+			for (int z = 0; z < compatibleLength; z += stepSize) {
+				SquareStep(heightMap, x + stepSize / 2, z, stepSize, minRandVal, rowLength);
+				SquareStep(heightMap, x + stepSize / 2, z + stepSize, stepSize, minRandVal, rowLength);
+				SquareStep(heightMap, x, z + stepSize / 2, stepSize, minRandVal, rowLength);
+				SquareStep(heightMap, x + stepSize, z + stepSize / 2, stepSize, minRandVal, rowLength);
 			}
 		}
-		MaxRandVal = MaxRandVal * pow(2, -H);
-		StepSize /= 2;
+		minRandVal *= pow(2, -H);
+		stepSize /= 2;
 	}
 
 	// Build Vertex Coords;
+	float fTextureS = float(rowLength) * 0.1f;
+	float fTextureT = float(rowLength) * 0.1f;
+
 	int i = 0;
-	for (int z = 0; z < RowLength; z++)
+	for (int x = 0; x < rowLength; x++)
 	{
-		for (int x = 0; x < RowLength; x++)
+		for (int z = 0; z < rowLength; z++)
 		{
+			float fScaleC = (float)(x) / (float)(rowLength - 1);
+			float fScaleR = (float)(z) / (float)(rowLength - 1);
 			// Set the coords (1st 4 elements) and a default colour of black (2nd 4 elements) 
-			TerrainVertexCollection[i] = Vertex(
-				glm::vec4((float)x, HeightMap[z][x], (float)z, 1.0));
+			terrainVertexCollection[i] = Vertex(
+				glm::vec4((float)x, heightMap[x][z], (float)z, 1.0),
+				glm::vec2(fTextureS * fScaleC, fTextureT * fScaleR));
 			i++;
 		}
 	}
 
-	struct PlaneTriangle {
+	//for (int i = 0; i < terrainVertexCollection.size(); ++i) {
+	//	if (terrainVertexCollection[i].Coords.y < 1) {
+	//		float lul = 1;
+	//	}
+	//}
+
+	struct QuadTriangle {
 		int FirstVertexIndex;
 		int SecondVertexIndex;
 		int ThirdVertexIndex;
@@ -208,25 +218,26 @@ void Renderer::ConfigTerrain()
 
 	//Build Index Collection:
 	std::vector<glm::vec3> TriNormalCollection;
-	std::vector<PlaneTriangle> TriGroupCollection;
+	std::vector<QuadTriangle> TriGroupCollection;
 	std::vector<std::vector<glm::vec3>> TriCollection;
 	std::vector<int> QuadVertIndexCollection;
 	int IndexLow = 0;
-	int IndexHigh = RowLength;
+	int IndexHigh = rowLength;
 	bool Tweaked = false;
 	int QuadCounter = 0;
 
 
-	for (int i = 0; i < IndexCount; i += 2) {
-		if (IndexHigh % RowLength == 0 && IndexHigh > RowLength && !Tweaked) {
-			TerrainIndexCollection[i] = TerrainIndexCollection[i - 1];
-			TerrainIndexCollection[i + 1] = IndexLow;
+	for (int i = 0; i < indexCount; i += 2) {
+		if (IndexHigh % rowLength == 0 && IndexHigh > rowLength && !Tweaked) {
+			terrainIndexCollection[i] = terrainIndexCollection[i - 1];
+			terrainIndexCollection[i + 1] = IndexLow;
 			Tweaked = true;
 			QuadVertIndexCollection.clear();
 		}
 		else {
-			TerrainIndexCollection[i] = IndexLow;
-			TerrainIndexCollection[i + 1] = IndexHigh;
+			terrainIndexCollection[i] = IndexLow;
+			terrainIndexCollection[i + 1] = IndexHigh;
+			//Push poinds for quad formation on non-degenerate triangles
 			QuadVertIndexCollection.push_back(IndexLow);
 			QuadVertIndexCollection.push_back(IndexHigh);
 			IndexLow++;
@@ -235,54 +246,35 @@ void Renderer::ConfigTerrain()
 		}
 		if (QuadVertIndexCollection.size() == 4) {
 
-			PlaneTriangle FirstQuadTri;
-			FirstQuadTri.FirstVertexIndex = QuadVertIndexCollection[0];
-			FirstQuadTri.SecondVertexIndex = QuadVertIndexCollection[1];
-			FirstQuadTri.ThirdVertexIndex = QuadVertIndexCollection[2];
-			FirstQuadTri.FirstVertexCoords = TerrainVertexCollection[FirstQuadTri.FirstVertexIndex].Coords;
-			FirstQuadTri.SecondVertexCoords = TerrainVertexCollection[FirstQuadTri.SecondVertexIndex].Coords;
-			FirstQuadTri.ThirdVertexCoords = TerrainVertexCollection[FirstQuadTri.ThirdVertexIndex].Coords;
+			//Create the quad out of two triangles through the obtained indecies
+			QuadTriangle UpperQuadTri;
+			UpperQuadTri.FirstVertexIndex = QuadVertIndexCollection[0];
+			UpperQuadTri.SecondVertexIndex = QuadVertIndexCollection[1];
+			UpperQuadTri.ThirdVertexIndex = QuadVertIndexCollection[2];
+			UpperQuadTri.FirstVertexCoords = terrainVertexCollection[UpperQuadTri.FirstVertexIndex].Coords;
+			UpperQuadTri.SecondVertexCoords = terrainVertexCollection[UpperQuadTri.SecondVertexIndex].Coords;
+			UpperQuadTri.ThirdVertexCoords = terrainVertexCollection[UpperQuadTri.ThirdVertexIndex].Coords;
 			
-			PlaneTriangle SecondQuadTri;
-			SecondQuadTri.FirstVertexIndex = QuadVertIndexCollection[1];
-			SecondQuadTri.SecondVertexIndex = QuadVertIndexCollection[2];
-			SecondQuadTri.ThirdVertexIndex = QuadVertIndexCollection[3];
-			SecondQuadTri.FirstVertexCoords = TerrainVertexCollection[SecondQuadTri.FirstVertexIndex].Coords;
-			SecondQuadTri.SecondVertexCoords = TerrainVertexCollection[SecondQuadTri.SecondVertexIndex].Coords;
-			SecondQuadTri.ThirdVertexCoords = TerrainVertexCollection[SecondQuadTri.ThirdVertexIndex].Coords;
+			QuadTriangle LowerQuadTri;
+			LowerQuadTri.FirstVertexIndex = QuadVertIndexCollection[1];
+			LowerQuadTri.SecondVertexIndex = QuadVertIndexCollection[2];
+			LowerQuadTri.ThirdVertexIndex = QuadVertIndexCollection[3];
+			LowerQuadTri.FirstVertexCoords = terrainVertexCollection[LowerQuadTri.FirstVertexIndex].Coords;
+			LowerQuadTri.SecondVertexCoords = terrainVertexCollection[LowerQuadTri.SecondVertexIndex].Coords;
+			LowerQuadTri.ThirdVertexCoords = terrainVertexCollection[LowerQuadTri.ThirdVertexIndex].Coords;
 			
-			FirstQuadTri.TriNormal = 
+			UpperQuadTri.TriNormal =
 				glm::cross(
-					glm::vec3(FirstQuadTri.FirstVertexCoords - FirstQuadTri.SecondVertexCoords),
-					glm::vec3(FirstQuadTri.SecondVertexCoords - FirstQuadTri.ThirdVertexCoords));
+					glm::vec3(UpperQuadTri.ThirdVertexCoords - UpperQuadTri.FirstVertexCoords),
+					glm::vec3(UpperQuadTri.FirstVertexCoords - UpperQuadTri.SecondVertexCoords));
 
-			SecondQuadTri.TriNormal = 
+			LowerQuadTri.TriNormal =
 				glm::cross(
-					glm::vec3(SecondQuadTri.FirstVertexCoords - SecondQuadTri.SecondVertexCoords),
-					glm::vec3(SecondQuadTri.SecondVertexCoords - SecondQuadTri.ThirdVertexCoords));
+					glm::vec3(LowerQuadTri.FirstVertexCoords - LowerQuadTri.ThirdVertexCoords),
+					glm::vec3(LowerQuadTri.ThirdVertexCoords - LowerQuadTri.SecondVertexCoords));
 			
-			TriGroupCollection.push_back(FirstQuadTri);
-			TriGroupCollection.push_back(SecondQuadTri);
-
-			//TriNormalCollection.push_back(FirstQuadTriNormal);
-			//TriNormalCollection.push_back(SecondQuadTriNormal);
-
-			//std::vector<glm::vec3> FirstTri(3);
-			//FirstTri[0] = glm::vec3(TerrainVertexCollection[QuadVertIndexCollection[0]].Coords);
-			//FirstTri[1] = glm::vec3(TerrainVertexCollection[QuadVertIndexCollection[1]].Coords);
-			//FirstTri[2] = glm::vec3(TerrainVertexCollection[QuadVertIndexCollection[2]].Coords);
-			//std::vector<glm::vec3> SecondTri(3);
-			//SecondTri[0] = glm::vec3(TerrainVertexCollection[QuadVertIndexCollection[1]].Coords);
-			//SecondTri[1] = glm::vec3(TerrainVertexCollection[QuadVertIndexCollection[2]].Coords);
-			//SecondTri[2] = glm::vec3(TerrainVertexCollection[QuadVertIndexCollection[3]].Coords);
-			//TriCollection.push_back(FirstTri);
-			//TriCollection.push_back(SecondTri);
-			//glm::vec3 FirstTriNormal = glm::cross(glm::vec3(FirstTri[0] - FirstTri[1]), glm::vec3(FirstTri[1] - FirstTri[2]));
-			//FirstTriNormal = glm::normalize(FirstTriNormal);
-			//TriNormalCollection.push_back(FirstTriNormal);
-			//glm::vec3 SecondTriNormal = glm::cross(glm::vec3(SecondTri[0] - SecondTri[1]), glm::vec3(SecondTri[1] - SecondTri[2]));
-			//SecondTriNormal = glm::normalize(SecondTriNormal);
-			//TriNormalCollection.push_back(SecondTriNormal);
+			TriGroupCollection.push_back(UpperQuadTri);
+			TriGroupCollection.push_back(LowerQuadTri);
 
 			QuadVertIndexCollection[0] = QuadVertIndexCollection[2];
 			QuadVertIndexCollection[1] = QuadVertIndexCollection[3];
@@ -293,28 +285,33 @@ void Renderer::ConfigTerrain()
 
 	//Build Vertex Normals:
 	//For each triangle check if the index is part of it and add the normal of the triangle to the vertex
-	for (int i = 0; i < TerrainIndexCollection.size(); ++i) {
+	for (int i = 0; i < terrainIndexCollection.size(); ++i) {
 		for (int j = 0; j < TriGroupCollection.size(); ++j) {
 			if (i == TriGroupCollection[j].FirstVertexIndex ||
 				i == TriGroupCollection[j].SecondVertexIndex ||
 				i == TriGroupCollection[j].ThirdVertexIndex) {
-				TerrainVertexCollection[i].Normal += TriGroupCollection[j].TriNormal;
+				terrainVertexCollection[i].Normal = TriGroupCollection[j].TriNormal;
 			}
 		}
 	}
 
 	//Normalize the normal value of each vertex
-	for (int i = 0; i < TerrainVertexCollection.size(); ++i) {
-		/*float temp = glm::dot(-TerrainVertexCollection[i].Normal, WorldUp);*/
-		glm::vec3 tempVec = TerrainVertexCollection[i].Normal; 
-		if (tempVec.y < 0) {
-			TerrainVertexCollection[i].Normal = -tempVec;
-		}
-		TerrainVertexCollection[i].Normal = glm::normalize(TerrainVertexCollection[i].Normal);
+	for (int i = 0; i < terrainVertexCollection.size(); ++i) {
+		/*float temp = glm::dot(-terrainVertexCollection[i].Normal, WorldUp);*/
+		glm::vec3 tempVec = terrainVertexCollection[i].Normal; 
+		/*if (tempVec.y < 0) {
+			terrainVertexCollection[i].Normal = -tempVec;
+		}*/
+		terrainVertexCollection[i].Normal = glm::normalize(-terrainVertexCollection[i].Normal);
 	}
 
-	TerrainMesh = new Mesh(TerrainVertexCollection, TerrainIndexCollection,glm::vec3(0.0f, 0.0f, 0.0f));
-	TerrainMesh->m_Material = new Material(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 50.0f);
+	TerrainMesh = new Mesh(terrainVertexCollection, terrainIndexCollection,glm::vec3(0.0f, 0.0f, 0.0f));
+	TerrainMesh->m_Material = new Material(
+		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 
+		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 
+		50.0f);
+	TerrainMesh->m_Texture = new Texture("../Textures/grass.bmp", ModelShader);
 }
 
 void Renderer::ConfigTrees()
@@ -332,13 +329,16 @@ void Renderer::ConfigWater()
 void Renderer::Draw(Camera* _Camera, Mesh* _Mesh, Shader* _Shader)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	_Shader->Activate();
 	_Mesh->ModelMatrix = glm::mat4(1.0f);
 	_Mesh->ModelMatrix = glm::translate(_Mesh->ModelMatrix, _Mesh->Position);
+	NormalMatrix = glm::transpose(glm::inverse(glm::mat3(MainCamera->ViewMatrix * _Mesh->ModelMatrix)));
 
 	_Shader->SetMat4("projMat", MainCamera->ProjectionMatrix);
 	_Shader->SetMat4("viewMat", MainCamera->ViewMatrix);
 	_Shader->SetMat4("modelMat", _Mesh->ModelMatrix);
+	_Shader->SetMat3("normalMat", NormalMatrix);
 
 	_Shader->SetVec4("light0.ambCols", DirLight->AmbientC);
 	_Shader->SetVec4("light0.difCols", DirLight->DiffuseC);
@@ -352,12 +352,14 @@ void Renderer::Draw(Camera* _Camera, Mesh* _Mesh, Shader* _Shader)
 
 	_Shader->SetVec4("globAmb", SceneAmbColor);
 
-	//NormalMatrix = glm::transpose(glm::inverse(glm::mat3(MainCamera->ViewMatrix * _Mesh->ModelMatrix)));
-	_Shader->SetMat3("normalMat", NormalMatrix);
-
 	glBindVertexArray(_Mesh->VAO);
 	glDrawElements(GL_TRIANGLE_STRIP, _Mesh->IndexCollection.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+}
+
+void Renderer::SquareStepAlt(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize)
+{
+
 }
 
 void Renderer::Update()
@@ -365,6 +367,7 @@ void Renderer::Update()
 	float DeltaTime = 0.0f;
 	float LastFrame = 0.0f;
 	while (!glfwWindowShouldClose(Window)) {
+		
 		float CurrentFrame = glfwGetTime();
 		DeltaTime = CurrentFrame - LastFrame;
 		LastFrame = CurrentFrame;
@@ -387,11 +390,9 @@ void Renderer::Update()
 		}
 		glfwGetCursorPos(Window, &PosX, &PosY);
 		MainCamera->UpdateTransformMouse(PosX, -PosY);
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		if (TerrainMesh != NULL) {
 			Draw(MainCamera, TerrainMesh, ModelShader);
 		}
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glDepthFunc(GL_LEQUAL);
 		MainSkybox->Draw(MainCamera);
 		glDepthFunc(GL_LESS);

@@ -6,22 +6,18 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "getbmp.h"
 #include "stb_image.h"
-
-GLint TextureFromFile(const char* _Path);
-
-enum class TextureType {
-	DIFFUSE,
-	SPECULAR
-};
+#include "Shader.h"
+#include <string>
 
 class Texture
 {
 public:
-	Texture(const char* _Path, TextureType _Type);
+	Texture(std::string _Path, Shader* _shader);
 	~Texture();
-	GLuint ID;
-	TextureType Type;
+	unsigned int ID, shaderTexLoc;
+	BitMapFile* BMP = NULL;
 	std::string Path;
 };
 
