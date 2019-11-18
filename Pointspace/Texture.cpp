@@ -17,7 +17,6 @@ Texture::Texture(std::string _path, Shader* _shader)
 	glGenerateMipmap(GL_TEXTURE_2D);
 	shaderTexLoc = glGetUniformLocation(_shader->ProgramID, "texSample");
 	glUniform1i(shaderTexLoc, 0);
-	//ID = TextureFromFile(_Path);
 }
 
 Texture::~Texture()

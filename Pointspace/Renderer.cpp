@@ -95,14 +95,14 @@ void Renderer::DiamondStep(float** _heightMap, int _x, int _z, int _stepSize, fl
 	_heightMap[_x][_z] += avg / counter + (_randomRange - static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
 }
 
-void Renderer::SquareStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize)
+void Renderer::SquareStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _rowLength)
 {
 	int halfstepSize = _stepSize / 2;
 	float avg = 0;
 	int counter = 0;
 
 	//Right
-	if (_x + halfstepSize < _mapSize) {
+	if (_x + halfstepSize < _rowLength) {
 		avg += _heightMap[_x + halfstepSize][_z];
 		counter++;
 	}
@@ -114,7 +114,7 @@ void Renderer::SquareStep(float** _heightMap, int _x, int _z, int _stepSize, flo
 	}
 
 	//Bottom
-	if (_z + halfstepSize < _mapSize) {
+	if (_z + halfstepSize < _rowLength) {
 		avg += _heightMap[_x][_z + halfstepSize];
 		counter++;
 	}
@@ -130,7 +130,7 @@ void Renderer::SquareStep(float** _heightMap, int _x, int _z, int _stepSize, flo
 void Renderer::ConfigTerrain()
 {
 	//5, 33, 65
-	const int rowLength = 5;
+	const int rowLength = 33;
 	//Max corresponds to inverse min value
 	float minRandVal = 2.0f;
 	const int numStrips = rowLength - 1;
@@ -284,7 +284,8 @@ void Renderer::ConfigTerrain()
 	}
 
 	//Build Vertex Normals:
-	//For each triangle check if the index is part of it and add the normal of the triangle to the vertex
+	//For each triangle check if the index is part of it and
+	//add the normal of the triangle to the vertex which the index represents
 	for (int i = 0; i < terrainIndexCollection.size(); ++i) {
 		for (int j = 0; j < TriGroupCollection.size(); ++j) {
 			if (i == TriGroupCollection[j].FirstVertexIndex ||
@@ -350,16 +351,9 @@ void Renderer::Draw(Camera* _Camera, Mesh* _Mesh, Shader* _Shader)
 	_Shader->SetVec4("terrainFandB.specRefl", _Mesh->m_Material->SpecularC);
 	_Shader->SetFloat("terrainFandB.shininess", _Mesh->m_Material->Shininess);
 
-	_Shader->SetVec4("globAmb", SceneAmbColor);
-
 	glBindVertexArray(_Mesh->VAO);
 	glDrawElements(GL_TRIANGLE_STRIP, _Mesh->IndexCollection.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
-}
-
-void Renderer::SquareStepAlt(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize)
-{
-
 }
 
 void Renderer::Update()

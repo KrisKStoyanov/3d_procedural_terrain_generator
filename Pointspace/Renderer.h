@@ -30,7 +30,6 @@ public:
 	void Draw(Camera* _Camera, Mesh* _Mesh, Shader* _Shader);
 	void DiamondStep(float ** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);
 	void SquareStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);
-	void SquareStepAlt(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);
 	void Update();
 	void Terminate();
 
