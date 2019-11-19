@@ -16,6 +16,8 @@ void main(void)
 {
 	normalExport = vNormal;
 	normalExport = normalize(normalMat * normalExport);
+
+	texCoordsExport = vTexCoords;
    
    gl_Position = projMat * viewMat * modelMat * vCoords;
 }

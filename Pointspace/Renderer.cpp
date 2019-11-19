@@ -92,7 +92,7 @@ void Renderer::DiamondStep(float** _heightMap, int _x, int _z, int _stepSize, fl
 		avg += _heightMap[_x + halfstepSize][_z + halfstepSize];
 		counter++;
 	}
-	_heightMap[_x][_z] += avg / counter + (_randomRange - static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
+	_heightMap[_x][_z] = avg / counter + (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
 }
 
 void Renderer::SquareStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _rowLength)
@@ -124,7 +124,7 @@ void Renderer::SquareStep(float** _heightMap, int _x, int _z, int _stepSize, flo
 		avg += _heightMap[_x][_z - halfstepSize];
 		counter++;
 	}
-	_heightMap[_x][_z] += avg / counter + (_randomRange - static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
+	_heightMap[_x][_z] = avg / counter + (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
 }
 
 void Renderer::ConfigTerrain()
@@ -132,7 +132,8 @@ void Renderer::ConfigTerrain()
 	//5, 33, 65
 	const int rowLength = 33;
 	//Max corresponds to inverse min value
-	float minRandVal = 2.0f;
+	float minRandVal = -5.0f;
+
 	const int numStrips = rowLength - 1;
 	const int verticesPerStrip = 2 * rowLength;
 	const int indexCount = numStrips * verticesPerStrip + (rowLength - 2) * 2;
@@ -150,35 +151,53 @@ void Renderer::ConfigTerrain()
 			heightMap[x][z] = 0;
 		}
 	}
+
+	//float heightMap[rowLength][rowLength];
+	//for (int x = 0; x < rowLength; ++x) {
+	//	for (int z = 0; z < rowLength; ++z) {
+	//		heightMap[x][z] = 0;
+	//	}
+	//}
+
 	//Perform Diamond Square Algorithm
 	srand(323);
 
-	float test = (minRandVal - static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
+	float test = (-minRandVal - static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
 
 	int stepSize = rowLength - 1;
-	int compatibleLength = rowLength - 1;
+	int iterations = log2(rowLength);
+	int compatibleLength = 1;
 	float H = 1;
-	//heightMap[0][0] = (-minRandVal + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
-	//heightMap[stepSize][0] = (-minRandVal + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
-	//heightMap[0][stepSize] = (-minRandVal + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
-	//heightMap[stepSize][stepSize] = (-minRandVal + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
-	while (stepSize > 1) {
-		for (int x = 0; x < compatibleLength; x += stepSize) {
-			for (int z = 0; z < compatibleLength; z += stepSize) {
-				DiamondStep(heightMap, x + stepSize/2, z + stepSize/2, stepSize, minRandVal, rowLength);
+	heightMap[0][0] = (-minRandVal + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
+	heightMap[stepSize][0] = (-minRandVal + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
+	heightMap[0][stepSize] = (-minRandVal + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
+	heightMap[stepSize][stepSize] = (-minRandVal + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (minRandVal + minRandVal)));
+	for (int i = 0; i < iterations; i++) {
+		int row = 0;
+		for (int x = 0; x < compatibleLength; x ++) {
+			int col = 0;
+			for (int z = 0; z < compatibleLength; z ++) {
+				DiamondStep(heightMap, row + stepSize / 2, col + stepSize / 2, stepSize, minRandVal, rowLength);
+				col += stepSize;
 			}
+			row += stepSize;
 		}
 
-		for (int x = 0; x < compatibleLength; x += stepSize) {
-			for (int z = 0; z < compatibleLength; z += stepSize) {
-				SquareStep(heightMap, x + stepSize / 2, z, stepSize, minRandVal, rowLength);
-				SquareStep(heightMap, x + stepSize / 2, z + stepSize, stepSize, minRandVal, rowLength);
-				SquareStep(heightMap, x, z + stepSize / 2, stepSize, minRandVal, rowLength);
-				SquareStep(heightMap, x + stepSize, z + stepSize / 2, stepSize, minRandVal, rowLength);
+		row = 0;
+		for (int x = 0; x < compatibleLength; x ++) {
+			int col = 0;
+			for (int z = 0; z < compatibleLength; z ++) {
+				SquareStep(heightMap, row + stepSize / 2, col, stepSize, minRandVal, rowLength);
+				SquareStep(heightMap, row + stepSize / 2, col + stepSize, stepSize, minRandVal, rowLength);
+				SquareStep(heightMap, row, col + stepSize / 2, stepSize, minRandVal, rowLength);
+				SquareStep(heightMap, row + stepSize, col + stepSize / 2, stepSize, minRandVal, rowLength);
+				col += stepSize;
 			}
+			row += stepSize;
 		}
-		minRandVal *= pow(2, -H);
+		minRandVal /= 2;
 		stepSize /= 2;
+		compatibleLength *= 2;
 	}
 
 	// Build Vertex Coords;
@@ -291,7 +310,7 @@ void Renderer::ConfigTerrain()
 			if (i == TriGroupCollection[j].FirstVertexIndex ||
 				i == TriGroupCollection[j].SecondVertexIndex ||
 				i == TriGroupCollection[j].ThirdVertexIndex) {
-				terrainVertexCollection[i].Normal = TriGroupCollection[j].TriNormal;
+				terrainVertexCollection[i].Normal += TriGroupCollection[j].TriNormal;
 			}
 		}
 	}
@@ -384,6 +403,7 @@ void Renderer::Update()
 		}
 		glfwGetCursorPos(Window, &PosX, &PosY);
 		MainCamera->UpdateTransformMouse(PosX, -PosY);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		if (TerrainMesh != NULL) {
 			Draw(MainCamera, TerrainMesh, ModelShader);
 		}
