@@ -19,5 +19,5 @@ void main(void)
 
 	UVExport = VertexUV;
    
-   gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * VertexPos;
+    gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * VertexPos;
 }

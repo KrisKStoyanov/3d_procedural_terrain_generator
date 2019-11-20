@@ -40,10 +40,10 @@ public:
 		const int _Width,
 		const int _Height);
 	void Setup();
-	void Draw(Camera* _Camera, Mesh* _Mesh, Shader* _Shader);
+	void Draw(Camera*& _Camera, Mesh*& _Mesh, Shader*& _Shader);
 	void DiamondStep(float ** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);
 	void SquareStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);
-	void UpdateWaterMesh(Mesh* _Mesh, float _deltaTime);
+	void UpdateWaterMesh(Mesh*& _Mesh, float _deltaTime);
 	void OnUpdate();
 	void Terminate();
 

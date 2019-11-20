@@ -124,14 +124,6 @@ void Renderer::SquareStep(float** _heightMap, int _x, int _z, int _stepSize, flo
 	_heightMap[_x][_z] = avg / counter + (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
 }
 
-void Renderer::UpdateWaterMesh(Mesh* _Mesh, float _deltaTime)
-{
-	for (int i = 0; i < _Mesh->VertexCollection.size(); ++i) {
-		_Mesh->VertexCollection[i].Coords.y += _deltaTime;
-			//sin(_Mesh->VertexCollection[i].Coords.y + _deltaTime * PI / 180);
-	}
-}
-
 void Renderer::ConfigTerrain()
 {
 	//5, 33, 65
@@ -349,11 +341,7 @@ void Renderer::ConfigWater()
 
 	for (int x(0); x < rowLength; ++x) {
 		for (int z(0); z < rowLength; ++z) {
-			param = 
-				(-minRandVal + static_cast <float> 
-				(rand()) / static_cast <float> 
-				(RAND_MAX / (minRandVal + minRandVal)));
-			heightMap[x][z] = sin(param * PI/180);
+			heightMap[x][z] = 0;
 		}
 	}
 
@@ -483,7 +471,15 @@ void Renderer::ConfigClouds()
 {
 }
 
-void Renderer::Draw(Camera* _Camera, Mesh* _Mesh, Shader* _Shader)
+void Renderer::UpdateWaterMesh(Mesh*& _Mesh, float _deltaTime)
+{
+	for (int i = 0; i < _Mesh->VertexCollection.size(); ++i) {
+		_Mesh->VertexCollection[i].Coords.y +=
+			sin(_Mesh->VertexCollection[i].Coords.y * PI / 180) * _deltaTime;
+	}
+}
+
+void Renderer::Draw(Camera*& _Camera, Mesh*& _Mesh, Shader*& _Shader)
 {
 	_Shader->Activate();
 	_Mesh->ModelMatrix = glm::mat4(1.0f);
@@ -506,7 +502,6 @@ void Renderer::Draw(Camera* _Camera, Mesh* _Mesh, Shader* _Shader)
 	_Shader->SetFloat("terrainFandB.shininess", _Mesh->m_Material->Shininess);
 
 	glBindTexture(GL_TEXTURE_2D,_Mesh->m_Texture->ID);
-
 	glBindVertexArray(_Mesh->VAO);
 	glDrawElements(GL_TRIANGLE_STRIP, _Mesh->IndexCollection.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
@@ -556,7 +551,14 @@ void Renderer::OnUpdate()
 void Renderer::Terminate()
 {
 	if (MainCamera) {
-		MainCamera = nullptr;
+		delete MainCamera;
+	}
+	if (TerrainMesh) {
+		delete TerrainMesh;
+	}
+
+	if (WaterMesh) {
+		delete WaterMesh;
 	}
 
 	if (ModelShader) {
