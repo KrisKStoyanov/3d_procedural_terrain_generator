@@ -18,11 +18,26 @@
 class Skybox
 {
 public:
-	Skybox(std::vector<std::string> _FaceTexturePaths, const GLchar* _VertexShaderPath, const GLchar* _FragmentShaderPath);
+	Skybox();
 	~Skybox();
-	Shader* SkyboxShader = NULL;
-	GLuint VAO = 0, VBO = 0, IBO = 0, TextureID = 0;
-	void Draw(Camera* _Camera);
+
+	Shader* m_Shader = NULL;
+	const char* m_VertexShaderSource = "../Shaders/SkyboxVertexShader.glsl";
+	const char* m_FragmentShaderSource = "../Shaders/SkyboxFragmentShader.glsl";
+
+	std::vector<std::string> m_CubeMapTextures
+	{
+		"../External Resources/Skybox/miramar_ft.tga",
+		"../External Resources/Skybox/miramar_bk.tga",
+		"../External Resources/Skybox/miramar_up.tga",
+		"../External Resources/Skybox/miramar_dn.tga",
+		"../External Resources/Skybox/miramar_rt.tga",
+		"../External Resources/Skybox/miramar_lf.tga"
+	};
+
+	unsigned int VAO = 0, VBO = 0, IBO = 0, TextureID = 0;
+
+	void Draw(Camera*& _Camera);
 	void Clear();
 };
 

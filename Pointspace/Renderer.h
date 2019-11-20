@@ -8,17 +8,15 @@
 #include <GLFW/glfw3.h>
 #include <time.h>
 
-#include "Shader.h"
-#include "Vertex.h"
-#include "Mesh.h"
 #include "Camera.h"
 #include "Skybox.h"
 #include "Light.h"
 #include "Timestep.h"
 
-#include "getbmp.h"
-
-constexpr int PI = 3.14159265;
+#include "TerrainGen.h"
+#include "WaterGen.h"
+#include "CloudGen.h"
+#include "TreeGen.h"
 
 struct QuadTriangle {
 	int FirstVertexIndex;
@@ -39,33 +37,19 @@ public:
 		const char* _Title,
 		const int _Width,
 		const int _Height);
-	void Setup();
-	void Draw(Camera*& _Camera, Mesh*& _Mesh, Shader*& _Shader);
-	void DiamondStep(float ** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);
-	void SquareStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);
-	void UpdateWaterMesh(Mesh*& _Mesh, float _deltaTime);
 	void OnUpdate();
 	void Terminate();
 
-	Shader* ModelShader = NULL;
+	GLFWwindow* m_Window = NULL;
 
-	Mesh* TerrainMesh = NULL;
-	Mesh* WaterMesh = NULL;
-	Mesh* CloudMesh = NULL;
+	TerrainGen* m_TerrainGen = NULL;
+	WaterGen* m_WaterGen = NULL;
+	CloudGen* m_CloudGen = NULL;
+	TreeGen* m_TreeGen = NULL;
 
-	GLFWwindow* Window = NULL;
-	Camera* MainCamera = NULL;
-	Skybox* MainSkybox = NULL;
-
-	Light* DirLight = NULL;
-
-	glm::vec4 SceneAmbColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
-	glm::mat3 NormalMatrix = glm::mat3(1.0f);
-
-	void ConfigTerrain();
-	void ConfigWater();
-	void ConfigTrees();
-	void ConfigClouds();
+	Skybox* m_Skybox = NULL;
+	Camera* m_Camera = NULL;
+	Light* m_DirLight = NULL;
 
 	double m_CursorPosX, m_CursorPosY;
 	float m_LastFrameTime = 0.0f;

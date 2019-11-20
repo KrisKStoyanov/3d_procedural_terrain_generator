@@ -10,6 +10,7 @@ Transform::Transform(glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale)
 Transform::~Transform()
 {
 }
+
 void Transform::Translate(glm::vec3 _translation)
 {
 	//Update position

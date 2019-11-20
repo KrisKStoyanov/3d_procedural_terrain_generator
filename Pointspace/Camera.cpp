@@ -22,10 +22,10 @@ void Camera::UpdateTransformKeyboard(MovementType _Type, float _DeltaTime)
 	float velocity = MovementSpeed * 20.0f * _DeltaTime;
 	switch (_Type) {
 	case MovementType::FORWARD:
-		m_Transform->SetPosition(m_Transform->GetPosition() + m_Transform->GetOrientation() * velocity);
+		m_Transform->SetPosition(m_Transform->GetPosition() + m_Transform->GetRotation() * velocity);
 		break;
 	case MovementType::BACKWARD:
-		m_Transform->SetPosition(m_Transform->GetPosition() - m_Transform->GetOrientation() * velocity);
+		m_Transform->SetPosition(m_Transform->GetPosition() - m_Transform->GetRotation() * velocity);
 		break;
 	case MovementType::LEFT:
 		m_Transform->SetPosition(m_Transform->GetPosition() - m_Transform->GetRightDir() * velocity);
@@ -70,7 +70,7 @@ void Camera::UpdateFrontDirection()
 	UpdatedFrontDir.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
 	UpdatedFrontDir.y = sin(glm::radians(Pitch));
 	UpdatedFrontDir.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-	m_Transform->SetOrientation(glm::normalize(glm::normalize(UpdatedFrontDir)));
+	m_Transform->SetRotation(glm::normalize(glm::normalize(UpdatedFrontDir)));
 
-	ViewMatrix = glm::lookAt(m_Transform->GetPosition(), m_Transform->GetPosition() + m_Transform->GetOrientation(), m_Transform->GetUpDir());
+	ViewMatrix = glm::lookAt(m_Transform->GetPosition(), m_Transform->GetPosition() + m_Transform->GetRotation(), m_Transform->GetUpDir());
 }
