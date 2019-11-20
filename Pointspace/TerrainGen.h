@@ -8,12 +8,15 @@
 #include "Camera.h"
 #include "Light.h"
 
+#include <chrono>
+#include <thread>
+
 #include <time.h>
 
 class TerrainGen
 {
 public:
-	TerrainGen(int _mapSize, float _randomRange);
+	TerrainGen(int _mapSize, float _randomRange, int _threadCount);
 	~TerrainGen();
 	
 	void DiamondStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);

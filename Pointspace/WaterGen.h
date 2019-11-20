@@ -14,10 +14,8 @@
 class WaterGen
 {
 public:
-	WaterGen(int _mapSize);
+	WaterGen(int _mapSize, int _threadCount);
 	~WaterGen();
-
-	void OnUpdate(float _deltaTime);
 
 	void Configure();
 	void Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime);

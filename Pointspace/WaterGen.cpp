@@ -1,6 +1,6 @@
 #include "WaterGen.h"
 
-WaterGen::WaterGen(int _mapSize)
+WaterGen::WaterGen(int _mapSize, int _threadCount)
 {
 	const int numStrips = _mapSize - 1;
 	const int verticesPerStrip = 2 * _mapSize;
@@ -156,14 +156,6 @@ WaterGen::~WaterGen()
 {
 }
 
-void WaterGen::OnUpdate(float _deltaTime)
-{
-	for (int i = 0; i < m_VertexCollection.size(); ++i) {
-		m_VertexCollection[i].Coords.y +=
-			sin(m_VertexCollection[i].Coords.y * PI / 180) * _deltaTime;
-	}
-}
-
 void WaterGen::Configure()
 {
 	glGenVertexArrays(1, &m_VAO);
@@ -224,8 +216,18 @@ void WaterGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
 		glBindTexture(GL_TEXTURE_2D, m_TextureCollection[i]->m_ID);
 	}
 
+	//for (int i = 0; i < m_VertexCollection.size(); ++i) {
+	//	m_VertexCollection[i].Coords.x +=
+	//		sin(glfwGetTime() * PI / 180) * _deltaTime;
+	//	m_VertexCollection[i].Coords.y +=
+	//		cos(glfwGetTime() * PI / 180) * _deltaTime;
+	//}
+
 	glBindVertexArray(m_VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	//glBufferData(GL_ARRAY_BUFFER, m_VertexCollection.size() * sizeof(Vertex), m_VertexCollection.data(), GL_STATIC_DRAW);
 	glDrawElements(GL_TRIANGLE_STRIP, m_IndexCollection.size(), GL_UNSIGNED_INT, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
 

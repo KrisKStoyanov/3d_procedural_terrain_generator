@@ -1,6 +1,6 @@
 #include "TerrainGen.h"
 
-TerrainGen::TerrainGen(int _mapSize, float _randomRange)
+TerrainGen::TerrainGen(int _mapSize, float _randomRange, int _threadCount)
 {
 	const int numStrips = _mapSize - 1;
 	const int verticesPerStrip = 2 * _mapSize;
@@ -33,6 +33,7 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange)
 	heightMap[stepSize][0] = (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
 	heightMap[0][stepSize] = (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
 	heightMap[stepSize][stepSize] = (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
+
 	for (int i = 0; i < iterations; i++) {
 		int row = 0;
 		for (int x = 0; x < compatibleLength; x++) {

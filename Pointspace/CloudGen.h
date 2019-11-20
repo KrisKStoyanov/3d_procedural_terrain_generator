@@ -14,10 +14,8 @@
 class CloudGen
 {
 public:
-	CloudGen(int _mapSize);
+	CloudGen(int _mapSize, int _threadCount);
 	~CloudGen();
-
-	void OnUpdate(float _deltaTime);
 
 	void Configure();
 	void Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime);

@@ -43,5 +43,8 @@ public:
 
 	double m_CursorPosX, m_CursorPosY;
 	float m_LastFrameTime = 0.0f;
+
+	bool m_MulticoreRendering = true;
+	int m_ThreadCount;
 };
 

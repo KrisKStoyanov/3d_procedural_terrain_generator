@@ -33,12 +33,14 @@ void Renderer::Init(const char* _Title, const int _Width, const int _Height)
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);
 
+	m_ThreadCount = std::thread::hardware_concurrency();
+
 	m_Camera = new Camera(glm::vec3(0.0f, 1.0f, 5.0f), 60, _Width, _Height);
 	m_DirLight = new Light(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
 
-	m_TerrainGen = new TerrainGen(65, -10.0f);
-	m_WaterGen = new WaterGen(65);
-	m_CloudGen = new CloudGen(65);
+	m_TerrainGen = new TerrainGen(33, -10.0f, m_ThreadCount);
+	m_WaterGen = new WaterGen(33, m_ThreadCount);
+	m_CloudGen = new CloudGen(33, m_ThreadCount);
 
 	m_Skybox = new Skybox();
 
