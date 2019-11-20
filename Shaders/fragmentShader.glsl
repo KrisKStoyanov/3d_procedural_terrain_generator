@@ -1,7 +1,7 @@
 #version 450 core
 
-in vec3 normalExport;
-in vec2 texCoordsExport;
+in vec3 NormalExport;
+in vec2 UVExport;
 
 out vec4 FragColor;
 
@@ -34,9 +34,9 @@ uniform sampler2D texSampler;
 void main(void)
 {
 	lightDirection = normalize(vec3(light0.coords));
-	fAndBDif = max(dot(normalExport, lightDirection), 0.0f) * (light0.difCols *
+	fAndBDif = max(dot(NormalExport, lightDirection), 0.0f) * (light0.difCols *
 		terrainFandB.difRefl);
 
-	vec4 fieldTexColor = texture(texSampler, texCoordsExport);
+	vec4 fieldTexColor = texture(texSampler, UVExport);
 	FragColor = fieldTexColor * fAndBDif;
 }

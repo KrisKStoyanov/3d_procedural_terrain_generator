@@ -1,23 +1,23 @@
 #version 450 core
 
-layout(location = 0) in vec4 vCoords;
-layout(location = 1) in vec3 vNormal;
-layout(location = 2) in vec2 vTexCoords;
+layout(location = 0) in vec4 VertexPos;
+layout(location = 1) in vec3 VertexNormal;
+layout(location = 2) in vec2 VertexUV;
 
-uniform mat4 projMat;
-uniform mat4 modelMat;
-uniform mat4 viewMat;
-uniform mat3 normalMat;
+uniform mat4 ModelMatrix;
+uniform mat4 ViewMatrix;
+uniform mat4 ProjectionMatrix;
+uniform mat3 NormalMatrix;
 
-out vec3 normalExport;
-out vec2 texCoordsExport;
+out vec3 NormalExport;
+out vec2 UVExport;
 
 void main(void)
 {
-	normalExport = vNormal;
-	normalExport = normalize(normalMat * normalExport);
+	NormalExport = VertexNormal;
+	NormalExport = normalize(NormalMatrix * NormalExport);
 
-	texCoordsExport = vTexCoords;
+	UVExport = VertexUV;
    
-   gl_Position = projMat * viewMat * modelMat * vCoords;
+   gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * VertexPos;
 }

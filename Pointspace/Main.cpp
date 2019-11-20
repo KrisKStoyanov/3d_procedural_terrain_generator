@@ -5,9 +5,7 @@
 Renderer R;
 
 int main(int argc, char* argv[]) {
-	if (!R.Init("Pointspace", 1280, 720)) {
-		return -1;
-	}
+	R.Init("Pointspace", 1280, 720);
 
 	return 0;
 }
