@@ -1,23 +1,31 @@
 #version 450 core
 
-layout(location = 0) in vec4 VertexPos;
+#define PI 3.14159265359
+
+layout(location = 0) in vec4 VertexCoords;
 layout(location = 1) in vec3 VertexNormal;
 layout(location = 2) in vec2 VertexUV;
 
-uniform mat4 ModelMatrix;
-uniform mat4 ViewMatrix;
-uniform mat4 ProjectionMatrix;
-uniform mat3 NormalMatrix;
+uniform mat4 u_modelMatrix;
+uniform mat4 u_viewMatrix;
+uniform mat4 u_projectionMatrix;
+uniform mat3 u_normalMatrix;
 
-out vec3 NormalExport;
-out vec2 UVExport;
+uniform float u_time;
+
+out vec4 exCoords;
+out vec3 exNormal;
+out vec2 exUV;
+
+out float exTime;
 
 void main(void)
 {
-	NormalExport = VertexNormal;
-	NormalExport = normalize(NormalMatrix * NormalExport);
+	exCoords = VertexCoords;
+	exNormal = normalize(u_normalMatrix * VertexNormal);
+	exUV = VertexUV;
+	exTime = u_time;
 
-	UVExport = VertexUV;
-
-	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * VertexPos;
+	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix *
+		vec4(VertexCoords.x, VertexCoords.y, VertexCoords.z, VertexCoords.w);
 }

@@ -21,7 +21,7 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange)
 	}
 
 	//Perform Diamond Square Algorithm
-	srand(323);
+	srand(5);
 
 	float test = (-_randomRange - static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
 
@@ -298,22 +298,22 @@ void TerrainGen::Draw(Camera*& _camera, Light*& _dirLight)
 	m_Transform->Translate(m_Transform->GetPosition());
 	m_Transform->SetNormalMatrix(glm::transpose(glm::inverse(glm::mat3(_camera->ViewMatrix * m_Transform->GetModelMatrix()))));
 
-	m_Shader->SetMat4("ProjectionMatrix", _camera->ProjectionMatrix);
-	m_Shader->SetMat4("ViewMatrix", _camera->ViewMatrix);
-	m_Shader->SetMat4("ModelMatrix", m_Transform->GetModelMatrix());
-	m_Shader->SetMat3("NormalMatrix", m_Transform->GetNormalMatrix());
+	m_Shader->SetMat4("u_projectionMatrix", _camera->ProjectionMatrix);
+	m_Shader->SetMat4("u_viewMatrix", _camera->ViewMatrix);
+	m_Shader->SetMat4("u_modelMatrix", m_Transform->GetModelMatrix());
+	m_Shader->SetMat3("u_normalMatrix", m_Transform->GetNormalMatrix());
 
-	m_Shader->SetVec4("light0.ambCols", _dirLight->AmbientC);
-	m_Shader->SetVec4("light0.difCols", _dirLight->DiffuseC);
-	m_Shader->SetVec4("light0.specCols", _dirLight->SpecularC);
-	m_Shader->SetVec4("light0.coords", _dirLight->Coords);
+	m_Shader->SetVec4("u_dirLight.ambCols", _dirLight->AmbientC);
+	m_Shader->SetVec4("u_dirLight.difCols", _dirLight->DiffuseC);
+	m_Shader->SetVec4("u_dirLight.specCols", _dirLight->SpecularC);
+	m_Shader->SetVec4("u_dirLight.coords", _dirLight->Coords);
 
-	m_Shader->SetVec4("terrainFandB.ambRefl", m_Material->AmbientC);
-	m_Shader->SetVec4("terrainFandB.difRefl", m_Material->DiffuseC);
-	m_Shader->SetVec4("terrainFandB.specRefl", m_Material->SpecularC);
-	m_Shader->SetFloat("terrainFandB.shininess", m_Material->Shininess);
+	m_Shader->SetVec4("u_material.ambRefl", m_Material->AmbientC);
+	m_Shader->SetVec4("u_material.difRefl", m_Material->DiffuseC);
+	m_Shader->SetVec4("u_material.specRefl", m_Material->SpecularC);
+	m_Shader->SetFloat("u_material.shininess", m_Material->Shininess);
 
-	m_Shader->SetInt("textureSampler", 0);
+	m_Shader->SetInt("u_texSampler", 0);
 
 	for (int i = 0; i < m_TextureCollection.size(); ++i) {
 		glActiveTexture(GL_TEXTURE0 + i);

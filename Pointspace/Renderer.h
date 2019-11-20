@@ -18,16 +18,6 @@
 #include "CloudGen.h"
 #include "TreeGen.h"
 
-struct QuadTriangle {
-	int FirstVertexIndex;
-	int SecondVertexIndex;
-	int ThirdVertexIndex;
-	glm::vec4 FirstVertexCoords;
-	glm::vec4 SecondVertexCoords;
-	glm::vec4 ThirdVertexCoords;
-	glm::vec3 TriNormal;
-};
-
 class Renderer
 {
 public:

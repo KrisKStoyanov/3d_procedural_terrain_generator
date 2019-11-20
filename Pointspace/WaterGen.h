@@ -9,27 +9,28 @@
 #include "Transform.h"
 
 #include "Camera.h"
+#include "Light.h"
 
 constexpr int PI = 3.14159265;
 
 class WaterGen
 {
 public:
-	WaterGen();
+	WaterGen(int _mapSize);
 	~WaterGen();
 
 	void OnUpdate(float _deltaTime);
 
 	void Configure();
-	void Draw(Camera*& _camera);
+	void Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime);
 
 	void Clear();
 
-	unsigned int VAO = 0, VBO = 0, IBO = 0;
+	unsigned int m_VAO = 0, m_VBO = 0, m_IBO = 0;
 
 	Shader* m_Shader = NULL;
-	const char* m_VertexShaderSource = "../Shaders/TerrainVertexShader.glsl";
-	const char* m_FragmentShaderSource = "../Shaders/TerrainFragmentShader.glsl";
+	const char* m_VertexShaderSource = "../Shaders/WaterVertexShader.glsl";
+	const char* m_FragmentShaderSource = "../Shaders/WaterFragmentShader.glsl";
 
 	Material* m_Material = NULL;
 	Transform* m_Transform = NULL;

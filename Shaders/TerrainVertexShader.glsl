@@ -4,20 +4,18 @@ layout(location = 0) in vec4 VertexPos;
 layout(location = 1) in vec3 VertexNormal;
 layout(location = 2) in vec2 VertexUV;
 
-uniform mat4 ModelMatrix;
-uniform mat4 ViewMatrix;
-uniform mat4 ProjectionMatrix;
-uniform mat3 NormalMatrix;
+uniform mat4 u_modelMatrix;
+uniform mat4 u_viewMatrix;
+uniform mat4 u_projectionMatrix;
+uniform mat3 u_normalMatrix;
 
-out vec3 NormalExport;
-out vec2 UVExport;
+out vec3 exNormal;
+out vec2 exUV;
 
 void main(void)
 {
-	NormalExport = VertexNormal;
-	NormalExport = normalize(NormalMatrix * NormalExport);
-
-	UVExport = VertexUV;
+	exNormal = normalize(u_normalMatrix * VertexNormal);
+	exUV = VertexUV;
    
-    gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * VertexPos;
+    gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * VertexPos;
 }
