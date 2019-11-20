@@ -142,5 +142,11 @@
     <None Include="..\Shaders\TreeVertexShader.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\Shaders\CloudFragmentShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\CloudVertexShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

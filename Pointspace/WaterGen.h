@@ -11,8 +11,6 @@
 #include "Camera.h"
 #include "Light.h"
 
-constexpr int PI = 3.14159265;
-
 class WaterGen
 {
 public:

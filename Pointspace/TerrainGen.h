@@ -8,6 +8,8 @@
 #include "Camera.h"
 #include "Light.h"
 
+#include <time.h>
+
 class TerrainGen
 {
 public:

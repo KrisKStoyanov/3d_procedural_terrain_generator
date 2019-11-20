@@ -36,8 +36,9 @@ void Renderer::Init(const char* _Title, const int _Width, const int _Height)
 	m_Camera = new Camera(glm::vec3(0.0f, 1.0f, 5.0f), 60, _Width, _Height);
 	m_DirLight = new Light(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
 
-	m_TerrainGen = new TerrainGen(33, -5.0f);
-	m_WaterGen = new WaterGen(33);
+	m_TerrainGen = new TerrainGen(65, -10.0f);
+	m_WaterGen = new WaterGen(65);
+	m_CloudGen = new CloudGen(65);
 
 	m_Skybox = new Skybox();
 
@@ -73,6 +74,7 @@ void Renderer::OnUpdate()
 		m_Camera->UpdateTransformMouse(m_CursorPosX, -m_CursorPosY);
 		m_TerrainGen->Draw(m_Camera, m_DirLight);
 		m_WaterGen->Draw(m_Camera, m_DirLight, timestep);
+		m_CloudGen->Draw(m_Camera, m_DirLight, timestep);
 		m_Skybox->Draw(m_Camera);
 
 		glfwSwapBuffers(m_Window);

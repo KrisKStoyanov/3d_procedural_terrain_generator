@@ -55,6 +55,8 @@
     <ClInclude Include="WaterGen.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Shaders\CloudFragmentShader.glsl" />
+    <None Include="..\Shaders\CloudVertexShader.glsl" />
     <None Include="..\Shaders\SkyboxFragmentShader.glsl" />
     <None Include="..\Shaders\SkyboxVertexShader.glsl" />
     <None Include="..\Shaders\TerrainFragmentShader.glsl" />

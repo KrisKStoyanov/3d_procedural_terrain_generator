@@ -11,6 +11,8 @@
 #include "Shader.h"
 #include "Transform.h"
 
+constexpr int PI = 3.14159265;
+
 enum class MovementType {
 	FORWARD,
 	BACKWARD,

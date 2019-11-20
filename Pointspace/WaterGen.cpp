@@ -132,7 +132,7 @@ WaterGen::WaterGen(int _mapSize)
 	//Normalize the normal value of each vertex
 	for (int i = 0; i < terrainVertexCollection.size(); ++i) {
 		/*float temp = glm::dot(-terrainVertexCollection[i].Normal, WorldUp);*/
-		glm::vec3 tempVec = terrainVertexCollection[i].Normal;
+		//glm::vec3 tempVec = terrainVertexCollection[i].Normal;
 		/*if (tempVec.y < 0) {
 			terrainVertexCollection[i].Normal = -tempVec;
 		}*/
