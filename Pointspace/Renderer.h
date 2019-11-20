@@ -51,6 +51,7 @@ public:
 
 	Mesh* TerrainMesh = NULL;
 	Mesh* WaterMesh = NULL;
+	Mesh* CloudMesh = NULL;
 
 	GLFWwindow* Window = NULL;
 	Camera* MainCamera = NULL;

@@ -57,6 +57,7 @@ void Renderer::Setup()
 
 	ConfigTerrain();
 	ConfigWater();
+	ConfigClouds();
 	OnUpdate();
 }
 
@@ -315,7 +316,7 @@ void Renderer::ConfigTerrain()
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 
 		50.0f);
-	TerrainMesh->m_Texture = new Texture("../Textures/grass.bmp", ModelShader);
+	TerrainMesh->m_Texture = new Texture("../Textures/grass.bmp");
 }
 
 void Renderer::ConfigWater()
@@ -460,7 +461,7 @@ void Renderer::ConfigWater()
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		50.0f);
-	WaterMesh->m_Texture = new Texture("../Textures/water.bmp", ModelShader);
+	WaterMesh->m_Texture = new Texture("../Textures/water.jpg");
 }
 
 void Renderer::ConfigTrees()
@@ -469,6 +470,147 @@ void Renderer::ConfigTrees()
 
 void Renderer::ConfigClouds()
 {
+	//5, 33, 65
+	const int rowLength = 33;
+	//Max corresponds to inverse min value
+	float minRandVal = -10.0f;
+
+	const int numStrips = rowLength - 1;
+	const int verticesPerStrip = 2 * rowLength;
+	const int indexCount = numStrips * verticesPerStrip + (rowLength - 2) * 2;
+	std::vector<Vertex> terrainVertexCollection(rowLength * rowLength);
+	std::vector<unsigned int> terrainIndexCollection(indexCount);
+
+	float param;
+
+	//Build Height Map
+	float** heightMap = new float* [rowLength];
+	for (int i(0); i < rowLength; ++i) {
+		heightMap[i] = new float[rowLength];
+	}
+
+	for (int x(0); x < rowLength; ++x) {
+		for (int z(0); z < rowLength; ++z) {
+			heightMap[x][z] = 0;
+		}
+	}
+
+	// Build Vertex Coords;
+	float fTextureS = float(rowLength) * 0.1f;
+	float fTextureT = float(rowLength) * 0.1f;
+
+	int i = 0;
+	for (int x = 0; x < rowLength; x++)
+	{
+		for (int z = 0; z < rowLength; z++)
+		{
+			float fScaleC = (float)(x) / (float)(rowLength - 1);
+			float fScaleR = (float)(z) / (float)(rowLength - 1);
+			// Set the coords (1st 4 elements) and a default colour of black (2nd 4 elements) 
+			terrainVertexCollection[i] = Vertex(
+				glm::vec4((float)x, heightMap[x][z], (float)z, 1.0),
+				glm::vec2(fTextureS * fScaleC, fTextureT * fScaleR));
+			i++;
+		}
+	}
+
+	//Build Index Collection:
+	std::vector<glm::vec3> TriNormalCollection;
+	std::vector<QuadTriangle> TriGroupCollection;
+	std::vector<std::vector<glm::vec3>> TriCollection;
+	std::vector<int> QuadVertIndexCollection;
+	int IndexLow = 0;
+	int IndexHigh = rowLength;
+	bool Tweaked = false;
+	int QuadCounter = 0;
+
+
+	for (int i = 0; i < indexCount; i += 2) {
+		if (IndexHigh % rowLength == 0 && IndexHigh > rowLength && !Tweaked) {
+			terrainIndexCollection[i] = terrainIndexCollection[i - 1];
+			terrainIndexCollection[i + 1] = IndexLow;
+			Tweaked = true;
+			QuadVertIndexCollection.clear();
+		}
+		else {
+			terrainIndexCollection[i] = IndexLow;
+			terrainIndexCollection[i + 1] = IndexHigh;
+			//Push poinds for quad formation on non-degenerate triangles
+			QuadVertIndexCollection.push_back(IndexLow);
+			QuadVertIndexCollection.push_back(IndexHigh);
+			IndexLow++;
+			IndexHigh++;
+			Tweaked = false;
+		}
+		if (QuadVertIndexCollection.size() == 4) {
+
+			//Create the quad out of two triangles through the obtained indecies
+			QuadTriangle UpperQuadTri;
+			UpperQuadTri.FirstVertexIndex = QuadVertIndexCollection[0];
+			UpperQuadTri.SecondVertexIndex = QuadVertIndexCollection[1];
+			UpperQuadTri.ThirdVertexIndex = QuadVertIndexCollection[2];
+			UpperQuadTri.FirstVertexCoords = terrainVertexCollection[UpperQuadTri.FirstVertexIndex].Coords;
+			UpperQuadTri.SecondVertexCoords = terrainVertexCollection[UpperQuadTri.SecondVertexIndex].Coords;
+			UpperQuadTri.ThirdVertexCoords = terrainVertexCollection[UpperQuadTri.ThirdVertexIndex].Coords;
+
+			QuadTriangle LowerQuadTri;
+			LowerQuadTri.FirstVertexIndex = QuadVertIndexCollection[1];
+			LowerQuadTri.SecondVertexIndex = QuadVertIndexCollection[2];
+			LowerQuadTri.ThirdVertexIndex = QuadVertIndexCollection[3];
+			LowerQuadTri.FirstVertexCoords = terrainVertexCollection[LowerQuadTri.FirstVertexIndex].Coords;
+			LowerQuadTri.SecondVertexCoords = terrainVertexCollection[LowerQuadTri.SecondVertexIndex].Coords;
+			LowerQuadTri.ThirdVertexCoords = terrainVertexCollection[LowerQuadTri.ThirdVertexIndex].Coords;
+
+			UpperQuadTri.TriNormal =
+				glm::cross(
+					glm::vec3(UpperQuadTri.ThirdVertexCoords - UpperQuadTri.FirstVertexCoords),
+					glm::vec3(UpperQuadTri.FirstVertexCoords - UpperQuadTri.SecondVertexCoords));
+
+			LowerQuadTri.TriNormal =
+				glm::cross(
+					glm::vec3(LowerQuadTri.FirstVertexCoords - LowerQuadTri.ThirdVertexCoords),
+					glm::vec3(LowerQuadTri.ThirdVertexCoords - LowerQuadTri.SecondVertexCoords));
+
+			TriGroupCollection.push_back(UpperQuadTri);
+			TriGroupCollection.push_back(LowerQuadTri);
+
+			QuadVertIndexCollection[0] = QuadVertIndexCollection[2];
+			QuadVertIndexCollection[1] = QuadVertIndexCollection[3];
+			QuadVertIndexCollection.pop_back();
+			QuadVertIndexCollection.pop_back();
+		}
+	}
+
+	//Build Vertex Normals:
+	//For each triangle check if the index is part of it and
+	//add the normal of the triangle to the vertex which the index represents
+	for (int i = 0; i < terrainIndexCollection.size(); ++i) {
+		for (int j = 0; j < TriGroupCollection.size(); ++j) {
+			if (i == TriGroupCollection[j].FirstVertexIndex ||
+				i == TriGroupCollection[j].SecondVertexIndex ||
+				i == TriGroupCollection[j].ThirdVertexIndex) {
+				terrainVertexCollection[i].Normal += TriGroupCollection[j].TriNormal;
+			}
+		}
+	}
+
+	//Normalize the normal value of each vertex
+	for (int i = 0; i < terrainVertexCollection.size(); ++i) {
+		/*float temp = glm::dot(-terrainVertexCollection[i].Normal, WorldUp);*/
+		glm::vec3 tempVec = terrainVertexCollection[i].Normal;
+		/*if (tempVec.y < 0) {
+			terrainVertexCollection[i].Normal = -tempVec;
+		}*/
+		terrainVertexCollection[i].Normal = glm::normalize(-terrainVertexCollection[i].Normal);
+	}
+
+	CloudMesh = new Mesh(terrainVertexCollection, terrainIndexCollection, glm::vec3(0.0f, 30.0f, 0.0f));
+	CloudMesh->m_Material = new Material(
+		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
+		50.0f);
+	CloudMesh->m_Texture = new Texture("../Textures/cloud.jpg");
 }
 
 void Renderer::UpdateWaterMesh(Mesh*& _Mesh, float _deltaTime)
@@ -501,7 +643,9 @@ void Renderer::Draw(Camera*& _Camera, Mesh*& _Mesh, Shader*& _Shader)
 	_Shader->SetVec4("terrainFandB.specRefl", _Mesh->m_Material->SpecularC);
 	_Shader->SetFloat("terrainFandB.shininess", _Mesh->m_Material->Shininess);
 
-	glBindTexture(GL_TEXTURE_2D,_Mesh->m_Texture->ID);
+	_Shader->SetInt("textureSampler", 0);
+
+	glBindTexture(GL_TEXTURE_2D,_Mesh->m_Texture->m_ID);
 	glBindVertexArray(_Mesh->VAO);
 	glDrawElements(GL_TRIANGLE_STRIP, _Mesh->IndexCollection.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
@@ -539,6 +683,9 @@ void Renderer::OnUpdate()
 		if (WaterMesh != NULL) {
 			UpdateWaterMesh(WaterMesh, timestep);
 			Draw(MainCamera, WaterMesh, ModelShader);
+		}
+		if (CloudMesh != NULL) {
+			Draw(MainCamera, CloudMesh, ModelShader);
 		}
 		glDepthFunc(GL_LEQUAL);
 		MainSkybox->Draw(MainCamera);

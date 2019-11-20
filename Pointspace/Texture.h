@@ -11,13 +11,14 @@
 #include "Shader.h"
 #include <string>
 
+GLuint TextureFromFile(const char* _Path);
+
 class Texture
 {
 public:
-	Texture(std::string _Path, Shader* _shader);
+	Texture(const char* _Path);
 	~Texture();
-	unsigned int ID, shaderTexLoc;
-	BitMapFile* BMP = NULL;
-	std::string Path;
+	unsigned int m_ID;
+	const char* m_Path;
 };
 
