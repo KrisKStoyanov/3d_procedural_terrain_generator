@@ -375,7 +375,7 @@ void Renderer::Draw(Camera* _Camera, Mesh* _Mesh, Shader* _Shader)
 	glBindVertexArray(0);
 }
 
-void Renderer::Update()
+void Renderer::OnUpdate()
 {
 	float DeltaTime = 0.0f;
 	float LastFrame = 0.0f;

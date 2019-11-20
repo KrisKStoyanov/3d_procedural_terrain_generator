@@ -2,17 +2,14 @@
 
 Camera::Camera(glm::vec3 _Position, float _FOV, float _ProjWidth, float _ProjHeight)
 {
-	Position = _Position;
-	Up = WorldUp = glm::vec3(0.f, 1.f, 0.f);
-	Front = glm::vec3(0.f, 0.f, -1.f);
-	Right = glm::vec3(1.f, 0.f, 0.f);
+	m_Transform = new Transform(_Position);
 
 	Yaw = -90.0f;
 	Pitch = 0.0f;
 	MovementSpeed = 5.f;
 	MouseSensitivity = 0.1f;
 
-	ProjectionMatrix = glm::perspective(glm::radians(_FOV), _ProjWidth * (1.f / _ProjHeight), 0.1f, 5000.0f);
+	ProjectionMatrix = glm::perspective(glm::radians(_FOV), _ProjWidth * (1.f / _ProjHeight), 0.1f, 90000.0f);
 	UpdateFrontDirection();
 }
 
@@ -22,19 +19,19 @@ Camera::~Camera()
 
 void Camera::UpdateTransformKeyboard(MovementType _Type, float _DeltaTime)
 {
-	float velocity = MovementSpeed * _DeltaTime;
+	float velocity = MovementSpeed * 20.0f * _DeltaTime;
 	switch (_Type) {
 	case MovementType::FORWARD:
-		Position += Front * velocity;
+		m_Transform->SetPosition(m_Transform->GetPosition() + m_Transform->GetOrientation() * velocity);
 		break;
 	case MovementType::BACKWARD:
-		Position += -Front * velocity;
+		m_Transform->SetPosition(m_Transform->GetPosition() - m_Transform->GetOrientation() * velocity);
 		break;
 	case MovementType::LEFT:
-		Position += -Right * velocity;
+		m_Transform->SetPosition(m_Transform->GetPosition() - m_Transform->GetRightDir() * velocity);
 		break;
 	case MovementType::RIGHT:
-		Position += Right * velocity;
+		m_Transform->SetPosition(m_Transform->GetPosition() + m_Transform->GetRightDir() * velocity);
 		break;
 	default:
 		break;
@@ -73,10 +70,7 @@ void Camera::UpdateFrontDirection()
 	UpdatedFrontDir.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
 	UpdatedFrontDir.y = sin(glm::radians(Pitch));
 	UpdatedFrontDir.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-	Front = glm::normalize(UpdatedFrontDir);
-	Right = glm::normalize(glm::cross(Front, WorldUp));
-	Up = glm::normalize(glm::cross(Right, Front));
+	m_Transform->SetOrientation(glm::normalize(glm::normalize(UpdatedFrontDir)));
 
-	ViewMatrix = glm::lookAt(Position, Position + Front, Up);
+	ViewMatrix = glm::lookAt(m_Transform->GetPosition(), m_Transform->GetPosition() + m_Transform->GetOrientation(), m_Transform->GetUpDir());
 }
-
