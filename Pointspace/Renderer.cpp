@@ -60,7 +60,7 @@ void Renderer::Setup()
 	//SpotLight = new Light(MainCamera->Position, MainCamera->Front, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 0.09f, 0.032f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(15.0f)));
 
 	ConfigTerrain();
-	Update();
+	OnUpdate();
 }
 
 void Renderer::DiamondStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _rowLength)
