@@ -208,6 +208,10 @@ void WaterGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
 	m_Shader->SetFloat("u_material.shininess", m_Material->Shininess);
 
 	m_Shader->SetInt("u_texSampler", 0);
+	m_Shader->SetFloat("u_amplitude", m_Amplitude);
+	m_Shader->SetFloat("u_wavelength", m_Wavelength);
+	m_Shader->SetFloat("u_speed", m_Speed);
+	m_Shader->SetFloat("u_steepness", m_Steepness);
 
 	m_Shader->SetFloat("u_time", glfwGetTime());
 

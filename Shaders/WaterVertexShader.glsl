@@ -12,7 +12,11 @@ uniform mat4 u_projectionMatrix;
 uniform mat3 u_normalMatrix;
 
 uniform float u_time;
-uniform float u_waveAmplitude;
+uniform float u_amplitude;
+uniform float u_wavelength;
+uniform float u_speed;
+uniform float u_steepness;
+uniform float u_depth;
 
 out vec4 exCoords;
 out vec3 exNormal;
@@ -27,6 +31,15 @@ void main(void)
 	exUV = VertexUV;
 	exTime = u_time;
 
+	float waveCoef = 2 * PI / u_wavelength;
+	float waveMomentum = waveCoef * (VertexCoords.x - u_speed * u_time);
+	float wavePressure = u_steepness / waveCoef;
+
+	float xPos = VertexCoords.x + wavePressure * cos(waveMomentum);
+
 	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix *
-		vec4(VertexCoords.x, VertexCoords.y, VertexCoords.z, VertexCoords.w);
+		vec4(VertexCoords.x + wavePressure * cos(waveMomentum), 
+			wavePressure * sin(waveMomentum), 
+			VertexCoords.z,
+			VertexCoords.w);
 }
