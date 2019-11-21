@@ -23,8 +23,10 @@ public:
 	void Clear();
 
 	unsigned int m_VAO = 0, m_VBO = 0, m_IBO = 0;
+	float m_Amplitude = 0.5f;
 	float m_Wavelength = 20.0f;
-	float m_Steepness = 0.2f; //range limit: 0.0f-1.0f
+	float m_Speed = 1.0f;
+	float m_Steepness = 0.5f; //range limit: 0.0f-1.0f
 
 	Shader* m_Shader = NULL;
 	const char* m_VertexShaderSource = "../Shaders/WaterVertexShader.glsl";
