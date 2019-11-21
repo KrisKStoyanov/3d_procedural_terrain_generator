@@ -1,5 +1,42 @@
 #pragma once
+#include <iostream>
+#include <fstream>
+
+#include "Vertex.h"
+#include "Shader.h"
+#include "Material.h"
+#include "Texture.h"
+#include "Transform.h"
+
+#include "Camera.h"
+#include "Light.h"
+
 class TreeGen
 {
+public:
+	TreeGen();
+	~TreeGen();
+
+	void Configure();
+	void Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime);
+
+	void Clear();
+
+	unsigned int m_VAO = 0, m_VBO = 0, m_IBO = 0;
+
+	Shader* m_Shader = NULL;
+	const char* m_VertexShaderSource = "../Shaders/TreeVertexShader.glsl";
+	const char* m_FragmentShaderSource = "../Shaders/TreeFragmentShader.glsl";
+
+	Material* m_Material = NULL;
+	Transform* m_Transform = NULL;
+	std::vector<Vertex> m_VertexCollection;
+	std::vector<unsigned int> m_IndexCollection;
+	std::vector<Texture*> m_TextureCollection;
+
+	const int m_NumPoints = 1000;
+	const int m_MaxLevel = 6;
+	const float m_R = 0.85f;
+	const float m_alpha = 40.0f;
 };
 

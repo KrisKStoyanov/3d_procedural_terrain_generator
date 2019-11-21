@@ -33,6 +33,7 @@ public:
 	GLFWwindow* m_Window = NULL;
 
 	TerrainGen* m_TerrainGen = NULL;
+	TerrainGen* m_GroundGen = NULL;
 	WaterGen* m_WaterGen = NULL;
 	CloudGen* m_CloudGen = NULL;
 	TreeGen* m_TreeGen = NULL;

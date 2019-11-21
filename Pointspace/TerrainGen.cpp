@@ -1,6 +1,6 @@
 #include "TerrainGen.h"
 
-TerrainGen::TerrainGen(int _mapSize, float _randomRange, int _threadCount)
+TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position, const char* _texturePath)
 {
 	const int numStrips = _mapSize - 1;
 	const int verticesPerStrip = 2 * _mapSize;
@@ -184,13 +184,13 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange, int _threadCount)
 	m_VertexCollection = terrainVertexCollection;
 	m_IndexCollection = terrainIndexCollection;
 
-	m_Transform = new Transform(glm::vec3(0.0f, 0.0f, 0.0f));
+	m_Transform = new Transform(_position);
 	m_Material = new Material(
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		50.0f);
-	m_TextureCollection.push_back(new Texture("../Textures/grass.bmp"));
+	m_TextureCollection.push_back(new Texture(_texturePath));
 	Configure();
 }
 

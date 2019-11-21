@@ -14,11 +14,11 @@
 class WaterGen
 {
 public:
-	WaterGen(int _mapSize, int _threadCount);
+	WaterGen(int _mapSize, glm::vec3 _position, const char* _texturePath);
 	~WaterGen();
 
 	void Configure();
-	void Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime, float _waveAmplitude);
+	void Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime);
 
 	void Clear();
 

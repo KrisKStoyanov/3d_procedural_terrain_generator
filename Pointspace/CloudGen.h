@@ -14,7 +14,7 @@
 class CloudGen
 {
 public:
-	CloudGen(int _mapSize, int _threadCount);
+	CloudGen(int _mapSize, glm::vec3 _position, const char* _texturePath);
 	~CloudGen();
 
 	void Configure();

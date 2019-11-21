@@ -76,7 +76,7 @@ Skybox::Skybox()
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 
 	m_Shader = new Shader(m_VertexShaderSource, m_FragmentShaderSource);
-	m_Shader->SetInt("SkyboxCubemap", 0);
+	m_Shader->SetInt("u_skyboxCubemap", 0);
 }
 
 Skybox::~Skybox()
@@ -89,8 +89,8 @@ void Skybox::Draw(Camera*& _Camera)
 	m_Shader->Activate();
 
 	glm::mat4 updatedView = glm::mat4(glm::mat3(_Camera->ViewMatrix));
-	m_Shader->SetMat4("ViewMatrix", updatedView);
-	m_Shader->SetMat4("ProjectionMatrix", _Camera->ProjectionMatrix);
+	m_Shader->SetMat4("u_viewMatrix", updatedView);
+	m_Shader->SetMat4("u_projectionMatrix", _Camera->ProjectionMatrix);
 
 	glBindVertexArray(VAO);
 	glActiveTexture(GL_TEXTURE0);

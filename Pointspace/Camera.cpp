@@ -9,7 +9,7 @@ Camera::Camera(glm::vec3 _Position, float _FOV, float _ProjWidth, float _ProjHei
 	MovementSpeed = 5.f;
 	MouseSensitivity = 0.1f;
 
-	ProjectionMatrix = glm::perspective(glm::radians(_FOV), _ProjWidth * (1.f / _ProjHeight), 0.1f, 90000.0f);
+	ProjectionMatrix = glm::perspective(glm::radians(_FOV), _ProjWidth * (1.f / _ProjHeight), 0.1f, 9000.0f);
 	UpdateFrontDirection();
 }
 

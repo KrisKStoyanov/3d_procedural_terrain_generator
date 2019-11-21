@@ -42,7 +42,7 @@ public:
 	inline glm::mat3 GetNormalMatrix() { return m_NormalMatrix; }
 	inline void SetNormalMatrix(glm::mat3 _normalMatrix) { m_NormalMatrix = _normalMatrix; }
 
-private:
+//private:
 	glm::vec3 m_Position;
 	glm::vec3 m_Scale;
 	glm::vec3 m_Rotation;

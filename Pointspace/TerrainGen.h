@@ -16,7 +16,7 @@
 class TerrainGen
 {
 public:
-	TerrainGen(int _mapSize, float _randomRange, int _threadCount);
+	TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position, const char* _texturePath);
 	~TerrainGen();
 	
 	void DiamondStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);

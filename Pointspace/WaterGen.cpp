@@ -1,6 +1,6 @@
 #include "WaterGen.h"
 
-WaterGen::WaterGen(int _mapSize, int _threadCount)
+WaterGen::WaterGen(int _mapSize, glm::vec3 _position, const char* _texturePath)
 {
 	const int numStrips = _mapSize - 1;
 	const int verticesPerStrip = 2 * _mapSize;
@@ -142,13 +142,13 @@ WaterGen::WaterGen(int _mapSize, int _threadCount)
 	m_VertexCollection = terrainVertexCollection;
 	m_IndexCollection = terrainIndexCollection;
 
-	m_Transform = new Transform(glm::vec3(0.0f, 0.0f, 0.0f));
+	m_Transform = new Transform(_position);
 	m_Material = new Material(
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		50.0f);
-	m_TextureCollection.push_back(new Texture("../Textures/water.jpg"));
+	m_TextureCollection.push_back(new Texture(_texturePath));
 	Configure();
 }
 
@@ -186,7 +186,7 @@ void WaterGen::Configure()
 	m_Shader = new Shader(m_VertexShaderSource, m_FragmentShaderSource);
 }
 
-void WaterGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime, float _waveAmplitude)
+void WaterGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
 {
 	m_Shader->Activate();
 	m_Transform->Translate(m_Transform->GetPosition());
@@ -210,7 +210,6 @@ void WaterGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime, float
 	m_Shader->SetInt("u_texSampler", 0);
 
 	m_Shader->SetFloat("u_time", glfwGetTime());
-	m_Shader->SetFloat("u_waveAmplitude", _waveAmplitude);
 
 	for (int i = 0; i < m_TextureCollection.size(); ++i) {
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -224,12 +223,14 @@ void WaterGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime, float
 	//		cos(glfwGetTime() * PI / 180) * _deltaTime;
 	//}
 
+	glEnable(GL_BLEND);
 	glBindVertexArray(m_VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+	//glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	//glBufferData(GL_ARRAY_BUFFER, m_VertexCollection.size() * sizeof(Vertex), m_VertexCollection.data(), GL_STATIC_DRAW);
 	glDrawElements(GL_TRIANGLE_STRIP, m_IndexCollection.size(), GL_UNSIGNED_INT, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	glDisable(GL_BLEND);
 }
 
 void WaterGen::Clear()
