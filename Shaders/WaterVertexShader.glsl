@@ -34,12 +34,16 @@ void main(void)
 	exUV = VertexUV;
 	exTime = u_time;
 
-	vec3 wave = GerstnerWave(vec2(1.0f, 1.0f), u_steepness, u_wavelength, VertexCoords);
+	vec3 waveA = GerstnerWave(vec2(1.0f, 1.0f), 0.2f, 10, VertexCoords);
+	vec3 waveB = GerstnerWave(vec2(1.0f, 1.0f), 0.4f, 20, VertexCoords);
+	vec3 waveC = GerstnerWave(vec2(1.0f, 1.0f), 0.9f, 15, VertexCoords);
+
+	vec3 combinedWave = VertexCoords.xyz + waveA + waveB + waveC;
 
 	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix *
-		vec4(wave.x, 
-			wave.y, 
-			wave.z,
+		vec4(combinedWave.x,
+			combinedWave.y,
+			VertexCoords.z,
 			VertexCoords.w);
 }
 
@@ -49,5 +53,5 @@ vec3 GerstnerWave(vec2 _direction, float _steepness, float _wavelength, vec4 _ve
 	_direction = normalize(_direction);
 	float waveMomentum = waveCoef * (dot(_direction, vec2(_vertexPos.x, _vertexPos.z)) - phaseSpeed * u_time);
 	float wavePressure = _steepness / waveCoef;
-	return vec3(_vertexPos.x + _direction.x * (wavePressure * cos(waveMomentum)), wavePressure * sin(waveMomentum), _vertexPos.z + _direction.y * (wavePressure * cos(waveMomentum)));
+	return vec3(_direction.x * (wavePressure * cos(waveMomentum)), wavePressure * sin(waveMomentum), _direction.y * (wavePressure * cos(waveMomentum)));
 }
