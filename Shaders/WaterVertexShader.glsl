@@ -47,7 +47,7 @@ void main(void)
 	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix *
 		vec4(combinedWave.x,
 			combinedWave.y,
-			VertexCoords.z,
+			combinedWave.z,
 			VertexCoords.w);
 }
 

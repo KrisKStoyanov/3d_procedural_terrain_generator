@@ -217,9 +217,11 @@ void CloudGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
 		glBindTexture(GL_TEXTURE_2D, m_TextureCollection[i]->m_ID);
 	}
 
+	glDisable(GL_CULL_FACE);
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_TRIANGLE_STRIP, m_IndexCollection.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+	glEnable(GL_CULL_FACE);
 }
 
 void CloudGen::Clear()

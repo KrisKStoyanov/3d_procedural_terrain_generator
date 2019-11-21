@@ -186,7 +186,7 @@ void WaterGen::Configure()
 	m_Shader = new Shader(m_VertexShaderSource, m_FragmentShaderSource);
 }
 
-void WaterGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
+void WaterGen::Draw(Camera*& _camera, Light*& _dirLight)
 {
 	m_Shader->Activate();
 	m_Transform->Translate(m_Transform->GetPosition());
@@ -220,16 +220,8 @@ void WaterGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
 		glBindTexture(GL_TEXTURE_2D, m_TextureCollection[i]->m_ID);
 	}
 
-	//for (int i = 0; i < m_VertexCollection.size(); ++i) {
-	//	m_VertexCollection[i].Coords.x +=
-	//		sin(glfwGetTime() * PI / 180) * _deltaTime;
-	//	m_VertexCollection[i].Coords.y +=
-	//		cos(glfwGetTime() * PI / 180) * _deltaTime;
-	//}
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindVertexArray(m_VAO);
-	//glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-	//glBufferData(GL_ARRAY_BUFFER, m_VertexCollection.size() * sizeof(Vertex), m_VertexCollection.data(), GL_STATIC_DRAW);
 	glDrawElements(GL_TRIANGLE_STRIP, m_IndexCollection.size(), GL_UNSIGNED_INT, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);

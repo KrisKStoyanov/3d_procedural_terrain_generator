@@ -18,7 +18,7 @@ public:
 	~WaterGen();
 
 	void Configure();
-	void Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime);
+	void Draw(Camera*& _camera, Light*& _dirLight);
 
 	void Clear();
 
