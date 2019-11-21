@@ -43,7 +43,7 @@ void Renderer::Init(const char* _Title, const int _Width, const int _Height)
 		"../Textures/grass.bmp",
 		"../Textures/sand.png");
 
-	m_WaterGen = new WaterGen(33, glm::vec3(0.0f, 0.0f, 0.0f), "../Textures/water.png");
+	m_WaterGen = new WaterGen(65, glm::vec3(0.0f, 0.0f, 0.0f), "../Textures/water.png");
 	m_CloudGen = new CloudGen(33, glm::vec3(0.0f, 20.0f, 0.0f), "../Textures/cloud.png");
 
 	m_Skybox = new Skybox();
@@ -78,10 +78,10 @@ void Renderer::OnUpdate()
 		}
 		glfwGetCursorPos(m_Window, &m_CursorPosX, &m_CursorPosY);
 		m_Camera->UpdateTransformMouse(m_CursorPosX, -m_CursorPosY);
-		m_TerrainGen->Draw(m_Camera, m_DirLight);
+		//m_TerrainGen->Draw(m_Camera, m_DirLight);
 		m_WaterGen->Draw(m_Camera, m_DirLight, timestep);
 		m_Skybox->Draw(m_Camera);
-		m_CloudGen->Draw(m_Camera, m_DirLight, timestep);
+		//m_CloudGen->Draw(m_Camera, m_DirLight, timestep);
 
 		glfwSwapBuffers(m_Window);
 	}

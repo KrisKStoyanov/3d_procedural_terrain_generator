@@ -34,8 +34,12 @@ uniform sampler2D u_texSampler;
 
 void main(void)
 {
-	float procX = exUV.x + exTime;
-	vec4 fieldTexColor = texture(u_texSampler, vec2(procX , exUV.y));
-	FragColor = fieldTexColor;
+	float procX = exUV.x - exTime;
+	lightDirection = normalize(vec3(u_dirLight.coords));
+	vec4 difCol = max(dot(exNormal, lightDirection), 0.0f) * (u_dirLight.difCols *
+		u_material.difRefl);
+
+	vec4 fieldTexColor = texture(u_texSampler, vec2(exUV.x , exUV.y));
+	FragColor = fieldTexColor * difCol;
 }
 
