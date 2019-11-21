@@ -9,6 +9,6 @@ out vec3 ExVertexUV;
 
 void main() {
 	ExVertexUV = VertexPos;
-	vec4 pos = u_projectionMatrix * u_viewMatrix * vec4(VertexPos, 1.0);
+	vec4 pos = u_projectionMatrix * u_viewMatrix * vec4(vec3(-VertexPos.x, VertexPos.y, VertexPos.z), 1.0);
 	gl_Position = pos.xyww;
 }

@@ -33,7 +33,6 @@ public:
 	GLFWwindow* m_Window = NULL;
 
 	TerrainGen* m_TerrainGen = NULL;
-	TerrainGen* m_GroundGen = NULL;
 	WaterGen* m_WaterGen = NULL;
 	CloudGen* m_CloudGen = NULL;
 	TreeGen* m_TreeGen = NULL;
@@ -44,8 +43,5 @@ public:
 
 	double m_CursorPosX, m_CursorPosY;
 	float m_LastFrameTime = 0.0f;
-
-	bool m_MulticoreRendering = true;
-	int m_ThreadCount;
 };
 

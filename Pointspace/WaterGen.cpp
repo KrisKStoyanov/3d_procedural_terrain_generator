@@ -222,15 +222,14 @@ void WaterGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
 	//	m_VertexCollection[i].Coords.y +=
 	//		cos(glfwGetTime() * PI / 180) * _deltaTime;
 	//}
-
-	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindVertexArray(m_VAO);
 	//glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	//glBufferData(GL_ARRAY_BUFFER, m_VertexCollection.size() * sizeof(Vertex), m_VertexCollection.data(), GL_STATIC_DRAW);
 	glDrawElements(GL_TRIANGLE_STRIP, m_IndexCollection.size(), GL_UNSIGNED_INT, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	glDisable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
 }
 
 void WaterGen::Clear()

@@ -30,17 +30,14 @@ void Renderer::Init(const char* _Title, const int _Width, const int _Height)
 
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-
-	m_ThreadCount = std::thread::hardware_concurrency();
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CW);
+	glEnable(GL_BLEND);
 
 	m_Camera = new Camera(glm::vec3(0.0f, 1.0f, 5.0f), 60, _Width, _Height);
 	m_DirLight = new Light(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
 
 	m_TerrainGen = new TerrainGen(33, -15.0f, glm::vec3(0.0f, 0.0f, 0.0f), "../Textures/grass.png");
-	m_GroundGen = new TerrainGen(33, -2.0f, glm::vec3(0.0f, -5.0f, 0.0f), "../Textures/ground.jpg");
 
 	m_WaterGen = new WaterGen(33, glm::vec3(0.0f, 0.0f, 0.0f), "../Textures/water.png");
 	m_CloudGen = new CloudGen(33, glm::vec3(0.0f, 20.0f, 0.0f), "../Textures/cloud.png");
@@ -78,7 +75,6 @@ void Renderer::OnUpdate()
 		glfwGetCursorPos(m_Window, &m_CursorPosX, &m_CursorPosY);
 		m_Camera->UpdateTransformMouse(m_CursorPosX, -m_CursorPosY);
 		m_TerrainGen->Draw(m_Camera, m_DirLight);
-		m_GroundGen->Draw(m_Camera, m_DirLight);
 		m_WaterGen->Draw(m_Camera, m_DirLight, timestep);
 		m_CloudGen->Draw(m_Camera, m_DirLight, timestep);
 		m_Skybox->Draw(m_Camera);
