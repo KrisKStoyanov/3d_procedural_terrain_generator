@@ -186,7 +186,7 @@ void WaterGen::Configure()
 	m_Shader = new Shader(m_VertexShaderSource, m_FragmentShaderSource);
 }
 
-void WaterGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
+void WaterGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime, float _waveAmplitude)
 {
 	m_Shader->Activate();
 	m_Transform->Translate(m_Transform->GetPosition());
@@ -210,6 +210,7 @@ void WaterGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
 	m_Shader->SetInt("u_texSampler", 0);
 
 	m_Shader->SetFloat("u_time", glfwGetTime());
+	m_Shader->SetFloat("u_waveAmplitude", _waveAmplitude);
 
 	for (int i = 0; i < m_TextureCollection.size(); ++i) {
 		glActiveTexture(GL_TEXTURE0 + i);

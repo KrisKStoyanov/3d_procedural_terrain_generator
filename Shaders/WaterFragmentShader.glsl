@@ -34,6 +34,7 @@ uniform sampler2D u_texSampler;
 
 void main(void)
 {
-	vec4 fieldTexColor = texture(u_texSampler, vec2(exUV.x + exTime, exUV.y));
+	float procX = exUV.x + exTime;
+	vec4 fieldTexColor = texture(u_texSampler, vec2(procX + exUV.x + sin(procX), exUV.y));
 	FragColor = fieldTexColor;
 }
