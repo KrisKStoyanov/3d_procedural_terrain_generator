@@ -1,6 +1,10 @@
 #include "TerrainGen.h"
 
-TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position, const char* _texturePath)
+TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position,
+	const char* _snowTexPath,
+	const char* _rockTexPath,
+	const char* _grassTexPath,
+	const char* _sandTexPath)
 {
 	const int numStrips = _mapSize - 1;
 	const int verticesPerStrip = 2 * _mapSize;
@@ -190,7 +194,11 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position, co
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		50.0f);
-	m_TextureCollection.push_back(new Texture(_texturePath));
+	m_SnowTexture = new Texture(_snowTexPath);
+	m_RockTexture = new Texture(_rockTexPath);
+	m_GrassTexture = new Texture(_grassTexPath);
+	m_SandTexture = new Texture(_sandTexPath);
+	//m_TextureCollection.push_back(new Texture(_texturePath));
 	Configure();
 }
 
@@ -314,12 +322,24 @@ void TerrainGen::Draw(Camera*& _camera, Light*& _dirLight)
 	m_Shader->SetVec4("u_material.specRefl", m_Material->SpecularC);
 	m_Shader->SetFloat("u_material.shininess", m_Material->Shininess);
 
-	m_Shader->SetInt("u_texSampler", 0);
+	m_Shader->SetInt("u_snowTexSampler", 0);
+	m_Shader->SetInt("u_rockTexSampler", 1);
+	m_Shader->SetInt("u_grassTexSampler", 2);
+	m_Shader->SetInt("u_sandTexSampler", 3);
 
-	for (int i = 0; i < m_TextureCollection.size(); ++i) {
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, m_TextureCollection[i]->m_ID);
-	}
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_SnowTexture->m_ID);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_RockTexture->m_ID);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_GrassTexture->m_ID);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, m_SandTexture->m_ID);
+
+	//for (int i = 0; i < m_TextureCollection.size(); ++i) {
+	//	glActiveTexture(GL_TEXTURE0 + i);
+	//	glBindTexture(GL_TEXTURE_2D, m_TextureCollection[i]->m_ID);
+	//}
 	
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_TRIANGLE_STRIP, m_IndexCollection.size(), GL_UNSIGNED_INT, 0);
@@ -328,8 +348,21 @@ void TerrainGen::Draw(Camera*& _camera, Light*& _dirLight)
 
 void TerrainGen::Clear()
 {
-	for (int i = 0; i < m_TextureCollection.size(); ++i) {
-		delete m_TextureCollection[i];
+	//for (int i = 0; i < m_TextureCollection.size(); ++i) {
+	//	delete m_TextureCollection[i];
+	//}
+
+	if (m_SnowTexture) {
+		delete m_SnowTexture;
+	}
+	if (m_RockTexture) {
+		delete m_RockTexture;
+	}
+	if (m_GrassTexture) {
+		delete m_GrassTexture;
+	}
+	if (m_SandTexture) {
+		delete m_SandTexture;
 	}
 }
 

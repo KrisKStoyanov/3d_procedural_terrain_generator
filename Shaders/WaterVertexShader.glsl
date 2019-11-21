@@ -28,5 +28,5 @@ void main(void)
 	exTime = u_time;
 
 	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix *
-		vec4(VertexCoords.x + sin(VertexCoords.z + u_time), VertexCoords.y + cos(VertexCoords.x + u_time) * smoothstep(-u_time, u_time, cos(u_time)), VertexCoords.z, VertexCoords.w);
+		vec4(VertexCoords.x, VertexCoords.y, VertexCoords.z, VertexCoords.w);
 }

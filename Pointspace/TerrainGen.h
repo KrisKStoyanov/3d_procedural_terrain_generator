@@ -16,7 +16,11 @@
 class TerrainGen
 {
 public:
-	TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position, const char* _texturePath);
+	TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position, 
+		const char* _snowTexPath, 
+		const char* _rockTexPath,
+		const char* _grassTexPath, 
+		const char* _sandTexPath);
 	~TerrainGen();
 	
 	void DiamondStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);
@@ -37,6 +41,10 @@ public:
 	Transform* m_Transform = NULL;
 	std::vector<Vertex> m_VertexCollection;
 	std::vector<unsigned int> m_IndexCollection;
-	std::vector<Texture*> m_TextureCollection;
+
+	Texture* m_SnowTexture = NULL;
+	Texture* m_RockTexture = NULL;
+	Texture* m_GrassTexture = NULL;
+	Texture* m_SandTexture = NULL;
 };
 
