@@ -38,3 +38,4 @@ void main(void)
 	vec4 fieldTexColor = texture(u_texSampler, vec2(procX , exUV.y));
 	FragColor = fieldTexColor;
 }
+
