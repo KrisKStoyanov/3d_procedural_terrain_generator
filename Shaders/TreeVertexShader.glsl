@@ -4,20 +4,24 @@ layout(location = 0) in vec4 VertexPos;
 layout(location = 1) in vec3 VertexNormal;
 layout(location = 2) in vec2 VertexUV;
 
-uniform mat4 ModelMatrix;
-uniform mat4 ViewMatrix;
-uniform mat4 ProjectionMatrix;
-uniform mat3 NormalMatrix;
+uniform mat4 u_modelMatrix;
+uniform mat4 u_viewMatrix;
+uniform mat4 u_projectionMatrix;
 
-out vec3 NormalExport;
-out vec2 UVExport;
+uniform float u_time;
+
+out VS_Data{
+	vec4 pos;
+	vec3 normal;
+	vec2 UV;
+} vs_data;
 
 void main(void)
 {
-	NormalExport = VertexNormal;
-	NormalExport = normalize(NormalMatrix * NormalExport);
+	mat3 normalMatrix = mat3(transpose(inverse(u_viewMatrix * u_modelMatrix)));
+	vs_data.pos = VertexPos;
+	vs_data.normal = normalize(normalMatrix * VertexNormal);
+	vs_data.UV = VertexUV;
 
-	UVExport = VertexUV;
-
-	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * VertexPos;
+	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * VertexPos;
 }

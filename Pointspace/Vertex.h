@@ -11,6 +11,7 @@ class Vertex
 {
 public:
 	Vertex(glm::vec4 _coords, glm::vec2 _texCoords);
+	Vertex(glm::vec4 _coords);
 	Vertex();
 	~Vertex();
 	glm::vec4 Coords;

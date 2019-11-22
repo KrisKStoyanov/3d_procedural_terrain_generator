@@ -14,11 +14,12 @@
 class TreeGen
 {
 public:
-	TreeGen();
+	TreeGen(int _mapSize, float _randomRange, glm::vec3 _position);
+	TreeGen(std::vector<Vertex> _vertexCol, std::vector<unsigned int> _indexCol, glm::vec3 _position);
 	~TreeGen();
 
 	void Configure();
-	void Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime);
+	void Draw(Camera*& _camera, Light*& _dirLight);
 
 	void Clear();
 
@@ -26,17 +27,12 @@ public:
 
 	Shader* m_Shader = NULL;
 	const char* m_VertexShaderSource = "../Shaders/TreeVertexShader.glsl";
+	const char* m_GeometryShaderSource = "../Shaders/TreeGeometryShader.glsl";
 	const char* m_FragmentShaderSource = "../Shaders/TreeFragmentShader.glsl";
 
 	Material* m_Material = NULL;
 	Transform* m_Transform = NULL;
 	std::vector<Vertex> m_VertexCollection;
 	std::vector<unsigned int> m_IndexCollection;
-	std::vector<Texture*> m_TextureCollection;
-
-	const int m_NumPoints = 1000;
-	const int m_MaxLevel = 6;
-	const float m_R = 0.85f;
-	const float m_alpha = 40.0f;
 };
 

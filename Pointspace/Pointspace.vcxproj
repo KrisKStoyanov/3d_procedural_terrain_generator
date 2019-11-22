@@ -63,6 +63,7 @@
     <None Include="..\Shaders\TerrainGeometryShader.glsl" />
     <None Include="..\Shaders\TerrainVertexShader.glsl" />
     <None Include="..\Shaders\TreeFragmentShader.glsl" />
+    <None Include="..\Shaders\TreeGeometryShader.glsl" />
     <None Include="..\Shaders\TreeVertexShader.glsl" />
     <None Include="..\Shaders\WaterFragmentShader.glsl" />
     <None Include="..\Shaders\WaterVertexShader.glsl" />

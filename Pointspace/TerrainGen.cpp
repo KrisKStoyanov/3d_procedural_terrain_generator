@@ -66,6 +66,8 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position,
 		compatibleLength *= 2;
 	}
 
+	m_HeightMap = heightMap;
+
 	// Build Vertex Coords;
 	float fTextureS = float(_mapSize) * 0.1f;
 	float fTextureT = float(_mapSize) * 0.1f;
@@ -305,12 +307,10 @@ void TerrainGen::Draw(Camera*& _camera, Light*& _dirLight)
 {
 	m_Shader->Activate();
 	m_Transform->Translate(m_Transform->GetPosition());
-	m_Transform->SetNormalMatrix(glm::transpose(glm::inverse(glm::mat3(_camera->ViewMatrix * m_Transform->GetModelMatrix()))));
 
 	m_Shader->SetMat4("u_projectionMatrix", _camera->ProjectionMatrix);
 	m_Shader->SetMat4("u_viewMatrix", _camera->ViewMatrix);
 	m_Shader->SetMat4("u_modelMatrix", m_Transform->GetModelMatrix());
-	m_Shader->SetMat3("u_normalMatrix", m_Transform->GetNormalMatrix());
 
 	m_Shader->SetVec4("u_dirLight.ambCols", _dirLight->AmbientC);
 	m_Shader->SetVec4("u_dirLight.difCols", _dirLight->DiffuseC);

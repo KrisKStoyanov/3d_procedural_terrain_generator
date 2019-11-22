@@ -38,6 +38,8 @@ public:
 	const char* m_GeometryShaderSource = "../Shaders/TerrainGeometryShader.glsl";
 	const char* m_FragmentShaderSource = "../Shaders/TerrainFragmentShader.glsl";
 
+	float** m_HeightMap = NULL;
+
 	Material* m_Material = NULL;
 	Transform* m_Transform = NULL;
 	std::vector<Vertex> m_VertexCollection;
