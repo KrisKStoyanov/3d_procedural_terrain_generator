@@ -1,10 +1,10 @@
 #version 450 core
 
-in vec4 exPos;
-in vec3 exNormal;
-in vec2 exUV;
-
-out vec4 FragColor;
+in FS_Data{
+	vec4 pos;
+	vec3 normal;
+	vec2 UV;
+} fs_data;
 
 struct Light
 {
@@ -41,24 +41,24 @@ float sandAltitude = -1.0f;
 void main(void)
 {
 	lightDirection = normalize(vec3(u_dirLight.coords));
-	diffuseColor = max(dot(exNormal, lightDirection), 0.0f) * (u_dirLight.difCols *
+	diffuseColor = max(dot(fs_data.normal, lightDirection), 0.0f) * (u_dirLight.difCols *
 		u_material.difRefl);
 	
-	vec4 snowTexColor = texture(u_snowTexSampler, exUV);
-	vec4 rockTexColor = texture(u_rockTexSampler, exUV);
-	vec4 grassTexColor = texture(u_grassTexSampler, exUV);
-	vec4 sandTexColor = texture(u_sandTexSampler, exUV);
+	vec4 snowTexColor = texture(u_snowTexSampler, fs_data.UV);
+	vec4 rockTexColor = texture(u_rockTexSampler, fs_data.UV);
+	vec4 grassTexColor = texture(u_grassTexSampler, fs_data.UV);
+	vec4 sandTexColor = texture(u_sandTexSampler, fs_data.UV);
 
 	vec4 texColor = sandTexColor;
-	if (exPos.y > sandAltitude) {
-		texColor = mix(sandTexColor, grassTexColor, abs(clamp((exPos.y - sandAltitude) / (grassAltitude - sandAltitude), 0.0f, 1.0f)));
+	if (fs_data.pos.y > sandAltitude) {
+		texColor = mix(sandTexColor, grassTexColor, abs(clamp((fs_data.pos.y - sandAltitude) / (grassAltitude - sandAltitude), 0.0f, 1.0f)));
 	}
-	if (exPos.y > grassAltitude) {
-		texColor = mix(grassTexColor, rockTexColor, abs(clamp((exPos.y - grassAltitude) / (rockAltitude - grassAltitude), 0.0f, 1.0f)));
+	if (fs_data.pos.y > grassAltitude) {
+		texColor = mix(grassTexColor, rockTexColor, abs(clamp((fs_data.pos.y - grassAltitude) / (rockAltitude - grassAltitude), 0.0f, 1.0f)));
 	}
-	if (exPos.y > rockAltitude) {
-		texColor = mix(rockTexColor, snowTexColor, abs(clamp((exPos.y - rockAltitude) / (snowAltitude - rockAltitude), 0.0f, 1.0f)));
+	if (fs_data.pos.y > rockAltitude) {
+		texColor = mix(rockTexColor, snowTexColor, abs(clamp((fs_data.pos.y - rockAltitude) / (snowAltitude - rockAltitude), 0.0f, 1.0f)));
 	}
 
-	FragColor = texColor * diffuseColor;
+	gl_FragColor = texColor * diffuseColor;
 }

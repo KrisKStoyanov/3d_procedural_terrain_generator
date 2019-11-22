@@ -148,5 +148,8 @@
     <None Include="..\Shaders\CloudVertexShader.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\Shaders\TerrainGeometryShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -29,6 +29,98 @@ Shader::Shader(const GLchar* _VertexShaderPath, const GLchar* _FragmentShaderPat
 	glAttachShader(ProgramID, VertexShaderID);
 	glDeleteShader(VertexShaderID);
 
+	//----------------------------------
+
+	std::string FragShaderSource;
+
+	try {
+		FragShaderSource = ReadFile(_FragmentShaderPath);
+	}
+	catch (std::ifstream::failure _error) {
+		std::cout << "Error: Unable to read Fragment Shader file " << std::endl;
+	}
+
+	FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+	const GLchar* FragSourceCode = FragShaderSource.c_str();
+	glShaderSource(FragmentShaderID, 1, &FragSourceCode, NULL);
+
+	glCompileShader(FragmentShaderID);
+	glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &CompileStatus);
+
+	if (!CompileStatus) {
+		PrintShaderLog(FragmentShaderID);
+	}
+
+	glAttachShader(ProgramID, FragmentShaderID);
+	glDeleteShader(FragmentShaderID);
+
+	GLint LinkStatus = 0;
+	glLinkProgram(ProgramID);
+	glGetProgramiv(ProgramID, GL_LINK_STATUS, &LinkStatus);
+	if (!LinkStatus) {
+		PrintProgramLog(ProgramID);
+	}
+}
+
+Shader::Shader(const GLchar* _VertexShaderPath, const GLchar* _GeometryShaderPath, const GLchar* _FragmentShaderPath)
+{
+	ProgramID = glCreateProgram();
+
+	std::string VertShaderSource;
+
+	try {
+		VertShaderSource = ReadFile(_VertexShaderPath);
+	}
+	catch (std::ifstream::failure _error) {
+		std::cout << "Error: Unable to read Vertex Shader file " << std::endl;
+	}
+
+	VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+
+	const GLchar* VertSourceCode = VertShaderSource.c_str();
+	glShaderSource(VertexShaderID, 1, &VertSourceCode, NULL);
+
+	GLint CompileStatus = 0;
+	glCompileShader(VertexShaderID);
+	glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &CompileStatus);
+
+	if (!CompileStatus) {
+		PrintShaderLog(VertexShaderID);
+	}
+
+	glAttachShader(ProgramID, VertexShaderID);
+	glDeleteShader(VertexShaderID);
+
+	//----------------------------------
+
+	std::string GeometryShaderSource;
+
+	try {
+		GeometryShaderSource = ReadFile(_GeometryShaderPath);
+	}
+	catch (std::ifstream::failure _error) {
+		std::cout << "Error: Unable to read Geometry Shader file " << std::endl;
+	}
+
+	GeometryShaderID = glCreateShader(GL_GEOMETRY_SHADER);
+
+	const GLchar* GeometrySourceCode = GeometryShaderSource.c_str();
+	glShaderSource(GeometryShaderID, 1, &GeometrySourceCode, NULL);
+
+	CompileStatus = 0;
+	glCompileShader(GeometryShaderID);
+	glGetShaderiv(GeometryShaderID, GL_COMPILE_STATUS, &CompileStatus);
+
+	if (!CompileStatus) {
+		PrintShaderLog(GeometryShaderID);
+	}
+
+	glAttachShader(ProgramID, GeometryShaderID);
+	glDeleteShader(GeometryShaderID);
+	
+	//----------------------------------
+
 	std::string FragShaderSource;
 
 	try {

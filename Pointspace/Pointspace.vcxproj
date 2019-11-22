@@ -60,6 +60,7 @@
     <None Include="..\Shaders\SkyboxFragmentShader.glsl" />
     <None Include="..\Shaders\SkyboxVertexShader.glsl" />
     <None Include="..\Shaders\TerrainFragmentShader.glsl" />
+    <None Include="..\Shaders\TerrainGeometryShader.glsl" />
     <None Include="..\Shaders\TerrainVertexShader.glsl" />
     <None Include="..\Shaders\TreeFragmentShader.glsl" />
     <None Include="..\Shaders\TreeVertexShader.glsl" />

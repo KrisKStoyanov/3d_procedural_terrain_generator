@@ -35,6 +35,7 @@ public:
 
 	Shader* m_Shader = NULL;
 	const char* m_VertexShaderSource = "../Shaders/TerrainVertexShader.glsl";
+	const char* m_GeometryShaderSource = "../Shaders/TerrainGeometryShader.glsl";
 	const char* m_FragmentShaderSource = "../Shaders/TerrainFragmentShader.glsl";
 
 	Material* m_Material = NULL;

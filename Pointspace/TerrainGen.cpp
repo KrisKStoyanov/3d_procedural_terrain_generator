@@ -298,7 +298,7 @@ void TerrainGen::Configure()
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
 
-	m_Shader = new Shader(m_VertexShaderSource, m_FragmentShaderSource);
+	m_Shader = new Shader(m_VertexShaderSource, m_GeometryShaderSource, m_FragmentShaderSource);
 }
 
 void TerrainGen::Draw(Camera*& _camera, Light*& _dirLight)

@@ -12,9 +12,10 @@
 class Shader {
 public:
 	Shader(const GLchar* _VertexShaderPath, const GLchar* _FragmentShaderPath);
+	Shader(const GLchar* _VertexShaderPath, const GLchar* _GeometryShaderPath, const GLchar* _FragmentShaderPath);
 	~Shader();
 
-	GLuint ProgramID, VertexShaderID, FragmentShaderID;
+	GLuint ProgramID, VertexShaderID, GeometryShaderID, FragmentShaderID;
 
 	std::string ReadFile(const GLchar* _FilePath);
 
