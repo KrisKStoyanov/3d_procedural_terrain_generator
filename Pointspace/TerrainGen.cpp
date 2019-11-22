@@ -25,7 +25,7 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position,
 	}
 
 	//Perform Diamond Square Algorithm
-	srand(time(NULL));
+	srand(323);
 
 	float test = (-_randomRange - static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
 

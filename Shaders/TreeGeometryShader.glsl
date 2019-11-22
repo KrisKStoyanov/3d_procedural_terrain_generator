@@ -70,11 +70,7 @@ void TreeGen(int _index) {
 	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * vertexPos;
 	EmitVertex();
 
-	vertexPos = vertexOrigin + vec4(0.5f, 2.0f, 0.5f, 0.0f);
-	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * vertexPos;
-	EmitVertex();
-
-	vertexPos = vertexOrigin + vec4(-0.5f, 2.0f, 0.5f, 0.0f);
+	vertexPos = vertexOrigin + vec4(0.0f, 2.0f, 0.0f, 0.0f);
 	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * vertexPos;
 	EmitVertex();
 

@@ -202,9 +202,11 @@ void GrassGen::Draw(Camera*& _camera, Light*& _dirLight)
 	m_Shader->SetMat4("u_modelMatrix", m_Transform->GetModelMatrix());
 	m_Shader->SetFloat("u_time", glfwGetTime());
 
+	glDisable(GL_CULL_FACE);
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_POINTS, m_IndexCollection.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+	glEnable(GL_CULL_FACE);
 }
 
 void GrassGen::Clear()

@@ -34,9 +34,9 @@ uniform sampler2D u_grassTexSampler;
 uniform sampler2D u_sandTexSampler;
 
 float snowAltitude = 6.0f;
-float rockAltitude = 3.0f;
+float rockAltitude = 4.0f;
 float grassAltitude = 0.0f;
-float sandAltitude = -1.0f;
+float sandAltitude = -2.0f;
 
 void main(void)
 {

@@ -8,8 +8,6 @@ layout(location = 2) in vec2 VertexUV;
 //uniform mat4 u_viewMatrix;
 //uniform mat4 u_projectionMatrix;
 
-uniform float u_time;
-
 out VS_Data{
 	vec4 pos;
 	vec3 normal;

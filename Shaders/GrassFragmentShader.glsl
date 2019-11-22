@@ -4,9 +4,10 @@ in FS_Data{
 	vec4 pos;
 	vec3 normal;
 	vec2 UV;
+	vec4 color;
 } fs_data;
 
 void main(void)
 {
-	gl_FragColor = vec4(0.0f, 1.0f, 0.0f, 1.0f) * fs_data.pos;
+	gl_FragColor = fs_data.color;
 }
