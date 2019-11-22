@@ -17,6 +17,7 @@
 #include "WaterGen.h"
 #include "CloudGen.h"
 #include "TreeGen.h"
+#include "GrassGen.h"
 
 class Renderer
 {
@@ -36,6 +37,7 @@ public:
 	WaterGen* m_WaterGen = NULL;
 	CloudGen* m_CloudGen = NULL;
 	TreeGen* m_TreeGen = NULL;
+	GrassGen* m_GrassGen = NULL;
 
 	Skybox* m_Skybox = NULL;
 	Camera* m_Camera = NULL;
@@ -43,5 +45,9 @@ public:
 
 	double m_CursorPosX, m_CursorPosY;
 	float m_LastFrameTime = 0.0f;
+
+	const int m_GeoSetOutputComp = 4;
+	int m_GeoMaxOutputComp;
+	int m_MaxGeoVertexCount;
 };
 

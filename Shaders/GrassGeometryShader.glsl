@@ -20,7 +20,7 @@ uniform mat4 u_modelMatrix;
 uniform mat4 u_viewMatrix;
 uniform mat4 u_projectionMatrix;
 
-void TreeGen(int _index);
+void GrassGen(int _index);
 
 void main(void)
 {
@@ -32,9 +32,9 @@ void main(void)
 		fs_data.UV = vs_data[i].UV;
 
 		if (vs_data[i].pos.y > 0.0f) {
-			TreeGen(i);
+			GrassGen(i);
 		}
-		
+
 		//vec4 offset = vec4(-1.0, 1.0, 0.0, 0.0);
 		//vec4 vertexPos = offset + gl_in[0].gl_Position;
 		//gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * vertexPos;
@@ -57,7 +57,7 @@ void main(void)
 	//EndPrimitive();
 }
 
-void TreeGen(int _index) {
+void GrassGen(int _index) {
 
 	vec4 vertexOrigin = gl_in[_index].gl_Position;
 

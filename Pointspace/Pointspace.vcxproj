@@ -22,6 +22,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CloudGen.cpp" />
     <ClCompile Include="getbmp.cpp" />
+    <ClCompile Include="GrassGen.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -40,6 +41,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CloudGen.h" />
     <ClInclude Include="getbmp.h" />
+    <ClInclude Include="GrassGen.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Renderer.h" />
@@ -57,6 +59,9 @@
   <ItemGroup>
     <None Include="..\Shaders\CloudFragmentShader.glsl" />
     <None Include="..\Shaders\CloudVertexShader.glsl" />
+    <None Include="..\Shaders\GrassFragmentShader.glsl" />
+    <None Include="..\Shaders\GrassGeometryShader.glsl" />
+    <None Include="..\Shaders\GrassVertexShader.glsl" />
     <None Include="..\Shaders\SkyboxFragmentShader.glsl" />
     <None Include="..\Shaders\SkyboxVertexShader.glsl" />
     <None Include="..\Shaders\TerrainFragmentShader.glsl" />

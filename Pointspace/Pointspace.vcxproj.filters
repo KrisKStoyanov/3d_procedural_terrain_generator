@@ -66,6 +66,9 @@
     <ClCompile Include="TreeGen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GrassGen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Renderer.h">
@@ -116,6 +119,9 @@
     <ClInclude Include="TreeGen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GrassGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\SkyboxFragmentShader.glsl">
@@ -152,6 +158,15 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\Shaders\TreeGeometryShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\GrassFragmentShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\GrassGeometryShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\GrassVertexShader.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

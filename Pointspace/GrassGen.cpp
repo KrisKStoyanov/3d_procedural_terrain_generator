@@ -1,6 +1,6 @@
-#include "TreeGen.h"
+#include "GrassGen.h"
 
-TreeGen::TreeGen(int _mapSize, float _randomRange, glm::vec3 _position)
+GrassGen::GrassGen(int _mapSize, float _randomRange, glm::vec3 _position)
 {
 	const int numStrips = _mapSize - 1;
 	const int verticesPerStrip = 2 * _mapSize;
@@ -147,7 +147,7 @@ TreeGen::TreeGen(int _mapSize, float _randomRange, glm::vec3 _position)
 	Configure();
 }
 
-TreeGen::TreeGen(std::vector<Vertex> _vertexCol, std::vector<unsigned int> _indexCol, glm::vec3 _position)
+GrassGen::GrassGen(std::vector<Vertex> _vertexCol, std::vector<unsigned int> _indexCol, glm::vec3 _position)
 {
 	m_VertexCollection = _vertexCol;
 	m_IndexCollection = _indexCol;
@@ -157,12 +157,12 @@ TreeGen::TreeGen(std::vector<Vertex> _vertexCol, std::vector<unsigned int> _inde
 	Configure();
 }
 
-TreeGen::~TreeGen()
+GrassGen::~GrassGen()
 {
 	Clear();
 }
 
-void TreeGen::Configure()
+void GrassGen::Configure()
 {
 	glGenVertexArrays(1, &m_VAO);
 	glGenBuffers(1, &m_VBO);
@@ -192,7 +192,7 @@ void TreeGen::Configure()
 	m_Shader = new Shader(m_VertexShaderSource, m_GeometryShaderSource, m_FragmentShaderSource);
 }
 
-void TreeGen::Draw(Camera*& _camera, Light*& _dirLight)
+void GrassGen::Draw(Camera*& _camera, Light*& _dirLight)
 {
 	m_Shader->Activate();
 	m_Transform->Translate(m_Transform->GetPosition());
@@ -207,7 +207,7 @@ void TreeGen::Draw(Camera*& _camera, Light*& _dirLight)
 	glBindVertexArray(0);
 }
 
-void TreeGen::Clear()
+void GrassGen::Clear()
 {
 
 }
