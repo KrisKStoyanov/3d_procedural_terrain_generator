@@ -6,12 +6,6 @@ layout(triangles) in;
 layout(triangle_strip) out;
 layout(max_vertices = 60) out; //compile time constant (hardware dependant)
 
-//in VS_Data{
-//	vec4 pos;
-//	vec3 normal;
-//	vec2 UV;
-//} vs_data[];
-
 in TES_Data{
 	vec4 pos;
 	vec3 normal;
@@ -31,99 +25,65 @@ uniform mat4 u_projectionMatrix;
 
 uniform float u_time;
 
-//void GrassGen(int _index);
+float swaySpeed = 1.0f;
+float swayAmplitude = 0.125f;
 
+void GrassGen(int _index);
 float rand(vec2 _co);
 
 void main(void)
 {
 	for (int i = 0; i < gl_in.length(); ++i) {
 
-		vec4 vertexOrigin = gl_in[i].gl_Position;
-
-		//fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
-		//fs_data.pos = u_projectionMatrix * u_viewMatrix * u_modelMatrix * (tes_data[i].pos + vec4(0.25f, 0.0f, 0.0f, 0.0f));
-		//fs_data.normal = tes_data[i].normal;
-		//fs_data.UV = tes_data[i].UV;
-		//gl_Position = fs_data.pos;
-		//EmitVertex();
-
-		//fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
-		//fs_data.pos = u_projectionMatrix * u_viewMatrix * u_modelMatrix * (tes_data[i].pos + vec4(-0.25f, 0.0f, 0.0f, 0.0f));
-		//fs_data.normal = tes_data[i].normal;
-		//fs_data.UV = tes_data[i].UV;
-		//gl_Position = fs_data.pos;
-		//EmitVertex();
-
-		//fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
-		//fs_data.pos = u_projectionMatrix * u_viewMatrix * u_modelMatrix * (tes_data[i].pos + vec4(0.0f, 2.0f, 0.0f, 0.0f));
-		//fs_data.normal = tes_data[i].normal;
-		//fs_data.UV = tes_data[i].UV;
-		//gl_Position = fs_data.pos;
-		//EmitVertex();
-
-		EndPrimitive();
 		if (tes_data[i].pos.y > -2.0f && tes_data[i].pos.y < 4.0f) {
-			//GrassGen(i);
-			fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
-			fs_data.pos = u_projectionMatrix * u_viewMatrix * u_modelMatrix * (tes_data[i].pos + vec4(0.25f, 0.0f, 0.0f, 0.0f));
-			fs_data.normal = tes_data[i].normal;
-			fs_data.UV = tes_data[i].UV;
-			gl_Position = fs_data.pos;
-			EmitVertex();
-
-			fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
-			fs_data.pos = u_projectionMatrix * u_viewMatrix * u_modelMatrix * (tes_data[i].pos + vec4(-0.25f, 0.0f, 0.0f, 0.0f));
-			fs_data.normal = tes_data[i].normal;
-			fs_data.UV = tes_data[i].UV;
-			gl_Position = fs_data.pos;
-			EmitVertex();
-
-			fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
-			fs_data.pos = u_projectionMatrix * u_viewMatrix * u_modelMatrix * (tes_data[i].pos + vec4(0.0f, 2.0f, 0.0f, 0.0f));
-			fs_data.normal = tes_data[i].normal;
-			fs_data.UV = tes_data[i].UV;
-			gl_Position = fs_data.pos;
-			EmitVertex();
+			GrassGen(i);
 		}
 	}
 }
 
-//void GrassGen(int _index) {
-//
-//	vec4 vertexOrigin = gl_in[_index].gl_Position;
-//
-//	//-------------------------------------------
-//
-//	fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
-//	vec4 vertexPos = vertexOrigin + vec4(0.1f, 0.0f, 0.0f, 0.0f);
-//	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * vertexPos;
-//	EmitVertex();
-//
-//	fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
-//	vertexPos = vertexOrigin + vec4(-0.1f, 0.0f, 0.0f, 0.0f);
-//	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * vertexPos;
-//	EmitVertex();
-//
-//	fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
-//	vertexPos = vertexOrigin + vec4(0.075f + 0.125f * sin(2 * PI * u_time - vertexOrigin.y), 0.5f, 0.0f, 0.0f);
-//	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * vertexPos;
-//	EmitVertex();
-//
-//	fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
-//	vertexPos = vertexOrigin + vec4(-0.075f + 0.125f * sin(2 * PI * u_time - vertexOrigin.y), 0.5f, 0.0f, 0.0f);
-//	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * vertexPos;
-//	EmitVertex();
-//
-//	fs_data.color = vec4(0.33f, 1.0f, 0.4f, 1.0f);
-//	vertexPos = vertexOrigin + vec4(0.0f + 0.25f * sin(2 * PI * u_time - vertexOrigin.y), 1.0f, 0.0f, 0.0f);
-//	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * vertexPos;
-//	EmitVertex();
-//
-//	//-------------------------------------------
-//
-//	EndPrimitive();
-//}
+void GrassGen(int _index) {
+
+	vec4 vertexOrigin = tes_data[_index].pos;
+	mat4 transformMatrix = u_projectionMatrix * u_viewMatrix * u_modelMatrix;
+	float swayCoef = (2 * PI) * (swaySpeed * u_time - vertexOrigin.y);
+
+	fs_data.color = vec4(0.33f, 1.0f, 0.4f, 1.0f);
+	fs_data.pos = transformMatrix * (vertexOrigin + vec4(0.1f, 0.0f, 0.0f, 0.0f));
+	fs_data.normal = tes_data[_index].normal;
+	fs_data.UV = tes_data[_index].UV;
+	gl_Position = fs_data.pos;
+	EmitVertex();
+
+	fs_data.color = vec4(0.33f, 1.0f, 0.4f, 1.0f);
+	fs_data.pos = transformMatrix * (vertexOrigin + vec4(-0.1f, 0.0f, 0.0f, 0.0f));
+	fs_data.normal = tes_data[_index].normal;
+	fs_data.UV = tes_data[_index].UV;
+	gl_Position = fs_data.pos;
+	EmitVertex();
+
+	fs_data.color = vec4(0.33f, 0.9f, 0.4f, 1.0f);
+	fs_data.pos = transformMatrix * (vertexOrigin + vec4(0.05f + swayAmplitude * sin(swayCoef), 0.5f, 0.0f, 0.0f));
+	fs_data.normal = tes_data[_index].normal;
+	fs_data.UV = tes_data[_index].UV;
+	gl_Position = fs_data.pos;
+	EmitVertex();
+
+	fs_data.color = vec4(0.33f, 0.9f, 0.4f, 1.0f);
+	fs_data.pos = transformMatrix * (vertexOrigin + vec4(-0.05f + swayAmplitude * sin(swayCoef), 0.5f, 0.0f, 0.0f));
+	fs_data.normal = tes_data[_index].normal;
+	fs_data.UV = tes_data[_index].UV;
+	gl_Position = fs_data.pos;
+	EmitVertex();
+
+	fs_data.color = vec4(0.26f, 0.91f, 0.48f, 1.0f);
+	fs_data.pos = transformMatrix * (vertexOrigin + vec4(0.0f + (swayAmplitude + swayAmplitude) * sin(swayCoef), 1.0f, 0.0f, 0.0f));
+	fs_data.normal = tes_data[_index].normal;
+	fs_data.UV = tes_data[_index].UV;
+	gl_Position = fs_data.pos;
+	EmitVertex();
+
+	EndPrimitive();
+}
 
 float rand(vec2 _co) {
 	return fract(sin(dot(_co.xy, vec2(12.9898, 78.233))) * 43758.5453);
