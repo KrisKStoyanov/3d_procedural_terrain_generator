@@ -32,6 +32,19 @@ float swayAmplitude = 0.125f;
 void GrassGen(int _index);
 float rand(vec2 _co);
 
+mat4 rotationMatrix(vec3 axis, float angle)
+{
+	axis = normalize(axis);
+	float s = sin(angle);
+	float c = cos(angle);
+	float oc = 1.0 - c;
+
+	return mat4(oc * axis.x * axis.x + c, oc * axis.x * axis.y - axis.z * s, oc * axis.z * axis.x + axis.y * s, 0.0,
+		oc * axis.x * axis.y + axis.z * s, oc * axis.y * axis.y + c, oc * axis.y * axis.z - axis.x * s, 0.0,
+		oc * axis.z * axis.x - axis.y * s, oc * axis.y * axis.z + axis.x * s, oc * axis.z * axis.z + c, 0.0,
+		0.0, 0.0, 0.0, 1.0);
+}
+
 void main(void)
 {
 	for (int i = 0; i < gl_in.length(); ++i) {
@@ -45,39 +58,46 @@ void main(void)
 void GrassGen(int _index) {
 
 	vec4 vertexOrigin = tes_data[_index].pos;
-	mat4 transformMatrix = u_projectionMatrix * u_viewMatrix * u_modelMatrix;
 	float swayCoef = (2 * PI) * (swaySpeed * u_time - vertexOrigin.y);
+	mat4 rotMat = rotationMatrix(vec3(0.0f, 1.0f, 0.0f), (sin(u_time)));
 
+	mat4 transformMatrix = u_projectionMatrix * u_viewMatrix * u_modelMatrix;
+
+	vec4 vertexPos = vertexOrigin + vec4(0.1f, 0.0f, 0.0f, 0.0f) * rotMat; 
 	fs_data.color = vec4(0.33f, 1.0f, 0.4f, 1.0f);
-	fs_data.pos = transformMatrix * (vertexOrigin + vec4(0.1f, 0.0f, 0.0f, 0.0f));
+	fs_data.pos = transformMatrix * vertexPos;
 	fs_data.normal = tes_data[_index].normal;
 	fs_data.UV = tes_data[_index].UV;
 	gl_Position = fs_data.pos;
 	EmitVertex();
 
+	vertexPos = vertexOrigin + vec4(-0.1f, 0.0f, 0.0f, 0.0f) * rotMat;
 	fs_data.color = vec4(0.33f, 1.0f, 0.4f, 1.0f);
-	fs_data.pos = transformMatrix * (vertexOrigin + vec4(-0.1f, 0.0f, 0.0f, 0.0f));
+	fs_data.pos = transformMatrix * vertexPos;
 	fs_data.normal = tes_data[_index].normal;
 	fs_data.UV = tes_data[_index].UV;
 	gl_Position = fs_data.pos;
 	EmitVertex();
 
+	vertexPos = vertexOrigin + vec4(0.05f + swayAmplitude * sin(swayCoef), 0.5f, 0.0f, 0.0f) * rotMat;
 	fs_data.color = vec4(0.33f, 0.9f, 0.4f, 1.0f);
-	fs_data.pos = transformMatrix * (vertexOrigin + vec4(0.05f + swayAmplitude * sin(swayCoef), 0.5f, 0.0f, 0.0f));
+	fs_data.pos = transformMatrix * vertexPos;
 	fs_data.normal = tes_data[_index].normal;
 	fs_data.UV = tes_data[_index].UV;
 	gl_Position = fs_data.pos;
 	EmitVertex();
 
+	vertexPos = vertexOrigin + vec4(-0.05f + swayAmplitude * sin(swayCoef), 0.5f, 0.0f, 0.0f) * rotMat;
 	fs_data.color = vec4(0.33f, 0.9f, 0.4f, 1.0f);
-	fs_data.pos = transformMatrix * (vertexOrigin + vec4(-0.05f + swayAmplitude * sin(swayCoef), 0.5f, 0.0f, 0.0f));
+	fs_data.pos = transformMatrix * vertexPos;
 	fs_data.normal = tes_data[_index].normal;
 	fs_data.UV = tes_data[_index].UV;
 	gl_Position = fs_data.pos;
 	EmitVertex();
 
+	vertexPos = vertexOrigin + vec4(0.0f + (swayAmplitude + swayAmplitude) * sin(swayCoef), 1.0f, 0.0f, 0.0f) * rotMat;
 	fs_data.color = vec4(0.26f, 0.91f, 0.48f, 1.0f);
-	fs_data.pos = transformMatrix * (vertexOrigin + vec4(0.0f + (swayAmplitude + swayAmplitude) * sin(swayCoef), 1.0f, 0.0f, 0.0f));
+	fs_data.pos = transformMatrix * vertexPos;
 	fs_data.normal = tes_data[_index].normal;
 	fs_data.UV = tes_data[_index].UV;
 	gl_Position = fs_data.pos;

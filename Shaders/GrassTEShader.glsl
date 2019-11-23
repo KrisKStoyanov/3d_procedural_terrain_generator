@@ -14,12 +14,12 @@ out TES_Data{
 	vec2 UV;
 } tes_data;
 
-vec4 interpolate(in vec4 v0, in vec4 v1, in vec4 v2)
-{
-	vec4 a = mix(v0, v1, gl_TessCoord.x);
-	vec4 b = mix(v2, v1, gl_TessCoord.x);
-	return mix(a, b, gl_TessCoord.y);
-}
+//vec4 interpolate(in vec4 v0, in vec4 v1, in vec4 v2)
+//{
+//	vec4 a = mix(v0, v1, gl_TessCoord.x);
+//	vec4 b = mix(v2, v1, gl_TessCoord.x);
+//	return mix(a, b, gl_TessCoord.y);
+//}
 
 void main()
 {
