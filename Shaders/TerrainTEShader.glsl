@@ -1,6 +1,6 @@
 #version 450 core
 
-layout(quads, equal_spacing, ccw) in;
+layout(triangles, equal_spacing, ccw) in;
 
 in TCS_Data{
 	vec4 pos;

@@ -37,7 +37,7 @@ public:
 	std::vector<Vertex> m_VertexCollection;
 	std::vector<unsigned int> m_IndexCollection;
 
-	unsigned int m_InnerTL = 3;
-	unsigned int m_OuterTL = 2;
+	unsigned int m_InnerTL = 4;
+	unsigned int m_OuterTL = 3;
 };
 

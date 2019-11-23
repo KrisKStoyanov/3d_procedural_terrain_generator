@@ -56,14 +56,12 @@ void main(void)
 }
 
 void GrassGen(int _index) {
-
 	vec4 vertexOrigin = tes_data[_index].pos;
 	float swayCoef = (2 * PI) * (swaySpeed * u_time - vertexOrigin.y);
-	mat4 rotMat = rotationMatrix(vec3(0.0f, 1.0f, 0.0f), (sin(u_time)));
-
 	mat4 transformMatrix = u_projectionMatrix * u_viewMatrix * u_modelMatrix;
+	mat4 randomRot = rotationMatrix(vec3(0.0f, 1.0f, 0.0f), sin(swayCoef));
 
-	vec4 vertexPos = vertexOrigin + vec4(0.1f, 0.0f, 0.0f, 0.0f) * rotMat; 
+	vec4 vertexPos = vertexOrigin;
 	fs_data.color = vec4(0.33f, 1.0f, 0.4f, 1.0f);
 	fs_data.pos = transformMatrix * vertexPos;
 	fs_data.normal = tes_data[_index].normal;
@@ -71,7 +69,7 @@ void GrassGen(int _index) {
 	gl_Position = fs_data.pos;
 	EmitVertex();
 
-	vertexPos = vertexOrigin + vec4(-0.1f, 0.0f, 0.0f, 0.0f) * rotMat;
+	vertexPos = vertexOrigin + vec4(0.05f, 0.05f, 0.0f, 0.0f) * randomRot;
 	fs_data.color = vec4(0.33f, 1.0f, 0.4f, 1.0f);
 	fs_data.pos = transformMatrix * vertexPos;
 	fs_data.normal = tes_data[_index].normal;
@@ -79,7 +77,15 @@ void GrassGen(int _index) {
 	gl_Position = fs_data.pos;
 	EmitVertex();
 
-	vertexPos = vertexOrigin + vec4(0.05f + swayAmplitude * sin(swayCoef), 0.5f, 0.0f, 0.0f) * rotMat;
+	vertexPos = vertexOrigin + vec4(-0.05f, 0.05f, 0.0f, 0.0f) * randomRot;
+	fs_data.color = vec4(0.33f, 1.0f, 0.4f, 1.0f);
+	fs_data.pos = transformMatrix * vertexPos;
+	fs_data.normal = tes_data[_index].normal;
+	fs_data.UV = tes_data[_index].UV;
+	gl_Position = fs_data.pos;
+	EmitVertex();
+
+	vertexPos = vertexOrigin + vec4(0.025f + swayAmplitude * sin(swayCoef), 0.5f, 0.0f, 0.0f) * randomRot;
 	fs_data.color = vec4(0.33f, 0.9f, 0.4f, 1.0f);
 	fs_data.pos = transformMatrix * vertexPos;
 	fs_data.normal = tes_data[_index].normal;
@@ -87,7 +93,7 @@ void GrassGen(int _index) {
 	gl_Position = fs_data.pos;
 	EmitVertex();
 
-	vertexPos = vertexOrigin + vec4(-0.05f + swayAmplitude * sin(swayCoef), 0.5f, 0.0f, 0.0f) * rotMat;
+	vertexPos = vertexOrigin + vec4(-0.025f + swayAmplitude * sin(swayCoef), 0.5f, 0.0f, 0.0f) * randomRot;
 	fs_data.color = vec4(0.33f, 0.9f, 0.4f, 1.0f);
 	fs_data.pos = transformMatrix * vertexPos;
 	fs_data.normal = tes_data[_index].normal;
@@ -95,7 +101,7 @@ void GrassGen(int _index) {
 	gl_Position = fs_data.pos;
 	EmitVertex();
 
-	vertexPos = vertexOrigin + vec4(0.0f + (swayAmplitude + swayAmplitude) * sin(swayCoef), 1.0f, 0.0f, 0.0f) * rotMat;
+	vertexPos = vertexOrigin + vec4(0.0f + (swayAmplitude + swayAmplitude) * sin(swayCoef), 1.0f, 0.0f, 0.0f) * randomRot;
 	fs_data.color = vec4(0.26f, 0.91f, 0.48f, 1.0f);
 	fs_data.pos = transformMatrix * vertexPos;
 	fs_data.normal = tes_data[_index].normal;

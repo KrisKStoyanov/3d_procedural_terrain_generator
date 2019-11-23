@@ -88,7 +88,7 @@ void Renderer::OnUpdate()
 		m_TerrainGen->Draw(m_Camera, m_DirLight);
 		m_GrassGen->Draw(m_Camera, m_DirLight);
 		m_WaterGen->Draw(m_Camera, m_DirLight);
-		//m_CloudGen->Draw(m_Camera, m_DirLight, timestep);
+		m_CloudGen->Draw(m_Camera, m_DirLight, timestep);
 		m_Skybox->Draw(m_Camera);
 
 		glfwSwapBuffers(m_Window);
