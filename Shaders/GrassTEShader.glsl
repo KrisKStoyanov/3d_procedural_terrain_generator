@@ -1,6 +1,6 @@
 #version 450 core
 
-layout(triangles, equal_spacing, ccw) in;
+layout(triangles, equal_spacing, cw) in;
 
 in TCS_Data{
 	vec4 pos;
@@ -14,12 +14,12 @@ out TES_Data{
 	vec2 UV;
 } tes_data;
 
-//vec4 interpolate(in vec4 v0, in vec4 v1, in vec4 v2)
-//{
-//	vec4 a = mix(v0, v1, gl_TessCoord.x);
-//	vec4 b = mix(v2, v1, gl_TessCoord.x);
-//	return mix(a, b, gl_TessCoord.y);
-//}
+vec4 interpolate(in vec4 v0, in vec4 v1, in vec4 v2)
+{
+	vec4 a = mix(v0, v1, gl_TessCoord.x);
+	vec4 b = mix(v2, v1, gl_TessCoord.x);
+	return mix(a, b, gl_TessCoord.y);
+}
 
 void main()
 {
@@ -36,10 +36,10 @@ void main()
 		(tcs_data[1].UV * gl_TessCoord.y) *
 		(tcs_data[2].UV * gl_TessCoord.z);
 
-	gl_Position = tes_data.pos;
+	//gl_Position = tes_data.pos;
 
-	//gl_Position = interpolate(
-	//	gl_in[0].gl_Position,
-	//	gl_in[1].gl_Position,
-	//	gl_in[2].gl_Position);
+	gl_Position = interpolate(
+		gl_in[0].gl_Position,
+		gl_in[1].gl_Position,
+		gl_in[2].gl_Position);
 }

@@ -20,14 +20,11 @@ void main(void)
 	tcs_data[gl_InvocationID].normal = vs_data[gl_InvocationID].normal;
 	tcs_data[gl_InvocationID].UV = vs_data[gl_InvocationID].UV;
 
-	if (gl_InvocationID == 0)
-	{
-		gl_TessLevelInner[0] = 1.0;
+	gl_TessLevelInner[0] = 4.0f;
 
-		gl_TessLevelOuter[0] = 1.0;
-		gl_TessLevelOuter[1] = 1.0;
-		gl_TessLevelOuter[2] = 1.0;
-	}
+	gl_TessLevelOuter[0] = 4.0f;
+	gl_TessLevelOuter[1] = 4.0f;
+	gl_TessLevelOuter[2] = 4.0f;
 
 	//gl_TessLevelOuter[0] = 2.0;
 	//gl_TessLevelOuter[1] = 4.0;
@@ -36,5 +33,5 @@ void main(void)
 	//gl_TessLevelInner[0] = 8.0;
 	//gl_TessLevelInner[1] = 8.0;
 
-	//gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
 }

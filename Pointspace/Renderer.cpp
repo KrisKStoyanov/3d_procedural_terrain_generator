@@ -32,7 +32,7 @@ void Renderer::Init(const char* _Title, const int _Width, const int _Height)
 	m_MaxGeoVertexCount = floor(m_GeoMaxOutputComp / m_HW_GeoSetOutputComp);*/
 
 	//glGetIntegerv(GL_PATCH_VERTICES, &m_HW_MaxTessVertsPerPatch);
-	//glPatchParameteri(GL_PATCH_VERTICES, 3);
+	glPatchParameteri(GL_PATCH_VERTICES, 3);
 
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
@@ -85,7 +85,7 @@ void Renderer::OnUpdate()
 		}
 		glfwGetCursorPos(m_Window, &m_CursorPosX, &m_CursorPosY);
 		m_Camera->UpdateTransformMouse(m_CursorPosX, -m_CursorPosY);
-		m_TerrainGen->Draw(m_Camera, m_DirLight);
+		//m_TerrainGen->Draw(m_Camera, m_DirLight);
 		m_GrassGen->Draw(m_Camera, m_DirLight);
 		m_WaterGen->Draw(m_Camera, m_DirLight);
 		m_CloudGen->Draw(m_Camera, m_DirLight, timestep);

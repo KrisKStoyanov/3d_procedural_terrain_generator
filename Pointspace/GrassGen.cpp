@@ -189,7 +189,12 @@ void GrassGen::Configure()
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
 
-	m_Shader = new Shader(m_VertexShaderSource, m_GeometryShaderSource, m_FragmentShaderSource);
+	m_Shader = new Shader(
+		m_VertexShaderSource,
+		m_TCShaderSource,
+		m_TEShaderSource,
+		m_GeometryShaderSource, 
+		m_FragmentShaderSource);
 }
 
 void GrassGen::Draw(Camera*& _camera, Light*& _dirLight)
@@ -204,7 +209,7 @@ void GrassGen::Draw(Camera*& _camera, Light*& _dirLight)
 
 	glDisable(GL_CULL_FACE);
 	glBindVertexArray(m_VAO);
-	glDrawElements(GL_POINTS, m_IndexCollection.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_PATCHES, m_IndexCollection.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 	glEnable(GL_CULL_FACE);
 }
