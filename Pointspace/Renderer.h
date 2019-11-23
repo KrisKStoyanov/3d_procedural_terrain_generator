@@ -46,8 +46,9 @@ public:
 	double m_CursorPosX, m_CursorPosY;
 	float m_LastFrameTime = 0.0f;
 
-	const int m_GeoSetOutputComp = 4;
-	int m_GeoMaxOutputComp;
-	int m_MaxGeoVertexCount;
+	const int m_HW_GeoSetOutputComp = 4;
+	int m_HW_GeoMaxOutputComp;
+	int m_HW_MaxGeoVertexCount;
+	int m_HW_MaxTessVertsPerPatch;
 };
 

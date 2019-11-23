@@ -27,6 +27,8 @@ public:
 
 	Shader* m_Shader = NULL;
 	const char* m_VertexShaderSource = "../Shaders/GrassVertexShader.glsl";
+	const char* m_TCShaderSource = "../Shaders/GrassTCShader.glsl";
+	const char* m_TEShaderSource = "../Shaders/GrassTEShader.glsl";
 	const char* m_GeometryShaderSource = "../Shaders/GrassGeometryShader.glsl";
 	const char* m_FragmentShaderSource = "../Shaders/GrassFragmentShader.glsl";
 

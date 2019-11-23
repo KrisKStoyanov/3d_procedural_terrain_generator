@@ -28,8 +28,11 @@ void Renderer::Init(const char* _Title, const int _Width, const int _Height)
 
 	glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	glGetIntegerv(GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS, &m_GeoMaxOutputComp);
-	m_MaxGeoVertexCount = floor(m_GeoMaxOutputComp / m_GeoSetOutputComp);
+	/*glGetIntegerv(GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS, &m_HW_GeoMaxOutputComp);
+	m_MaxGeoVertexCount = floor(m_GeoMaxOutputComp / m_HW_GeoSetOutputComp);*/
+
+	//glGetIntegerv(GL_PATCH_VERTICES, &m_HW_MaxTessVertsPerPatch);
+	//glPatchParameteri(GL_PATCH_VERTICES, 3);
 
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
