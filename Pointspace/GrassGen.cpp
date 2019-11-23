@@ -202,9 +202,13 @@ void GrassGen::Draw(Camera*& _camera, Light*& _dirLight)
 	m_Shader->Activate();
 	m_Transform->Translate(m_Transform->GetPosition());
 
+	m_Shader->SetInt("u_innerTL", m_InnerTL);
+	m_Shader->SetInt("u_outerTL", m_OuterTL);
+
 	m_Shader->SetMat4("u_projectionMatrix", _camera->ProjectionMatrix);
 	m_Shader->SetMat4("u_viewMatrix", _camera->ViewMatrix);
 	m_Shader->SetMat4("u_modelMatrix", m_Transform->GetModelMatrix());
+
 	m_Shader->SetFloat("u_time", glfwGetTime());
 
 	glDisable(GL_CULL_FACE);

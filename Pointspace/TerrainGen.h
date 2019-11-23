@@ -35,6 +35,8 @@ public:
 
 	Shader* m_Shader = NULL;
 	const char* m_VertexShaderSource = "../Shaders/TerrainVertexShader.glsl";
+	const char* m_TCShaderSource = "../Shaders/TerrainTCShader.glsl";
+	const char* m_TEShaderSource = "../Shaders/TerrainTEShader.glsl";
 	const char* m_GeometryShaderSource = "../Shaders/TerrainGeometryShader.glsl";
 	const char* m_FragmentShaderSource = "../Shaders/TerrainFragmentShader.glsl";
 
@@ -49,5 +51,8 @@ public:
 	Texture* m_RockTexture = NULL;
 	Texture* m_GrassTexture = NULL;
 	Texture* m_SandTexture = NULL;
+
+	unsigned int m_InnerTL = 1;
+	unsigned int m_OuterTL = 1;
 };
 

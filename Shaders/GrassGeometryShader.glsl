@@ -3,6 +3,7 @@
 #define PI 3.14159265359
 
 layout(triangles) in;
+layout(invocations = 1) in;
 layout(triangle_strip) out;
 layout(max_vertices = 60) out; //compile time constant (hardware dependant)
 
@@ -25,7 +26,7 @@ uniform mat4 u_projectionMatrix;
 
 uniform float u_time;
 
-float swaySpeed = 1.0f;
+float swaySpeed = 0.5f;
 float swayAmplitude = 0.125f;
 
 void GrassGen(int _index);

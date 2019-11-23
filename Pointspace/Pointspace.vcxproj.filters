@@ -175,5 +175,11 @@
     <None Include="..\Shaders\GrassTEShader.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\Shaders\TerrainTCShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\TerrainTEShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 #version 450 core
 
-layout(vertices = 3) out;
+layout(vertices = 6) out;
 
 in VS_Data{
 	vec4 pos;
@@ -23,11 +23,13 @@ void main(void)
 	tcs_data[gl_InvocationID].normal = vs_data[gl_InvocationID].normal;
 	tcs_data[gl_InvocationID].UV = vs_data[gl_InvocationID].UV;
 
-	gl_TessLevelInner[0] = u_innerTL;
+	gl_TessLevelInner[0] = 1.0f;
+	gl_TessLevelInner[1] = 1.0f;
 
-	gl_TessLevelOuter[0] = u_outerTL;
-	gl_TessLevelOuter[1] = u_outerTL;
-	gl_TessLevelOuter[2] = u_outerTL;
+	gl_TessLevelOuter[0] = 1.0f;
+	gl_TessLevelOuter[1] = 1.0f;
+	gl_TessLevelOuter[2] = 1.0f;
+	gl_TessLevelOuter[3] = 1.0f;
 
 	//gl_TessLevelOuter[0] = 2.0;
 	//gl_TessLevelOuter[1] = 4.0;
