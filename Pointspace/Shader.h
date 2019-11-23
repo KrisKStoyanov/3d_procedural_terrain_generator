@@ -19,6 +19,11 @@ public:
 		const GLchar* _GeometryShaderPath, 
 		const GLchar* _FragmentShaderPath);
 	Shader(
+		const GLchar* _VertexShaderPath,
+		const GLchar* _TCShaderPath,
+		const GLchar* _TEShaderPath,
+		const GLchar* _FragmentShaderPath);
+	Shader(
 		const GLchar* _VertexShaderPath, 
 		const GLchar* _TCShaderPath, 
 		const GLchar* _TEShaderPath,
