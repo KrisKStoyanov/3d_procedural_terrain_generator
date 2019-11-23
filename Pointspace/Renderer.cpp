@@ -85,7 +85,7 @@ void Renderer::OnUpdate()
 		}
 		glfwGetCursorPos(m_Window, &m_CursorPosX, &m_CursorPosY);
 		m_Camera->UpdateTransformMouse(m_CursorPosX, -m_CursorPosY);
-		//m_TerrainGen->Draw(m_Camera, m_DirLight);
+		m_TerrainGen->Draw(m_Camera, m_DirLight);
 		m_GrassGen->Draw(m_Camera, m_DirLight);
 		m_WaterGen->Draw(m_Camera, m_DirLight);
 		m_CloudGen->Draw(m_Camera, m_DirLight, timestep);

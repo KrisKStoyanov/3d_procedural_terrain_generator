@@ -39,15 +39,53 @@ void main(void)
 {
 	for (int i = 0; i < gl_in.length(); ++i) {
 
-		fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
-		fs_data.pos = u_projectionMatrix * u_viewMatrix * u_modelMatrix * tes_data[i].pos;
-		fs_data.normal = tes_data[i].normal;
-		fs_data.UV = tes_data[i].UV;
-		gl_Position = fs_data.pos;
-		EmitVertex();
-		//if (tes_data[i].pos.y > 0.0f && tes_data[i].pos.y < 2.0f) {
-		//	GrassGen(i);
-		//}
+		vec4 vertexOrigin = gl_in[i].gl_Position;
+
+		//fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
+		//fs_data.pos = u_projectionMatrix * u_viewMatrix * u_modelMatrix * (tes_data[i].pos + vec4(0.25f, 0.0f, 0.0f, 0.0f));
+		//fs_data.normal = tes_data[i].normal;
+		//fs_data.UV = tes_data[i].UV;
+		//gl_Position = fs_data.pos;
+		//EmitVertex();
+
+		//fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
+		//fs_data.pos = u_projectionMatrix * u_viewMatrix * u_modelMatrix * (tes_data[i].pos + vec4(-0.25f, 0.0f, 0.0f, 0.0f));
+		//fs_data.normal = tes_data[i].normal;
+		//fs_data.UV = tes_data[i].UV;
+		//gl_Position = fs_data.pos;
+		//EmitVertex();
+
+		//fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
+		//fs_data.pos = u_projectionMatrix * u_viewMatrix * u_modelMatrix * (tes_data[i].pos + vec4(0.0f, 2.0f, 0.0f, 0.0f));
+		//fs_data.normal = tes_data[i].normal;
+		//fs_data.UV = tes_data[i].UV;
+		//gl_Position = fs_data.pos;
+		//EmitVertex();
+
+		EndPrimitive();
+		if (tes_data[i].pos.y > -2.0f && tes_data[i].pos.y < 4.0f) {
+			//GrassGen(i);
+			fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
+			fs_data.pos = u_projectionMatrix * u_viewMatrix * u_modelMatrix * (tes_data[i].pos + vec4(0.25f, 0.0f, 0.0f, 0.0f));
+			fs_data.normal = tes_data[i].normal;
+			fs_data.UV = tes_data[i].UV;
+			gl_Position = fs_data.pos;
+			EmitVertex();
+
+			fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
+			fs_data.pos = u_projectionMatrix * u_viewMatrix * u_modelMatrix * (tes_data[i].pos + vec4(-0.25f, 0.0f, 0.0f, 0.0f));
+			fs_data.normal = tes_data[i].normal;
+			fs_data.UV = tes_data[i].UV;
+			gl_Position = fs_data.pos;
+			EmitVertex();
+
+			fs_data.color = vec4(0.01f, 0.85f, 0.31f, 1.0f);
+			fs_data.pos = u_projectionMatrix * u_viewMatrix * u_modelMatrix * (tes_data[i].pos + vec4(0.0f, 2.0f, 0.0f, 0.0f));
+			fs_data.normal = tes_data[i].normal;
+			fs_data.UV = tes_data[i].UV;
+			gl_Position = fs_data.pos;
+			EmitVertex();
+		}
 	}
 }
 

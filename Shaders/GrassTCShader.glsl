@@ -20,11 +20,11 @@ void main(void)
 	tcs_data[gl_InvocationID].normal = vs_data[gl_InvocationID].normal;
 	tcs_data[gl_InvocationID].UV = vs_data[gl_InvocationID].UV;
 
-	gl_TessLevelInner[0] = 4.0f;
+	gl_TessLevelInner[0] = 3.0f;
 
-	gl_TessLevelOuter[0] = 4.0f;
-	gl_TessLevelOuter[1] = 4.0f;
-	gl_TessLevelOuter[2] = 4.0f;
+	gl_TessLevelOuter[0] = 2.0f;
+	gl_TessLevelOuter[1] = 2.0f;
+	gl_TessLevelOuter[2] = 2.0f;
 
 	//gl_TessLevelOuter[0] = 2.0;
 	//gl_TessLevelOuter[1] = 4.0;

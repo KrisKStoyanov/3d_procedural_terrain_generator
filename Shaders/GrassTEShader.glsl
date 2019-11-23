@@ -36,10 +36,10 @@ void main()
 		(tcs_data[1].UV * gl_TessCoord.y) *
 		(tcs_data[2].UV * gl_TessCoord.z);
 
-	//gl_Position = tes_data.pos;
+	gl_Position = tes_data.pos;
 
-	gl_Position = interpolate(
-		gl_in[0].gl_Position,
-		gl_in[1].gl_Position,
-		gl_in[2].gl_Position);
+	//gl_Position = interpolate(
+	//	gl_in[0].gl_Position,
+	//	gl_in[1].gl_Position,
+	//	gl_in[2].gl_Position);
 }
