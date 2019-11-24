@@ -24,52 +24,35 @@ CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _
 	}
 
 	m_NoiseMap = noiseMap;
-	float** noiseSamples = new float* [_mapSize];
-	for (int i = 0; i < _mapSize; ++i) {
-		noiseSamples[i] = new float[_mapSize];
-	}
 
-	//Loop through and interpolate based on random cell sequencing
+	float** noiseFilterA = new float* [_mapSize];
+	for (int i = 0; i < _mapSize; ++i) {
+		noiseFilterA[i] = new float[_mapSize];
+	}
 	for (unsigned int z = 0; z < _mapSize; ++z) {
 		for (unsigned int x = 0; x < _mapSize; ++x) {
-
-			//Compute index boundaries:
-			int sampleLocLowX = x;
-			int sampleLocHighX = sampleLocLowX == _mapSize - 1 ?
-				0 : sampleLocLowX + 1;
-
-			int sampleLocLowZ = z;
-			int sampleLocHighZ = sampleLocLowZ == _mapSize - 1 ?
-				0 : sampleLocLowZ + 1;
-
-			//Retrieve random sample location: (LoxX - HighX)
-			float sampleLocX =
-				static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1)));
-			
-			float sampleLocZ =
-				static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1)));
-
-			sampleLocX = Smoothstep(sampleLocX);
-			sampleLocZ = Smoothstep(sampleLocZ);
-			
-			//Lerp between low and high on the X axis: 	(lo * (1 - t) + hi * t)
-			float sampleValLowX = 
-				noiseMap[sampleLocLowZ][sampleLocLowX] * (1 - sampleLocX) + noiseMap[sampleLocLowZ][sampleLocHighX] * sampleLocX;
-
-			float sampleValHighX = 
-				noiseMap[sampleLocHighZ][sampleLocLowX] * (1 - sampleLocX) + noiseMap[sampleLocHighZ][sampleLocHighX] * sampleLocX;
-
-			//Lerp between low and high on the Z axis using obtained values to compute interpolated value:
-			float sampleVal = sampleValLowX * (1 - sampleLocZ) + sampleValHighX * sampleLocZ;
-
-			//Calculate value of sample at set location:
-
-			noiseSamples[z][x] = sampleVal;
+			noiseFilterA[z][x] = NoiseGen(x,z, _mapSize);
 		}
 	}
+	m_NoiseMap = noiseFilterA;
 
+	float** noiseFilterB = new float* [_mapSize];
+	for (int i = 0; i < _mapSize; ++i) {
+		noiseFilterB[i] = new float[_mapSize];
+	}
+	for (unsigned int z = 0; z < _mapSize; ++z) {
+		for (unsigned int x = 0; x < _mapSize; ++x) {
+			noiseFilterB[z][x] = NoiseGen(x, z, _mapSize);
+		}
+	}
+	m_NoiseMap = noiseFilterB;
 
-
+	for (unsigned int z = 0; z < _mapSize; ++z) {
+		for (unsigned int x = 0; x < _mapSize; ++x) {
+			noiseFilterA[z][x] = NoiseGen(x, z, _mapSize);
+		}
+	}
+	
 	float fTextureS = float(_mapSize) * 0.1f;
 	float fTextureT = float(_mapSize) * 0.1f;
 
@@ -82,7 +65,7 @@ CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _
 			float fScaleR = (float)(z) / (float)(_mapSize - 1);
 			// Set the coords (1st 4 elements) and a default colour of black (2nd 4 elements) 
 			vertexCollection[i] = Vertex(
-				glm::vec4((float)x, noiseSamples[z][x], (float)z, 1.0),
+				glm::vec4((float)x, noiseFilterA[z][x], (float)z, 1.0),
 				glm::vec2(fTextureS * fScaleC, fTextureT * fScaleR));
 			i++;
 		}
@@ -206,15 +189,15 @@ CloudGen::~CloudGen()
 	Clear();
 }
 
-float CloudGen::NoiseGen(const int _xPos, const int _yPos, const int _mapSize)
+float CloudGen::NoiseGen(const int _xPos, const int _zPos, const int _mapSize)
 {
 	int sampleLocLowX = _xPos;
 	int sampleLocHighX = sampleLocLowX == _mapSize - 1 ?
 		0 : sampleLocLowX + 1;
 
-	int sampleLocLowZ = _yPos;
+	int sampleLocLowZ = _zPos;
 	int sampleLocHighZ = sampleLocLowZ == _mapSize - 1 ?
-		0 : sampleLocLowZ;
+		0 : sampleLocLowZ + 1;
 
 	//Retrieve random sample location: (LoxX - HighX)
 	float sampleLocX =
@@ -223,8 +206,8 @@ float CloudGen::NoiseGen(const int _xPos, const int _yPos, const int _mapSize)
 	float sampleLocZ =
 		static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1)));
 
-	sampleLocX = Smoothstep(sampleLocX);
-	sampleLocZ = Smoothstep(sampleLocZ);
+	//sampleLocX = Smoothstep(sampleLocX);
+	//sampleLocZ = Smoothstep(sampleLocZ);
 
 	//Lerp between low and high on the X axis: 	(lo * (1 - t) + hi * t)
 	float sampleValLowX = Lerp(m_NoiseMap[sampleLocLowZ][sampleLocLowX], m_NoiseMap[sampleLocLowZ][sampleLocHighX], sampleLocX);
