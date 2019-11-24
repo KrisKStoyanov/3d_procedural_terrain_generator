@@ -23,8 +23,8 @@ public:
 		const char* _sandTexPath);
 	~TerrainGen();
 	
-	void DiamondStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);
-	void SquareStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);
+	void DiamondStep(float**& _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);
+	void SquareStep(float**& _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize);
 
 	void Configure();
 	void Draw(Camera*& _camera, Light*& _dirLight);

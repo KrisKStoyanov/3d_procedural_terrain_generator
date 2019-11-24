@@ -207,7 +207,7 @@ TerrainGen::~TerrainGen()
 	Clear();
 }
 
-void TerrainGen::DiamondStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize)
+void TerrainGen::DiamondStep(float**& _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize)
 {
 	int halfstepSize = _stepSize / 2;
 	float avg = 0;
@@ -239,7 +239,7 @@ void TerrainGen::DiamondStep(float** _heightMap, int _x, int _z, int _stepSize, 
 	_heightMap[_x][_z] = avg / counter + (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
 }
 
-void TerrainGen::SquareStep(float** _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize)
+void TerrainGen::SquareStep(float**& _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize)
 {
 	int halfstepSize = _stepSize / 2;
 	float avg = 0;

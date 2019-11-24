@@ -10,6 +10,7 @@
 
 #include "Camera.h"
 #include "Light.h"
+#include <time.h>
 
 class CloudGen
 {
@@ -17,8 +18,7 @@ public:
 	CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _position, const char* _texturePath);
 	~CloudGen();
 
-	float** m_NoiseMap = NULL;
-	float NoiseGen(const int _xPos, const int _zPos, const int _mapSize);
+	void ValueNoise(float**& _noiseMap, const int _xPos, const int _zPos, const int _mapSize);
 
 	inline float Smoothstep(const float& _t) { return _t * _t * (3 - 2 * _t); }
 	inline float Lerp(const float& _low, const float& _high, const float& _t) { return _low * (1 - _t) + _high * _t; }
