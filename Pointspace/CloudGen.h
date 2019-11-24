@@ -28,6 +28,8 @@ public:
 
 	void Clear();
 
+	unsigned int* m_PermutationTable = NULL;
+
 	unsigned int m_VAO = 0, m_VBO = 0, m_IBO = 0;
 
 	Shader* m_Shader = NULL;
