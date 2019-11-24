@@ -51,7 +51,7 @@ void Renderer::Init(const char* _Title, const int _Width, const int _Height)
 
 	m_WaterGen = new WaterGen(33, glm::vec3(0.0f, 0.0f, 0.0f), "../Textures/water.png");
 	m_GrassGen = new GrassGen(m_TerrainGen->m_VertexCollection, m_TerrainGen->m_IndexCollection, glm::vec3(0.0f, 0.0f, 0.0f));
-	m_CloudGen = new CloudGen(33, 2.0f, 0.15f, glm::vec3(0.0f, 20.0f, 0.0f), "../Textures/cloud.png");
+	m_CloudGen = new CloudGen(33, 2.0f, 0.1f, glm::vec3(0.0f, 20.0f, 0.0f), "../Textures/cloud.png");
 
 	m_Skybox = new Skybox();
 
