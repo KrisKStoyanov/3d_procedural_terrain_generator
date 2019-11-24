@@ -14,8 +14,11 @@
 class CloudGen
 {
 public:
-	CloudGen(int _mapSize, glm::vec3 _position, const char* _texturePath);
+	CloudGen(int _mapSize, int _samplesPerCell, glm::vec3 _position, const char* _texturePath);
 	~CloudGen();
+
+	float Mix(int _min, float _x);
+	float Lerp(float _min, float _max, float _x);
 
 	void Configure();
 	void Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime);

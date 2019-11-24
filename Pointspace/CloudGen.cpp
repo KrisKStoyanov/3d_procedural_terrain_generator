@@ -1,14 +1,13 @@
 #include "CloudGen.h"
 
-CloudGen::CloudGen(int _mapSize, glm::vec3 _position, const char* _texturePath)
+CloudGen::CloudGen(int _mapSize, int _samplesPerCell, glm::vec3 _position, const char* _texturePath)
 {
 	const int numStrips = _mapSize - 1;
 	const int verticesPerStrip = 2 * _mapSize;
 	const int indexCount = numStrips * verticesPerStrip + (_mapSize - 2) * 2;
-	std::vector<Vertex> terrainVertexCollection(_mapSize * _mapSize);
-	std::vector<unsigned int> terrainIndexCollection(indexCount);
+	std::vector<Vertex> vertexCollection(_mapSize * _mapSize);
+	std::vector<unsigned int> indexCollection(indexCount);
 
-	//Build Height Map
 	float** heightMap = new float* [_mapSize];
 	for (int i(0); i < _mapSize; ++i) {
 		heightMap[i] = new float[_mapSize];
@@ -16,11 +15,10 @@ CloudGen::CloudGen(int _mapSize, glm::vec3 _position, const char* _texturePath)
 
 	for (int x(0); x < _mapSize; ++x) {
 		for (int z(0); z < _mapSize; ++z) {
-			heightMap[x][z] = 0;
+			heightMap[x][z] = -1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1 - -1)));
 		}
 	}
 
-	// Build Vertex Coords;
 	float fTextureS = float(_mapSize) * 0.1f;
 	float fTextureT = float(_mapSize) * 0.1f;
 
@@ -32,7 +30,7 @@ CloudGen::CloudGen(int _mapSize, glm::vec3 _position, const char* _texturePath)
 			float fScaleC = (float)(x) / (float)(_mapSize - 1);
 			float fScaleR = (float)(z) / (float)(_mapSize - 1);
 			// Set the coords (1st 4 elements) and a default colour of black (2nd 4 elements) 
-			terrainVertexCollection[i] = Vertex(
+			vertexCollection[i] = Vertex(
 				glm::vec4((float)x, heightMap[x][z], (float)z, 1.0),
 				glm::vec2(fTextureS * fScaleC, fTextureT * fScaleR));
 			i++;
@@ -62,14 +60,14 @@ CloudGen::CloudGen(int _mapSize, glm::vec3 _position, const char* _texturePath)
 
 	for (int i = 0; i < indexCount; i += 2) {
 		if (IndexHigh % _mapSize == 0 && IndexHigh > _mapSize && !Tweaked) {
-			terrainIndexCollection[i] = terrainIndexCollection[i - 1];
-			terrainIndexCollection[i + 1] = IndexLow;
+			indexCollection[i] = indexCollection[i - 1];
+			indexCollection[i + 1] = IndexLow;
 			Tweaked = true;
 			QuadVertIndexCollection.clear();
 		}
 		else {
-			terrainIndexCollection[i] = IndexLow;
-			terrainIndexCollection[i + 1] = IndexHigh;
+			indexCollection[i] = IndexLow;
+			indexCollection[i + 1] = IndexHigh;
 			//Push poinds for quad formation on non-degenerate triangles
 			QuadVertIndexCollection.push_back(IndexLow);
 			QuadVertIndexCollection.push_back(IndexHigh);
@@ -84,17 +82,17 @@ CloudGen::CloudGen(int _mapSize, glm::vec3 _position, const char* _texturePath)
 			UpperQuadTri.FirstVertexIndex = QuadVertIndexCollection[0];
 			UpperQuadTri.SecondVertexIndex = QuadVertIndexCollection[1];
 			UpperQuadTri.ThirdVertexIndex = QuadVertIndexCollection[2];
-			UpperQuadTri.FirstVertexCoords = terrainVertexCollection[UpperQuadTri.FirstVertexIndex].Coords;
-			UpperQuadTri.SecondVertexCoords = terrainVertexCollection[UpperQuadTri.SecondVertexIndex].Coords;
-			UpperQuadTri.ThirdVertexCoords = terrainVertexCollection[UpperQuadTri.ThirdVertexIndex].Coords;
+			UpperQuadTri.FirstVertexCoords = vertexCollection[UpperQuadTri.FirstVertexIndex].Coords;
+			UpperQuadTri.SecondVertexCoords = vertexCollection[UpperQuadTri.SecondVertexIndex].Coords;
+			UpperQuadTri.ThirdVertexCoords = vertexCollection[UpperQuadTri.ThirdVertexIndex].Coords;
 
 			QuadTriangle LowerQuadTri;
 			LowerQuadTri.FirstVertexIndex = QuadVertIndexCollection[1];
 			LowerQuadTri.SecondVertexIndex = QuadVertIndexCollection[2];
 			LowerQuadTri.ThirdVertexIndex = QuadVertIndexCollection[3];
-			LowerQuadTri.FirstVertexCoords = terrainVertexCollection[LowerQuadTri.FirstVertexIndex].Coords;
-			LowerQuadTri.SecondVertexCoords = terrainVertexCollection[LowerQuadTri.SecondVertexIndex].Coords;
-			LowerQuadTri.ThirdVertexCoords = terrainVertexCollection[LowerQuadTri.ThirdVertexIndex].Coords;
+			LowerQuadTri.FirstVertexCoords = vertexCollection[LowerQuadTri.FirstVertexIndex].Coords;
+			LowerQuadTri.SecondVertexCoords = vertexCollection[LowerQuadTri.SecondVertexIndex].Coords;
+			LowerQuadTri.ThirdVertexCoords = vertexCollection[LowerQuadTri.ThirdVertexIndex].Coords;
 
 			UpperQuadTri.TriNormal =
 				glm::cross(
@@ -119,35 +117,36 @@ CloudGen::CloudGen(int _mapSize, glm::vec3 _position, const char* _texturePath)
 	//Build Vertex Normals:
 	//For each triangle check if the index is part of it and
 	//add the normal of the triangle to the vertex which the index represents
-	for (int i = 0; i < terrainIndexCollection.size(); ++i) {
+	for (int i = 0; i < indexCollection.size(); ++i) {
 		for (int j = 0; j < TriGroupCollection.size(); ++j) {
 			if (i == TriGroupCollection[j].FirstVertexIndex ||
 				i == TriGroupCollection[j].SecondVertexIndex ||
 				i == TriGroupCollection[j].ThirdVertexIndex) {
-				terrainVertexCollection[i].Normal += TriGroupCollection[j].TriNormal;
+				vertexCollection[i].Normal += TriGroupCollection[j].TriNormal;
 			}
 		}
 	}
 
 	//Normalize the normal value of each vertex
-	for (int i = 0; i < terrainVertexCollection.size(); ++i) {
+	for (int i = 0; i < vertexCollection.size(); ++i) {
 		/*float temp = glm::dot(-terrainVertexCollection[i].Normal, WorldUp);*/
-		//glm::vec3 tempVec = terrainVertexCollection[i].Normal;
+		//glm::vec3 tempVec = vertexCollection[i].Normal;
 		/*if (tempVec.y < 0) {
 			terrainVertexCollection[i].Normal = -tempVec;
 		}*/
-		terrainVertexCollection[i].Normal = glm::normalize(-terrainVertexCollection[i].Normal);
+		vertexCollection[i].Normal = glm::normalize(-vertexCollection[i].Normal);
 	}
 
-	m_VertexCollection = terrainVertexCollection;
-	m_IndexCollection = terrainIndexCollection;
+	m_VertexCollection = vertexCollection;
+	m_IndexCollection = indexCollection;
 
-	m_Transform = new Transform(glm::vec3(_position));
+	m_Transform = new Transform(_position);
 	m_Material = new Material(
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		50.0f);
+
 	m_TextureCollection.push_back(new Texture(_texturePath));
 	Configure();
 }
@@ -155,6 +154,17 @@ CloudGen::CloudGen(int _mapSize, glm::vec3 _position, const char* _texturePath)
 CloudGen::~CloudGen()
 {
 	Clear();
+}
+
+float CloudGen::Mix(int _min, float _x)
+{
+	int xMin = (int)_x;
+	return _x - xMin;
+}
+
+float CloudGen::Lerp(float _min, float _max, float _x)
+{
+	return _min * (1 - _x) + _max * _x;
 }
 
 void CloudGen::Configure()
