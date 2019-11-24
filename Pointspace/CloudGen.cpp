@@ -12,26 +12,43 @@ CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _
 	srand(time(NULL));
 
 	//Value noise
-	float** noiseMap = new float*[_mapSize];
-
+	//float* vNoiseMap = new float[_mapSize];
+	//for (int i = 0; i < _mapSize * _mapSize; ++i) {
+	//	vNoiseMap[i] = -_randRange + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (_randRange - -_randRange)));
+	//}
+	float** vNoiseMap = new float*[_mapSize];
 	for (int i = 0; i < _mapSize; ++i) {
-		noiseMap[i] = new float[_mapSize];
+		vNoiseMap[i] = new float[_mapSize];
 	}
-
+	for (unsigned int z = 0; z < _mapSize; ++z) {
+		for (unsigned int x = 0; x < _mapSize; ++x) {
+			vNoiseMap[z][x] = -_randRange + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (_randRange - -_randRange)));
+		}
+	}
+	//float** noiseMap = new float* [_mapSize];
+	//for (int i = 0; i < _mapSize; ++i) {
+	//	noiseMap[i] = new float[_mapSize];
+	//}
 	/*noiseMap[0][0] = -_randRange + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (_randRange + _randRange)));
 	noiseMap[0][_mapSize - 1] = -_randRange + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (_randRange + _randRange)));
 	noiseMap[_mapSize - 1][0] = -_randRange + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (_randRange + _randRange)));
 	noiseMap[_mapSize - 1][_mapSize - 1] = -_randRange + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (_randRange + _randRange)));*/
 	//Seed map with random values
-	for (unsigned int z = 0; z < _mapSize; ++z) {
-		for (unsigned int x = 0; x < _mapSize; ++x) {
-			noiseMap[z][x] = -_randRange + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (_randRange - -_randRange)));
-		}
+	//for (unsigned int z = 0; z < _mapSize; ++z) {
+	//	for (unsigned int x = 0; x < _mapSize; ++x) {
+	//		noiseMap[z][x] = -_randRange + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (_randRange - -_randRange)));
+	//	}
+	//}
+
+	float** noiseSamples = new float* [_mapSize];
+	for (int i = 0; i < _mapSize; ++i) {
+		noiseSamples[i] = new float[_mapSize];
 	}
 
 	for (unsigned int z = 0; z < _mapSize; ++z) {
 		for (unsigned int x = 0; x < _mapSize; ++x) {
-			ValueNoise(noiseMap, x,z, _mapSize);
+			//vNoiseMap[z * _mapSize + x] = ValueNoise(vNoiseMap, x * _frequency,z * _frequency, _mapSize);
+			noiseSamples[z][x] = ValueNoise(vNoiseMap, x * _frequency, z * _frequency, _mapSize);
 		}
 	}
 
@@ -48,7 +65,7 @@ CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _
 			float fScaleR = (float)(z) / (float)(_mapSize - 1);
 			// Set the coords (1st 4 elements) and a default colour of black (2nd 4 elements) 
 			vertexCollection[i] = Vertex(
-				glm::vec4((float)x, noiseMap[z][x], (float)z, 1.0),
+				glm::vec4((float)x, noiseSamples[z][x], (float)z, 1.0),
 				glm::vec2(fTextureS * fScaleC, fTextureT * fScaleR));
 			i++;
 		}
@@ -172,40 +189,36 @@ CloudGen::~CloudGen()
 	Clear();
 }
 
-void CloudGen::ValueNoise(float**& _noiseMap, const int _xPos, const int _zPos, const int _mapSize)
+float CloudGen::ValueNoise(float**& _noiseMap, const float _xPos, const float _zPos, const int _mapSize)
 {
-	int sampleLocLowX = _xPos;
-	int sampleLocHighX = sampleLocLowX == _mapSize - 1 ?
-		0 : sampleLocLowX + 1;
+	int xOffset = std::floor(_xPos);
+	int zOffset = std::floor(_zPos);
 
-	int sampleLocLowZ = _zPos;
-	int sampleLocHighZ = sampleLocLowZ == _mapSize - 1 ?
-		0 : sampleLocLowZ + 1;
+	float xSample = _xPos - xOffset;
+	float zSample = _zPos - zOffset;
 
-	//Retrieve random sample location: (LoxX - HighX)
-	float sampleLocX =
-		static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1)));
+	int sampleIdLowX = xOffset & _mapSize;
+	int sampleIdHighX = sampleIdLowX == _mapSize - 1 ?
+		0 : sampleIdLowX + 1;
 
-	float sampleLocZ =
-		static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1)));
+	int sampleIdLowZ = zOffset & _mapSize;
+	int sampleIdHighZ = sampleIdLowZ == _mapSize - 1 ?
+		0 : sampleIdLowZ + 1;
 
-	sampleLocX = Smoothstep(sampleLocX);
-	sampleLocZ = Smoothstep(sampleLocZ);
+	const float sampleValLowX = _noiseMap[sampleIdLowZ][sampleIdLowX];
+	const float sampleValHighX = _noiseMap[sampleIdLowZ][sampleIdHighX];
+	const float sampleValLowZ = _noiseMap[sampleIdHighZ][sampleIdLowX];
+	const float sampleValHighZ = _noiseMap[sampleIdHighZ][sampleIdHighX];
 
-	//Lerp between low and high on the X axis: 	(lo * (1 - t) + hi * t)
-	float sampleValLowX = Lerp(_noiseMap[sampleLocLowZ][sampleLocLowX], _noiseMap[sampleLocLowZ][sampleLocHighX], sampleLocX);
-		/*m_NoiseMap[sampleLocLowZ][sampleLocLowX] * (1 - sampleLocX) + m_NoiseMap[sampleLocLowZ][sampleLocHighX] * sampleLocX;*/
+	float smoothXSample = Smoothstep(xSample);
+	float smoothZSample = Smoothstep(zSample);
 
-	float sampleValHighX = Lerp(_noiseMap[sampleLocHighZ][sampleLocLowX], _noiseMap[sampleLocHighZ][sampleLocHighX], sampleLocX);
-		/*m_NoiseMap[sampleLocHighZ][sampleLocLowX] * (1 - sampleLocX) + m_NoiseMap[sampleLocHighZ][sampleLocHighX] * sampleLocX;*/
+	float lerpSampleLowX = Lerp(sampleValLowX, sampleValHighX, smoothXSample);
+	float lerpSampleHighX = Lerp(sampleValLowZ, sampleValHighZ, smoothXSample);
 
-	//Lerp between low and high on the Z axis using obtained values to compute interpolated value:
-	float sampleVal = Lerp(sampleValLowX, sampleValHighX, sampleLocZ);
-		/*sampleValLowX * (1 - sampleLocZ) + sampleValHighX * sampleLocZ;*/
-
+	float lerpSample = Lerp(lerpSampleLowX, lerpSampleHighX, smoothZSample);
+	return lerpSample;
 	//Calculate value of sample at set location:
-
-	_noiseMap[_zPos][_xPos] = sampleVal;
 }
 
 void CloudGen::Configure()
