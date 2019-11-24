@@ -39,13 +39,17 @@ void main(void)
 	//vec4 cloudTexColor = vec4(0.63f, 0.5f, 0.96f, 1.0f);//texture(u_texSampler, vec2(exUV.x + 0.25f * exTime - phaseSpeed, exUV.y));
 	//cloudTexColor += amplitude * sin(exTime - 10.0f);
 
-	//if (exCoords.y < 0.5f) {
+	//if (exCoords.x < 0.25f || exCoords.z < 0.25f) {
 	//	discard;
 	//}
 
-	//if (cloudTexColor.r > 0.8f || cloudTexColor.g > 0.85f) {
-	//	discard;
-	//}
+	if (exCoords.y < 0.05f) {
+		discard;
+	}
+
+	if (cloudTexColor.r > 0.85f) {
+		discard;
+	}
 
 	FragColor = cloudTexColor;
 }

@@ -11,19 +11,11 @@ CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _
 
 	srand(time(NULL));
 	//Value noise
-	//float* vNoiseMap = new float[_mapSize];
-	//for (int i = 0; i < _mapSize * _mapSize; ++i) {
-	//	vNoiseMap[i] = -_randRange + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (_randRange - -_randRange)));
-	//}
 	const int sampleCount = _mapSize * _mapSize;
 	float* vNoiseMap = new float[sampleCount];
-	std::vector<float> testValues;
 	for (unsigned int i = 0; i < sampleCount; ++i) {
 		vNoiseMap[i] = -_randRange + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (_randRange - -_randRange)));
-		testValues.push_back(vNoiseMap[i]);
 	}
-
-
 
 	float* noiseSamples = new float [sampleCount];
 	for (unsigned int z = 0; z < _mapSize; ++z) {

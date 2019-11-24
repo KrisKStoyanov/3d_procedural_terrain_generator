@@ -43,7 +43,7 @@ void Renderer::Init(const char* _Title, const int _Width, const int _Height)
 	m_Camera = new Camera(glm::vec3(0.0f, 1.0f, 5.0f), 60, _Width, _Height);
 	m_DirLight = new Light(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
 
-	m_TerrainGen = new TerrainGen(33, -8.0f, glm::vec3(0.0f, 0.0f, 0.0f),
+	m_TerrainGen = new TerrainGen(33, -10.0f, glm::vec3(0.0f, 0.0f, 0.0f),
 		"../Textures/snow.png",
 		"../Textures/rock.png",
 		"../Textures/grass.bmp",
@@ -51,7 +51,7 @@ void Renderer::Init(const char* _Title, const int _Width, const int _Height)
 
 	m_WaterGen = new WaterGen(33, glm::vec3(0.0f, 0.0f, 0.0f), "../Textures/water.png");
 	m_GrassGen = new GrassGen(m_TerrainGen->m_VertexCollection, m_TerrainGen->m_IndexCollection, glm::vec3(0.0f, 0.0f, 0.0f));
-	m_CloudGen = new CloudGen(33, 2.0f, 0.1f, glm::vec3(0.0f, 20.0f, 0.0f), "../Textures/cloud.png");
+	m_CloudGen = new CloudGen(33, 3.0f, 0.1f, glm::vec3(0.0f, 20.0f, 0.0f), "../Textures/cloud.png");
 
 	m_Skybox = new Skybox();
 

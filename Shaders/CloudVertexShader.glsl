@@ -25,7 +25,9 @@ void main(void)
 	exNormal = normalize(u_normalMatrix * VertexNormal);
 	exUV = VertexUV;
 	exTime = u_time;
+	exCoords.x -= cos(exTime - exCoords.y);
+	exCoords.y += 0.5f * sin(exTime + exCoords.z * 5.0f);
+	exCoords.z += cos(exTime + exCoords.x);
 
-	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix *
-		vec4(VertexCoords.x, VertexCoords.y/* + 0.5f * sin(u_time - VertexCoords.x)*/, VertexCoords.z, VertexCoords.w);
+	gl_Position = u_projectionMatrix * u_viewMatrix * u_modelMatrix * exCoords;
 }
