@@ -40,7 +40,7 @@ CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _
 
 			int sampleLocLowZ = z;
 			int sampleLocHighZ = sampleLocLowZ == _mapSize - 1 ?
-				0 : sampleLocLowZ;
+				0 : sampleLocLowZ + 1;
 
 			//Retrieve random sample location: (LoxX - HighX)
 			float sampleLocX =
@@ -48,6 +48,9 @@ CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _
 			
 			float sampleLocZ =
 				static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1)));
+
+			sampleLocX = Smoothstep(sampleLocX);
+			sampleLocZ = Smoothstep(sampleLocZ);
 			
 			//Lerp between low and high on the X axis: 	(lo * (1 - t) + hi * t)
 			float sampleValLowX = 
@@ -71,15 +74,15 @@ CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _
 	float fTextureT = float(_mapSize) * 0.1f;
 
 	int i = 0;
-	for (int x = 0; x < _mapSize; x++)
+	for (int z = 0; z < _mapSize; z++)
 	{
-		for (int z = 0; z < _mapSize; z++)
+		for (int x = 0; x < _mapSize; x++)
 		{
 			float fScaleC = (float)(x) / (float)(_mapSize - 1);
 			float fScaleR = (float)(z) / (float)(_mapSize - 1);
 			// Set the coords (1st 4 elements) and a default colour of black (2nd 4 elements) 
 			vertexCollection[i] = Vertex(
-				glm::vec4((float)x, noiseSamples[x][z], (float)z, 1.0),
+				glm::vec4((float)x, noiseSamples[z][x], (float)z, 1.0),
 				glm::vec2(fTextureS * fScaleC, fTextureT * fScaleR));
 			i++;
 		}
@@ -220,6 +223,9 @@ float CloudGen::NoiseGen(const int _xPos, const int _yPos, const int _mapSize)
 	float sampleLocZ =
 		static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1)));
 
+	sampleLocX = Smoothstep(sampleLocX);
+	sampleLocZ = Smoothstep(sampleLocZ);
+
 	//Lerp between low and high on the X axis: 	(lo * (1 - t) + hi * t)
 	float sampleValLowX = Lerp(m_NoiseMap[sampleLocLowZ][sampleLocLowX], m_NoiseMap[sampleLocLowZ][sampleLocHighX], sampleLocX);
 		/*m_NoiseMap[sampleLocLowZ][sampleLocLowX] * (1 - sampleLocX) + m_NoiseMap[sampleLocLowZ][sampleLocHighX] * sampleLocX;*/
@@ -234,11 +240,6 @@ float CloudGen::NoiseGen(const int _xPos, const int _yPos, const int _mapSize)
 	//Calculate value of sample at set location:
 
 	return sampleVal;
-}
-
-float CloudGen::Lerp(float _min, float _max, float _x)
-{
-	return _min * (1 - _x) + _max * _x;
 }
 
 void CloudGen::Configure()

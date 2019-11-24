@@ -20,7 +20,8 @@ public:
 	float** m_NoiseMap = NULL;
 	float NoiseGen(const int _xPos, const int _yPos, const int _mapSize);
 
-	float Lerp(float _min, float _max, float _x);
+	inline float Smoothstep(const float& _t) { return _t * _t * (3 - 2 * _t); }
+	inline float Lerp(const float& _low, const float& _high, const float& _t) { return _low * (1 - _t) + _high * _t; }
 
 	void Configure();
 	void Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime);
