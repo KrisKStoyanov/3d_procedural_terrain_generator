@@ -14,10 +14,12 @@
 class CloudGen
 {
 public:
-	CloudGen(int _mapSize, int _samplesPerCell, glm::vec3 _position, const char* _texturePath);
+	CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _position, const char* _texturePath);
 	~CloudGen();
 
-	float Mix(int _min, float _x);
+	float** m_NoiseMap = NULL;
+	float NoiseGen(const int _xPos, const int _yPos, const int _mapSize);
+
 	float Lerp(float _min, float _max, float _x);
 
 	void Configure();

@@ -1,23 +1,71 @@
 #include "CloudGen.h"
 
-CloudGen::CloudGen(int _mapSize, int _samplesPerCell, glm::vec3 _position, const char* _texturePath)
+CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _position, const char* _texturePath)
 {
 	const int numStrips = _mapSize - 1;
 	const int verticesPerStrip = 2 * _mapSize;
+	const int vertexCount = _mapSize * _mapSize;
 	const int indexCount = numStrips * verticesPerStrip + (_mapSize - 2) * 2;
-	std::vector<Vertex> vertexCollection(_mapSize * _mapSize);
+	std::vector<Vertex> vertexCollection(vertexCount);
 	std::vector<unsigned int> indexCollection(indexCount);
 
-	float** heightMap = new float* [_mapSize];
-	for (int i(0); i < _mapSize; ++i) {
-		heightMap[i] = new float[_mapSize];
+	//Value noise
+	float** noiseMap = new float*[_mapSize];
+
+	for (int i = 0; i < _mapSize; ++i) {
+		noiseMap[i] = new float[_mapSize];
 	}
 
-	for (int x(0); x < _mapSize; ++x) {
-		for (int z(0); z < _mapSize; ++z) {
-			heightMap[x][z] = -1 + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1 - -1)));
+	//Seed map with random values
+	for (unsigned int z = 0; z < _mapSize; ++z) {
+		for (unsigned int x = 0; x < _mapSize; ++x) {
+			noiseMap[z][x] = -_randRange + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (_randRange + _randRange)));
 		}
 	}
+
+	m_NoiseMap = noiseMap;
+	float** noiseSamples = new float* [_mapSize];
+	for (int i = 0; i < _mapSize; ++i) {
+		noiseSamples[i] = new float[_mapSize];
+	}
+
+	//Loop through and interpolate based on random cell sequencing
+	for (unsigned int z = 0; z < _mapSize; ++z) {
+		for (unsigned int x = 0; x < _mapSize; ++x) {
+
+			//Compute index boundaries:
+			int sampleLocLowX = x;
+			int sampleLocHighX = sampleLocLowX == _mapSize - 1 ?
+				0 : sampleLocLowX + 1;
+
+			int sampleLocLowZ = z;
+			int sampleLocHighZ = sampleLocLowZ == _mapSize - 1 ?
+				0 : sampleLocLowZ;
+
+			//Retrieve random sample location: (LoxX - HighX)
+			float sampleLocX =
+				static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1)));
+			
+			float sampleLocZ =
+				static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1)));
+			
+			//Lerp between low and high on the X axis: 	(lo * (1 - t) + hi * t)
+			float sampleValLowX = 
+				noiseMap[sampleLocLowZ][sampleLocLowX] * (1 - sampleLocX) + noiseMap[sampleLocLowZ][sampleLocHighX] * sampleLocX;
+
+			float sampleValHighX = 
+				noiseMap[sampleLocHighZ][sampleLocLowX] * (1 - sampleLocX) + noiseMap[sampleLocHighZ][sampleLocHighX] * sampleLocX;
+
+			//Lerp between low and high on the Z axis using obtained values to compute interpolated value:
+			float sampleVal = sampleValLowX * (1 - sampleLocZ) + sampleValHighX * sampleLocZ;
+
+			//Calculate value of sample at set location:
+
+			noiseSamples[z][x] = sampleVal;
+		}
+	}
+
+
 
 	float fTextureS = float(_mapSize) * 0.1f;
 	float fTextureT = float(_mapSize) * 0.1f;
@@ -31,7 +79,7 @@ CloudGen::CloudGen(int _mapSize, int _samplesPerCell, glm::vec3 _position, const
 			float fScaleR = (float)(z) / (float)(_mapSize - 1);
 			// Set the coords (1st 4 elements) and a default colour of black (2nd 4 elements) 
 			vertexCollection[i] = Vertex(
-				glm::vec4((float)x, heightMap[x][z], (float)z, 1.0),
+				glm::vec4((float)x, noiseSamples[x][z], (float)z, 1.0),
 				glm::vec2(fTextureS * fScaleC, fTextureT * fScaleR));
 			i++;
 		}
@@ -146,7 +194,6 @@ CloudGen::CloudGen(int _mapSize, int _samplesPerCell, glm::vec3 _position, const
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		50.0f);
-
 	m_TextureCollection.push_back(new Texture(_texturePath));
 	Configure();
 }
@@ -156,10 +203,37 @@ CloudGen::~CloudGen()
 	Clear();
 }
 
-float CloudGen::Mix(int _min, float _x)
+float CloudGen::NoiseGen(const int _xPos, const int _yPos, const int _mapSize)
 {
-	int xMin = (int)_x;
-	return _x - xMin;
+	int sampleLocLowX = _xPos;
+	int sampleLocHighX = sampleLocLowX == _mapSize - 1 ?
+		0 : sampleLocLowX + 1;
+
+	int sampleLocLowZ = _yPos;
+	int sampleLocHighZ = sampleLocLowZ == _mapSize - 1 ?
+		0 : sampleLocLowZ;
+
+	//Retrieve random sample location: (LoxX - HighX)
+	float sampleLocX =
+		static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1)));
+
+	float sampleLocZ =
+		static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (1)));
+
+	//Lerp between low and high on the X axis: 	(lo * (1 - t) + hi * t)
+	float sampleValLowX = Lerp(m_NoiseMap[sampleLocLowZ][sampleLocLowX], m_NoiseMap[sampleLocLowZ][sampleLocHighX], sampleLocX);
+		/*m_NoiseMap[sampleLocLowZ][sampleLocLowX] * (1 - sampleLocX) + m_NoiseMap[sampleLocLowZ][sampleLocHighX] * sampleLocX;*/
+
+	float sampleValHighX = Lerp(m_NoiseMap[sampleLocHighZ][sampleLocLowX], m_NoiseMap[sampleLocHighZ][sampleLocHighX], sampleLocX);
+		/*m_NoiseMap[sampleLocHighZ][sampleLocLowX] * (1 - sampleLocX) + m_NoiseMap[sampleLocHighZ][sampleLocHighX] * sampleLocX;*/
+
+	//Lerp between low and high on the Z axis using obtained values to compute interpolated value:
+	float sampleVal = Lerp(sampleValLowX, sampleValHighX, sampleLocZ);
+		/*sampleValLowX * (1 - sampleLocZ) + sampleValHighX * sampleLocZ;*/
+
+	//Calculate value of sample at set location:
+
+	return sampleVal;
 }
 
 float CloudGen::Lerp(float _min, float _max, float _x)
@@ -207,7 +281,6 @@ void CloudGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
 	m_Shader->SetMat4("u_viewMatrix", _camera->ViewMatrix);
 	m_Shader->SetMat4("u_modelMatrix", m_Transform->GetModelMatrix());
 	m_Shader->SetMat3("u_normalMatrix", m_Transform->GetNormalMatrix());
-
 	m_Shader->SetVec4("u_dirLight.ambCols", _dirLight->AmbientC);
 	m_Shader->SetVec4("u_dirLight.difCols", _dirLight->DiffuseC);
 	m_Shader->SetVec4("u_dirLight.specCols", _dirLight->SpecularC);
@@ -219,14 +292,11 @@ void CloudGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
 	m_Shader->SetFloat("u_material.shininess", m_Material->Shininess);
 
 	m_Shader->SetInt("u_texSampler", 0);
-
 	m_Shader->SetFloat("u_time", glfwGetTime());
-
 	for (int i = 0; i < m_TextureCollection.size(); ++i) {
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, m_TextureCollection[i]->m_ID);
 	}
-
 	glDisable(GL_CULL_FACE);
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_TRIANGLE_STRIP, m_IndexCollection.size(), GL_UNSIGNED_INT, 0);
