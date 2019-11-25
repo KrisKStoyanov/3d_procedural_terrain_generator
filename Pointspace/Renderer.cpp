@@ -53,6 +53,8 @@ void Renderer::Init(const char* _Title, const int _Width, const int _Height)
 	m_GrassGen = new GrassGen(m_TerrainGen->m_VertexCollection, m_TerrainGen->m_IndexCollection, glm::vec3(0.0f, 0.0f, 0.0f));
 	m_CloudGen = new CloudGen(33, 3.0f, 0.1f, glm::vec3(0.0f, 20.0f, 0.0f));
 
+	m_TreeGen = new TreeGen(m_TerrainGen->m_VertexCollection, 1000, 6, 0.85f, glm::vec3(0.0f, 0.0f, 0.0f));
+
 	m_Skybox = new Skybox();
 
 	OnUpdate();
@@ -87,8 +89,9 @@ void Renderer::OnUpdate()
 		m_Camera->UpdateTransformMouse(m_CursorPosX, -m_CursorPosY);
 		m_TerrainGen->Draw(m_Camera, m_DirLight);
 		m_GrassGen->Draw(m_Camera, m_DirLight);
-		m_WaterGen->Draw(m_Camera, m_DirLight);
+		m_TreeGen->Draw(m_Camera, m_DirLight);
 		m_CloudGen->Draw(m_Camera, m_DirLight, timestep);
+		m_WaterGen->Draw(m_Camera, m_DirLight);
 		m_Skybox->Draw(m_Camera);
 
 		glfwSwapBuffers(m_Window);

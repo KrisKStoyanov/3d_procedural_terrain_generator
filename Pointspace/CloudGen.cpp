@@ -224,7 +224,7 @@ void CloudGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
 	m_Shader->SetMat4("u_modelMatrix", m_Transform->GetModelMatrix());
 
 	m_Shader->SetInt("u_texSampler", 0);
-	m_Shader->SetFloat("u_time", glfwGetTime());
+	m_Shader->SetFloat("u_time", glfwGetTime() + _deltaTime);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_CULL_FACE);

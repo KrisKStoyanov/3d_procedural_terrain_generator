@@ -1,146 +1,17 @@
 #include "TreeGen.h"
 
-TreeGen::TreeGen(int _mapSize, float _randomRange, glm::vec3 _position)
+TreeGen::TreeGen(std::vector<Vertex> _vertexCol, const int _numPoints, const int _maxLevel, const float _r, glm::vec3 _position)
 {
-	const int numStrips = _mapSize - 1;
-	const int verticesPerStrip = 2 * _mapSize;
-	const int indexCount = numStrips * verticesPerStrip + (_mapSize - 2) * 2;
-	std::vector<Vertex> terrainVertexCollection(_mapSize * _mapSize);
-	std::vector<unsigned int> terrainIndexCollection(indexCount);
-
-	//Build Height Map
-	float** heightMap = new float* [_mapSize];
-	for (int i(0); i < _mapSize; ++i) {
-		heightMap[i] = new float[_mapSize];
-	}
-
-	for (int x(0); x < _mapSize; ++x) {
-		for (int z(0); z < _mapSize; ++z) {
-			heightMap[x][z] = 0;
+	if (_vertexCol.size() > 10) {
+		for (int i = 0; i < 10; ++i) {
+			int randId = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_vertexCol.size()));
+			glm::vec3 randCoords = glm::vec3(_vertexCol[randId].Coords.x, _vertexCol[randId].Coords.y, _vertexCol[randId].Coords.z);
+			m_InstancedPositions[i] = randCoords;
 		}
 	}
 
-	// Build Vertex Coords;
-	float fTextureS = float(_mapSize) * 0.1f;
-	float fTextureT = float(_mapSize) * 0.1f;
-
-	int i = 0;
-	for (int x = 0; x < _mapSize; x++)
-	{
-		for (int z = 0; z < _mapSize; z++)
-		{
-			float fScaleC = (float)(x) / (float)(_mapSize - 1);
-			float fScaleR = (float)(z) / (float)(_mapSize - 1);
-			// Set the coords (1st 4 elements) and a default colour of black (2nd 4 elements) 
-			terrainVertexCollection[i] = Vertex(
-				glm::vec4((float)x, heightMap[x][z], (float)z, 1.0),
-				glm::vec2(fTextureS * fScaleC, fTextureT * fScaleR));
-			i++;
-		}
-	}
-
-	struct QuadTriangle {
-		int FirstVertexIndex;
-		int SecondVertexIndex;
-		int ThirdVertexIndex;
-		glm::vec4 FirstVertexCoords;
-		glm::vec4 SecondVertexCoords;
-		glm::vec4 ThirdVertexCoords;
-		glm::vec3 TriNormal;
-	};
-
-	//Build Index Collection:
-	std::vector<glm::vec3> TriNormalCollection;
-	std::vector<QuadTriangle> TriGroupCollection;
-	std::vector<std::vector<glm::vec3>> TriCollection;
-	std::vector<int> QuadVertIndexCollection;
-	int IndexLow = 0;
-	int IndexHigh = _mapSize;
-	bool Tweaked = false;
-	int QuadCounter = 0;
-
-
-	for (int i = 0; i < indexCount; i += 2) {
-		if (IndexHigh % _mapSize == 0 && IndexHigh > _mapSize && !Tweaked) {
-			terrainIndexCollection[i] = terrainIndexCollection[i - 1];
-			terrainIndexCollection[i + 1] = IndexLow;
-			Tweaked = true;
-			QuadVertIndexCollection.clear();
-		}
-		else {
-			terrainIndexCollection[i] = IndexLow;
-			terrainIndexCollection[i + 1] = IndexHigh;
-			//Push poinds for quad formation on non-degenerate triangles
-			QuadVertIndexCollection.push_back(IndexLow);
-			QuadVertIndexCollection.push_back(IndexHigh);
-			IndexLow++;
-			IndexHigh++;
-			Tweaked = false;
-		}
-		if (QuadVertIndexCollection.size() == 4) {
-
-			//Create the quad out of two triangles through the obtained indecies
-			QuadTriangle UpperQuadTri;
-			UpperQuadTri.FirstVertexIndex = QuadVertIndexCollection[0];
-			UpperQuadTri.SecondVertexIndex = QuadVertIndexCollection[1];
-			UpperQuadTri.ThirdVertexIndex = QuadVertIndexCollection[2];
-			UpperQuadTri.FirstVertexCoords = terrainVertexCollection[UpperQuadTri.FirstVertexIndex].Coords;
-			UpperQuadTri.SecondVertexCoords = terrainVertexCollection[UpperQuadTri.SecondVertexIndex].Coords;
-			UpperQuadTri.ThirdVertexCoords = terrainVertexCollection[UpperQuadTri.ThirdVertexIndex].Coords;
-
-			QuadTriangle LowerQuadTri;
-			LowerQuadTri.FirstVertexIndex = QuadVertIndexCollection[1];
-			LowerQuadTri.SecondVertexIndex = QuadVertIndexCollection[2];
-			LowerQuadTri.ThirdVertexIndex = QuadVertIndexCollection[3];
-			LowerQuadTri.FirstVertexCoords = terrainVertexCollection[LowerQuadTri.FirstVertexIndex].Coords;
-			LowerQuadTri.SecondVertexCoords = terrainVertexCollection[LowerQuadTri.SecondVertexIndex].Coords;
-			LowerQuadTri.ThirdVertexCoords = terrainVertexCollection[LowerQuadTri.ThirdVertexIndex].Coords;
-
-			UpperQuadTri.TriNormal =
-				glm::cross(
-					glm::vec3(UpperQuadTri.ThirdVertexCoords - UpperQuadTri.FirstVertexCoords),
-					glm::vec3(UpperQuadTri.FirstVertexCoords - UpperQuadTri.SecondVertexCoords));
-
-			LowerQuadTri.TriNormal =
-				glm::cross(
-					glm::vec3(LowerQuadTri.FirstVertexCoords - LowerQuadTri.ThirdVertexCoords),
-					glm::vec3(LowerQuadTri.ThirdVertexCoords - LowerQuadTri.SecondVertexCoords));
-
-			TriGroupCollection.push_back(UpperQuadTri);
-			TriGroupCollection.push_back(LowerQuadTri);
-
-			QuadVertIndexCollection[0] = QuadVertIndexCollection[2];
-			QuadVertIndexCollection[1] = QuadVertIndexCollection[3];
-			QuadVertIndexCollection.pop_back();
-			QuadVertIndexCollection.pop_back();
-		}
-	}
-
-	//Build Vertex Normals:
-	//For each triangle check if the index is part of it and
-	//add the normal of the triangle to the vertex which the index represents
-	for (int i = 0; i < terrainIndexCollection.size(); ++i) {
-		for (int j = 0; j < TriGroupCollection.size(); ++j) {
-			if (i == TriGroupCollection[j].FirstVertexIndex ||
-				i == TriGroupCollection[j].SecondVertexIndex ||
-				i == TriGroupCollection[j].ThirdVertexIndex) {
-				terrainVertexCollection[i].Normal += TriGroupCollection[j].TriNormal;
-			}
-		}
-	}
-
-	//Normalize the normal value of each vertex
-	for (int i = 0; i < terrainVertexCollection.size(); ++i) {
-		/*float temp = glm::dot(-terrainVertexCollection[i].Normal, WorldUp);*/
-		glm::vec3 tempVec = terrainVertexCollection[i].Normal;
-		/*if (tempVec.y < 0) {
-			terrainVertexCollection[i].Normal = -tempVec;
-		}*/
-		terrainVertexCollection[i].Normal = glm::normalize(-terrainVertexCollection[i].Normal);
-	}
-
-	m_VertexCollection = terrainVertexCollection;
-	m_IndexCollection = terrainIndexCollection;
+	m_VertexCollection = CreateTree(3.0f, 0.25f, _numPoints, _maxLevel, _r);
+	//m_IndexCollection = indexCollection;
 
 	m_Transform = new Transform(_position);
 
@@ -167,14 +38,18 @@ void TreeGen::Configure()
 	glGenVertexArrays(1, &m_VAO);
 	glGenBuffers(1, &m_VBO);
 	glGenBuffers(1, &m_IBO);
+	//glGenBuffers(1, &m_InstanceBO);
 
 	glBindVertexArray(m_VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, m_VertexCollection.size() * sizeof(Vertex), m_VertexCollection.data(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_IndexCollection.size() * sizeof(unsigned int), m_IndexCollection.data(), GL_STATIC_DRAW);
+	//glBindBuffer(GL_ARRAY_BUFFER, m_InstanceBO);
+	//glBufferData(GL_ARRAY_BUFFER, 10 * sizeof(glm::vec3), &m_InstancedPositions[0], GL_STATIC_DRAW);
+
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_IndexCollection.size() * sizeof(unsigned int), m_IndexCollection.data(), GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(m_VertexCollection[0]), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -182,14 +57,19 @@ void TreeGen::Configure()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(m_VertexCollection[0]), (GLvoid*)(sizeof(m_VertexCollection[0].Coords) + sizeof(m_VertexCollection[0].Normal)));
 	glEnableVertexAttribArray(2);
+	//glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	//glEnableVertexAttribArray(3);
+	//glVertexAttribDivisor(3, 1);
 
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
+	//glDisableVertexAttribArray(3);
 
-	m_Shader = new Shader(m_VertexShaderSource, m_GeometryShaderSource, m_FragmentShaderSource);
+	m_Shader = new Shader(m_VertexShaderSource, m_FragmentShaderSource);
 }
 
 void TreeGen::Draw(Camera*& _camera, Light*& _dirLight)
@@ -200,11 +80,115 @@ void TreeGen::Draw(Camera*& _camera, Light*& _dirLight)
 	m_Shader->SetMat4("u_projectionMatrix", _camera->ProjectionMatrix);
 	m_Shader->SetMat4("u_viewMatrix", _camera->ViewMatrix);
 	m_Shader->SetMat4("u_modelMatrix", m_Transform->GetModelMatrix());
+	for (unsigned int i = 0; i < 10; ++i) {
+		std::stringstream ss;
+		std::string id;
+		ss << i;
+		id = ss.str();
+		m_Shader->SetVec3(("u_instancedPos[" + id + "]").c_str(), m_InstancedPositions[i]);
+	}
 	m_Shader->SetFloat("u_time", glfwGetTime());
-
+	
 	glBindVertexArray(m_VAO);
-	glDrawElements(GL_POINTS, m_IndexCollection.size(), GL_UNSIGNED_INT, 0);
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, m_VertexCollection.size(), 10);
 	glBindVertexArray(0);
+}
+
+std::vector<Vertex> TreeGen::CreateTree(const float _trunkH, const float _trunkR, const int _numPoints, const int _maxLevel, const float _r)
+{
+	std::vector<Vertex> trunkVertexCollection;
+	float height = 4.0f;
+	float radius = 0.25f;
+	float doublePI = 2 * 3.14159265f;
+	int slices = 20;
+	float edgeScalar = doublePI * (1.f / slices);
+	for (size_t i = 0; i < slices; ++i) {		
+		trunkVertexCollection.push_back(Vertex(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)));
+		trunkVertexCollection.push_back(
+			Vertex(glm::vec4(_trunkR * cos(i * edgeScalar), 0.0f, _trunkR * sin(i * edgeScalar), 1.0f)));
+		trunkVertexCollection.push_back(
+			Vertex(glm::vec4(_trunkR * cos((i + 1) * edgeScalar), 0.0f, _trunkR * sin((i + 1) * edgeScalar), 1.0f)));
+		trunkVertexCollection.push_back(
+			Vertex(glm::vec4(_trunkR * cos(i * edgeScalar), _trunkH, _trunkR * sin(i * edgeScalar), 1.0f)));
+		trunkVertexCollection.push_back(
+			Vertex(glm::vec4(_trunkR * cos((i + 1) * edgeScalar), _trunkH, _trunkR * sin((i + 1) * edgeScalar), 1.0f)));
+		trunkVertexCollection.push_back(Vertex(glm::vec4(0.0f, _trunkH, 0.0f, 1.0f)));
+	}
+	return trunkVertexCollection;
+}
+
+void TreeGen::ComputeBranch(float _r, int _depth, float _angle, 
+	float _x0, float _y0, float _z0, 
+	float _x1, float _y1, float _z1, 
+	float& _x2, float& _y2, float& _z2)
+{
+	float xs, ys, zs,
+		xll, yll, zll,
+		xl, yl, zl, m;
+	double val;
+
+	xs = (_x1 - _x0) * _r;
+	ys = (_y1 - _y0) * _r;
+	zs = (_z1 - _z0) * _r;
+
+	m = sqrt(xs * xs + ys * ys + zs * zs);
+	xll = cos(_angle / 2.0f) * xs - sin(_angle / 2.0f) * ys;
+	yll = cos(_angle / 2.0f) * xs + cos(_angle / 2.0f) * ys;
+	zll = 0.0f;
+
+	srand(3);
+	if (_depth % 2 == 0) {
+		val = -2.0f;
+	}
+	else {
+		val = 2.0f;
+	}
+
+	xl = cos(val * _angle / 2.0f) * xll - sin(val * _angle / 2.0f) * zll;
+	yl = yll;
+	zl = sin(val * _angle / 2.0f) * xll + cos(val * _angle / 2.0f) * zll;
+
+	_x2 = _x1 + xl;
+	_y2 = _y1 + yl;
+	_z2 = _z1 + zl;
+}
+
+void TreeGen::RecurComputeBranch(
+	std::vector<Vertex>& _vertexCollection,
+	float _r, int _maxLevel,  int _depth, 
+	int _index, float _angle, 
+	std::vector<glm::vec3> _basePts, 
+	std::vector<glm::vec3> _brPts)
+{
+	int i, size;
+	float x2, y2, z2;
+	glm::vec3 ttPt;
+	std::vector<glm::vec3> genBasePts, genBrPts;
+	if (_depth > _maxLevel) {
+		return;
+	}
+	size = _basePts.size();
+	if (size == 0) {
+		return;
+	}
+
+	for (int i = 0; i < size; ++i) {
+		ComputeBranch(_r, _depth, _angle, 
+			_basePts[i].x, _basePts[i].y, _basePts[i].z, 
+			_brPts[i].x, _brPts[i].y, _brPts[i].z, 
+			x2, y2, z2);
+		_vertexCollection[_index].Coords[0] = x2;
+		_vertexCollection[_index].Coords[1] = y2;
+		_vertexCollection[_index].Coords[2] = z2;
+		_vertexCollection[_index].Coords[3] = 1.0f;
+		_index++;
+		genBasePts.push_back(_brPts[i]);
+		ttPt.x = x2; ttPt.y = y2, ttPt.z= z2;
+		genBrPts.push_back(ttPt);
+	}
+
+	_depth++;
+	RecurComputeBranch(_vertexCollection, _r, _maxLevel, _depth, _index, _angle, genBasePts, genBrPts);
 }
 
 void TreeGen::Clear()
