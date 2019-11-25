@@ -43,7 +43,7 @@ void Renderer::Init(const char* _Title, const int _Width, const int _Height)
 	m_Camera = new Camera(glm::vec3(0.0f, 1.0f, 5.0f), 60, _Width, _Height);
 	m_DirLight = new Light(glm::vec4(0.5f, 0.5f, 0.5f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 0.0f, 0.0f));
 
-	m_TerrainGen = new TerrainGen(33, -10.0f, glm::vec3(0.0f, 0.0f, 0.0f),
+	m_TerrainGen = new TerrainGen(33, 10.0f, glm::vec3(0.0f, 0.0f, 0.0f),
 		"../Textures/snow.png",
 		"../Textures/rock.png",
 		"../Textures/grass.bmp",

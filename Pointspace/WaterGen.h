@@ -36,6 +36,6 @@ public:
 	Transform* m_Transform = NULL;
 	std::vector<Vertex> m_VertexCollection;
 	std::vector<unsigned int> m_IndexCollection;
-	std::vector<Texture*> m_TextureCollection;
+	Texture* m_Texture = NULL;
 };
 

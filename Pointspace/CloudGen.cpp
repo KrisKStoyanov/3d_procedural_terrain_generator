@@ -26,18 +26,6 @@ CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _
 		}
 	}
 
-	std::ofstream ofs("./noise.ppm", std::ios::out | std::ios::binary);
-	ofs << "P6\n" << _mapSize << " " << _mapSize << "\n255\n";
-	for (unsigned z = 0; z < _mapSize; ++z)
-	{
-		for (unsigned x = 0; x < _mapSize; ++x)
-		{
-			unsigned char n = (unsigned char)(noiseSamples[z * _mapSize + x] * 255);
-			ofs << n << n << n;
-		}
-	}
-	ofs.close();
-
 	float fTextureS = float(_mapSize) * 0.1f;
 	float fTextureT = float(_mapSize) * 0.1f;
 
@@ -146,13 +134,7 @@ CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _
 		}
 	}
 
-	//Normalize the normal value of each vertex
 	for (int i = 0; i < vertexCollection.size(); ++i) {
-		/*float temp = glm::dot(-terrainVertexCollection[i].Normal, WorldUp);*/
-		//glm::vec3 tempVec = vertexCollection[i].Normal;
-		/*if (tempVec.y < 0) {
-			terrainVertexCollection[i].Normal = -tempVec;
-		}*/
 		vertexCollection[i].Normal = glm::normalize(-vertexCollection[i].Normal);
 	}
 
@@ -251,6 +233,21 @@ void CloudGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
 	glBindVertexArray(0);
 	glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
+}
+
+void CloudGen::PrintNoiseMap(const float*& _noiseMap, const int _mapSize)
+{
+	std::ofstream ofs("./noise_map.ppm", std::ios::out | std::ios::binary);
+	ofs << "P6\n" << _mapSize << " " << _mapSize << "\n255\n";
+	for (unsigned z = 0; z < _mapSize; ++z)
+	{
+		for (unsigned x = 0; x < _mapSize; ++x)
+		{
+			unsigned char n = (unsigned char)(_noiseMap[z * _mapSize + x] * 255.0f);
+			ofs << n << n << n;
+		}
+	}
+	ofs.close();
 }
 
 void CloudGen::Clear()

@@ -30,6 +30,7 @@ public:
 	void Draw(Camera*& _camera, Light*& _dirLight);
 
 	void Clear();
+	void PrintHeightMap(float**& _heightMap, int _mapSize);
 
 	unsigned int m_VAO = 0, m_VBO = 0, m_IBO = 0;
 
@@ -39,8 +40,6 @@ public:
 	const char* m_TEShaderSource = "../Shaders/TerrainTEShader.glsl";
 	const char* m_GeometryShaderSource = "../Shaders/TerrainGeometryShader.glsl";
 	const char* m_FragmentShaderSource = "../Shaders/TerrainFragmentShader.glsl";
-
-	float** m_HeightMap = NULL;
 
 	Material* m_Material = NULL;
 	Transform* m_Transform = NULL;

@@ -4,21 +4,10 @@ WaterGen::WaterGen(int _mapSize, glm::vec3 _position, const char* _texturePath)
 {
 	const int numStrips = _mapSize - 1;
 	const int verticesPerStrip = 2 * _mapSize;
+	const int vertexCount = _mapSize * _mapSize;
 	const int indexCount = numStrips * verticesPerStrip + (_mapSize - 2) * 2;
-	std::vector<Vertex> terrainVertexCollection(_mapSize * _mapSize);
+	std::vector<Vertex> terrainVertexCollection(vertexCount);
 	std::vector<unsigned int> terrainIndexCollection(indexCount);
-
-	//Build Height Map
-	float** heightMap = new float* [_mapSize];
-	for (int i(0); i < _mapSize; ++i) {
-		heightMap[i] = new float[_mapSize];
-	}
-
-	for (int x(0); x < _mapSize; ++x) {
-		for (int z(0); z < _mapSize; ++z) {
-			heightMap[x][z] = 0;
-		}
-	}
 
 	// Build Vertex Coords;
 	float fTextureS = float(_mapSize) * 0.1f;
@@ -33,7 +22,7 @@ WaterGen::WaterGen(int _mapSize, glm::vec3 _position, const char* _texturePath)
 			float fScaleR = (float)(z) / (float)(_mapSize - 1);
 			// Set the coords (1st 4 elements) and a default colour of black (2nd 4 elements) 
 			terrainVertexCollection[i] = Vertex(
-				glm::vec4((float)x, heightMap[x][z], (float)z, 1.0),
+				glm::vec4((float)x, 0.0f, (float)z, 1.0),
 				glm::vec2(fTextureS * fScaleC, fTextureT * fScaleR));
 			i++;
 		}
@@ -60,7 +49,7 @@ WaterGen::WaterGen(int _mapSize, glm::vec3 _position, const char* _texturePath)
 	int QuadCounter = 0;
 
 
-	for (int i = 0; i < indexCount; i += 2) {
+	for (size_t i = 0; i < indexCount; i += 2) {
 		if (IndexHigh % _mapSize == 0 && IndexHigh > _mapSize && !Tweaked) {
 			terrainIndexCollection[i] = terrainIndexCollection[i - 1];
 			terrainIndexCollection[i + 1] = IndexLow;
@@ -148,7 +137,7 @@ WaterGen::WaterGen(int _mapSize, glm::vec3 _position, const char* _texturePath)
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		50.0f);
-	m_TextureCollection.push_back(new Texture(_texturePath));
+	m_Texture = new Texture(_texturePath);
 	Configure();
 }
 
@@ -215,10 +204,7 @@ void WaterGen::Draw(Camera*& _camera, Light*& _dirLight)
 
 	m_Shader->SetFloat("u_time", glfwGetTime());
 
-	for (int i = 0; i < m_TextureCollection.size(); ++i) {
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, m_TextureCollection[i]->m_ID);
-	}
+	glBindTexture(GL_TEXTURE_2D, m_Texture->m_ID);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBindVertexArray(m_VAO);
@@ -230,7 +216,8 @@ void WaterGen::Draw(Camera*& _camera, Light*& _dirLight)
 
 void WaterGen::Clear()
 {
-	for (int i = 0; i < m_TextureCollection.size(); ++i) {
-		delete m_TextureCollection[i];
+	if (m_Texture) {
+		delete m_Texture;
 	}
+	
 }

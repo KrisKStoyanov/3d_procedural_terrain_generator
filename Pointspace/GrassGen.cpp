@@ -60,7 +60,7 @@ GrassGen::GrassGen(int _mapSize, float _randomRange, glm::vec3 _position)
 	int QuadCounter = 0;
 
 
-	for (int i = 0; i < indexCount; i += 2) {
+	for (size_t i = 0; i < indexCount; i += 2) {
 		if (IndexHigh % _mapSize == 0 && IndexHigh > _mapSize && !Tweaked) {
 			terrainIndexCollection[i] = terrainIndexCollection[i - 1];
 			terrainIndexCollection[i + 1] = IndexLow;
@@ -132,7 +132,6 @@ GrassGen::GrassGen(int _mapSize, float _randomRange, glm::vec3 _position)
 	//Normalize the normal value of each vertex
 	for (int i = 0; i < terrainVertexCollection.size(); ++i) {
 		/*float temp = glm::dot(-terrainVertexCollection[i].Normal, WorldUp);*/
-		glm::vec3 tempVec = terrainVertexCollection[i].Normal;
 		/*if (tempVec.y < 0) {
 			terrainVertexCollection[i].Normal = -tempVec;
 		}*/

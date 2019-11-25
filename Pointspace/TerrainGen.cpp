@@ -8,8 +8,9 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position,
 {
 	const int numStrips = _mapSize - 1;
 	const int verticesPerStrip = 2 * _mapSize;
+	const int vertexCount = _mapSize * _mapSize;
 	const int indexCount = numStrips * verticesPerStrip + (_mapSize - 2) * 2;
-	std::vector<Vertex> terrainVertexCollection(_mapSize * _mapSize);
+	std::vector<Vertex> terrainVertexCollection(vertexCount);
 	std::vector<unsigned int> terrainIndexCollection(indexCount);
 
 	//Build Height Map
@@ -25,12 +26,12 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position,
 	}
 
 	//Perform Diamond Square Algorithm
-	srand(323);
+	srand(time(NULL));
 
 	int stepSize = _mapSize - 1;
 	int iterations = log2(_mapSize);
 	int compatibleLength = 1;
-	float H = 1;
+	float H = 1.0f;
 	heightMap[0][0] = (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
 	heightMap[stepSize][0] = (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
 	heightMap[0][stepSize] = (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
@@ -63,8 +64,6 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position,
 		stepSize /= 2;
 		compatibleLength *= 2;
 	}
-
-	m_HeightMap = heightMap;
 
 	// Build Vertex Coords;
 	float fTextureS = float(_mapSize) * 0.1f;
@@ -106,7 +105,7 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position,
 	int QuadCounter = 0;
 
 
-	for (int i = 0; i < indexCount; i += 2) {
+	for (size_t i = 0; i < indexCount; i += 2) {
 		if (IndexHigh % _mapSize == 0 && IndexHigh > _mapSize && !Tweaked) {
 			terrainIndexCollection[i] = terrainIndexCollection[i - 1];
 			terrainIndexCollection[i + 1] = IndexLow;
@@ -178,10 +177,6 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position,
 	//Normalize the normal value of each vertex
 	for (int i = 0; i < terrainVertexCollection.size(); ++i) {
 		/*float temp = glm::dot(-terrainVertexCollection[i].Normal, WorldUp);*/
-		glm::vec3 tempVec = terrainVertexCollection[i].Normal;
-		/*if (tempVec.y < 0) {
-			terrainVertexCollection[i].Normal = -tempVec;
-		}*/
 		terrainVertexCollection[i].Normal = glm::normalize(-terrainVertexCollection[i].Normal);
 	}
 
@@ -198,7 +193,6 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position,
 	m_RockTexture = new Texture(_rockTexPath);
 	m_GrassTexture = new Texture(_grassTexPath);
 	m_SandTexture = new Texture(_sandTexPath);
-	//m_TextureCollection.push_back(new Texture(_texturePath));
 	Configure();
 }
 
@@ -209,8 +203,8 @@ TerrainGen::~TerrainGen()
 
 void TerrainGen::DiamondStep(float**& _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize)
 {
-	int halfstepSize = _stepSize / 2;
-	float avg = 0;
+	int halfstepSize = _stepSize * (1.f/ 2.f);
+	float avg = 0.0f;
 	int counter = 0;
 
 	//Top left
@@ -236,13 +230,13 @@ void TerrainGen::DiamondStep(float**& _heightMap, int _x, int _z, int _stepSize,
 		avg += _heightMap[_x + halfstepSize][_z + halfstepSize];
 		counter++;
 	}
-	_heightMap[_x][_z] = avg / counter + (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
+	_heightMap[_x][_z] = avg * (1.f/ counter) + (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
 }
 
 void TerrainGen::SquareStep(float**& _heightMap, int _x, int _z, int _stepSize, float _randomRange, int _mapSize)
 {
-	int halfstepSize = _stepSize / 2;
-	float avg = 0;
+	int halfstepSize = _stepSize * (1.f / 2.f);
+	float avg = 0.0f;
 	int counter = 0;
 
 	//Right
@@ -268,7 +262,7 @@ void TerrainGen::SquareStep(float**& _heightMap, int _x, int _z, int _stepSize, 
 		avg += _heightMap[_x][_z - halfstepSize];
 		counter++;
 	}
-	_heightMap[_x][_z] = avg / counter + (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
+	_heightMap[_x][_z] = avg * (1.f / counter) + (-_randomRange + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_randomRange + _randomRange)));
 }
 
 void TerrainGen::Configure()
@@ -340,11 +334,6 @@ void TerrainGen::Draw(Camera*& _camera, Light*& _dirLight)
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, m_SandTexture->m_ID);
 
-	//for (int i = 0; i < m_TextureCollection.size(); ++i) {
-	//	glActiveTexture(GL_TEXTURE0 + i);
-	//	glBindTexture(GL_TEXTURE_2D, m_TextureCollection[i]->m_ID);
-	//}
-	
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_TRIANGLE_STRIP, m_IndexCollection.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
@@ -352,10 +341,6 @@ void TerrainGen::Draw(Camera*& _camera, Light*& _dirLight)
 
 void TerrainGen::Clear()
 {
-	//for (int i = 0; i < m_TextureCollection.size(); ++i) {
-	//	delete m_TextureCollection[i];
-	//}
-
 	if (m_SnowTexture) {
 		delete m_SnowTexture;
 	}
@@ -368,6 +353,21 @@ void TerrainGen::Clear()
 	if (m_SandTexture) {
 		delete m_SandTexture;
 	}
+}
+
+void TerrainGen::PrintHeightMap(float**& _heightMap, int _mapSize)
+{
+	std::ofstream ofs("./height_map.ppm", std::ios::out | std::ios::binary);
+	ofs << "P6\n" << _mapSize << " " << _mapSize << "\n255\n";
+	for (unsigned z = 0; z < _mapSize; ++z)
+	{
+		for (unsigned x = 0; x < _mapSize; ++x)
+		{
+			unsigned char n = (unsigned char)(_heightMap[z][x] * 255.0f);
+			ofs << n << n << n;
+		}
+	}
+	ofs.close();
 }
 
 

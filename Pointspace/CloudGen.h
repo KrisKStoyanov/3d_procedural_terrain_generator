@@ -25,6 +25,7 @@ public:
 	inline float Lerp(const float& _low, const float& _high, const float& _t) { return _low * (1 - _t) + _high * _t; }
 	void Configure();
 	void Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime);
+	void PrintNoiseMap(const float*& _noiseMap, const int _mapSize);
 
 	void Clear();
 
