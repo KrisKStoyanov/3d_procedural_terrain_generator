@@ -36,8 +36,8 @@ void main(void)
 	vec3 tangent = vec3(1.0f, 0.0f, 0.0f);
 	vec3 binormal = vec3(0.0f, 0.0f, 1.0f);
 
-	vec3 waveA = GerstnerWave(vec2(1.0f, 0.5f), 0.5f, 10.0f, VertexCoords, tangent, binormal);
-	vec3 waveB = GerstnerWave(vec2(0.0f, 1.0f), 0.25f, 20.0f, VertexCoords, tangent, binormal);
+	vec3 waveA = GerstnerWave(vec2(1.0f, 0.5f), 0.5f, 5.0f, VertexCoords, tangent, binormal);
+	vec3 waveB = GerstnerWave(vec2(0.0f, 1.0f), 0.35f, 20.0f, VertexCoords, tangent, binormal);
 	vec3 waveC = GerstnerWave(vec2(1.0f, 1.0f), 0.15f, 10.0f, VertexCoords, tangent, binormal);
 
 	exNormal = normalize(cross(binormal, tangent));

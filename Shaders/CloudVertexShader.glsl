@@ -25,7 +25,7 @@ void main(void)
 	exNormal = normalize(u_normalMatrix * VertexNormal);
 	exUV = VertexUV;
 	exTime = u_time;
-	exCoords.x -= cos(exTime - exCoords.y);
+	exCoords.x -= cos(exTime - exCoords.y * 0.2f);
 	exCoords.y += 0.5f * sin(exTime + exCoords.z * 5.0f);
 	exCoords.z += cos(exTime + exCoords.x);
 

@@ -16,7 +16,7 @@
 class CloudGen
 {
 public:
-	CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _position, const char* _texturePath);
+	CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _position);
 	~CloudGen();
 
 	float ValueNoise(float*& _noiseMap, const float _xPos, const float _zPos, const int _mapSize);
@@ -38,6 +38,5 @@ public:
 	Transform* m_Transform = NULL;
 	std::vector<Vertex> m_VertexCollection;
 	std::vector<unsigned int> m_IndexCollection;
-	std::vector<Texture*> m_TextureCollection;
 };
 

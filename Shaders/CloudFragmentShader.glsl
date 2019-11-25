@@ -5,51 +5,21 @@ in vec3 exNormal;
 in vec2 exUV;
 
 in float exTime;
+float scatterCoef = 0.20f;
+float gradientCheck = 1.0f - scatterCoef;
 
 out vec4 FragColor;
 
-struct Light
-{
-	vec4 ambCols;
-	vec4 difCols;
-	vec4 specCols;
-	vec4 coords;
-};
-uniform Light u_dirLight;
-
-struct Material
-{
-	vec4 ambRefl;
-	vec4 difRefl;
-	vec4 specRefl;
-	vec4 emitCols;
-	float shininess;
-};
-uniform Material u_material;
-
-vec3 normal, lightDirection;
-vec4 diffuseColor;
-
-uniform sampler2D u_texSampler;
-
 void main(void)
 {
-	vec4 cloudTexColor = texture(u_texSampler, vec2(exUV.x + 0.25f * exTime, exUV.y));
-
-	//vec4 cloudTexColor = vec4(0.63f, 0.5f, 0.96f, 1.0f);//texture(u_texSampler, vec2(exUV.x + 0.25f * exTime - phaseSpeed, exUV.y));
-	//cloudTexColor += amplitude * sin(exTime - 10.0f);
-
-	//if (exCoords.x < 0.25f || exCoords.z < 0.25f) {
-	//	discard;
-	//}
-
-	if (exCoords.y < 0.05f) {
+	vec4 baseColor = vec4(0.7f, 0.94f, 1.0f, 0.5f) + scatterCoef * cos(exTime - exCoords.y);
+	if (exCoords.y < 0.075f) {
 		discard;
 	}
 
-	if (cloudTexColor.r > 0.85f) {
+	if (baseColor.b < gradientCheck) {
 		discard;
 	}
 
-	FragColor = cloudTexColor;
+	FragColor = baseColor;
 }

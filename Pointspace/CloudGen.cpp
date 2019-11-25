@@ -1,6 +1,6 @@
 #include "CloudGen.h"
 
-CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _position, const char* _texturePath)
+CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _position)
 {
 	const int numStrips = _mapSize - 1;
 	const int verticesPerStrip = 2 * _mapSize;
@@ -165,7 +165,6 @@ CloudGen::CloudGen(int _mapSize, float _randRange, float _frequency, glm::vec3 _
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		glm::vec4(1.0f, 1.0f, 1.0f, 1.0f),
 		50.0f);
-	m_TextureCollection.push_back(new Texture(_texturePath));
 	Configure();
 }
 
@@ -241,33 +240,20 @@ void CloudGen::Draw(Camera*& _camera, Light*& _dirLight, float _deltaTime)
 	m_Shader->SetMat4("u_projectionMatrix", _camera->ProjectionMatrix);
 	m_Shader->SetMat4("u_viewMatrix", _camera->ViewMatrix);
 	m_Shader->SetMat4("u_modelMatrix", m_Transform->GetModelMatrix());
-	m_Shader->SetMat3("u_normalMatrix", m_Transform->GetNormalMatrix());
-	m_Shader->SetVec4("u_dirLight.ambCols", _dirLight->AmbientC);
-	m_Shader->SetVec4("u_dirLight.difCols", _dirLight->DiffuseC);
-	m_Shader->SetVec4("u_dirLight.specCols", _dirLight->SpecularC);
-	m_Shader->SetVec4("u_dirLight.coords", _dirLight->Coords);
-
-	m_Shader->SetVec4("u_material.ambRefl", m_Material->AmbientC);
-	m_Shader->SetVec4("u_material.difRefl", m_Material->DiffuseC);
-	m_Shader->SetVec4("u_material.specRefl", m_Material->SpecularC);
-	m_Shader->SetFloat("u_material.shininess", m_Material->Shininess);
 
 	m_Shader->SetInt("u_texSampler", 0);
 	m_Shader->SetFloat("u_time", glfwGetTime());
-	for (int i = 0; i < m_TextureCollection.size(); ++i) {
-		glActiveTexture(GL_TEXTURE0 + i);
-		glBindTexture(GL_TEXTURE_2D, m_TextureCollection[i]->m_ID);
-	}
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_CULL_FACE);
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_TRIANGLE_STRIP, m_IndexCollection.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 	glEnable(GL_CULL_FACE);
+	glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
 }
 
 void CloudGen::Clear()
 {
-	for (int i = 0; i < m_TextureCollection.size(); ++i) {
-		delete m_TextureCollection[i];
-	}
+
 }
