@@ -57,6 +57,17 @@ void Renderer::Init(const char* _Title, const int _Width, const int _Height)
 
 	m_Skybox = new Skybox();
 
+	printf("Controls:\n"
+		"[W] - Move Camera Forward\n"
+		"[S] - Move Camera Backward\n"
+		"[A] - Move Camera Left\n"
+		"[D] - Move Camera Right\n"
+		"-------------------\n"
+		"[Mouse Movement] - Rotate 3D view\n"
+		"-------------------\n"
+		"[ESC] - Exit \n"
+		"-------------------\n");
+
 	OnUpdate();
 }
 
