@@ -111,11 +111,9 @@ void TreeGen::Draw(Camera*& _camera, Light*& _dirLight)
 		m_Shader->SetVec3(("u_instancedPos[" + id + "]").c_str(), m_InstancedPositions[i]);
 	}
 	m_Shader->SetFloat("u_time", glfwGetTime());
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glBindVertexArray(m_VAO);
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, m_VertexCollection.size(), 10);
 	glBindVertexArray(0);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void TreeGen::CreateTrunk(std::vector<Vertex>& _vertexCol, const float _trunkStartH, const float _trunkEndH, const float _trunkR)

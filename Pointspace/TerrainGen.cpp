@@ -31,7 +31,9 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position,
 	}
 
 	//Perform Diamond Square Algorithm
-	srand(time(NULL));
+	//Seed based on personal preference
+	//Change to srand(time(NULL)) for procedural random time based seed
+	srand(450);
 
 	int stepSize = _mapSize - 1;
 	int iterations = log2(_mapSize);
