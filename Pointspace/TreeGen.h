@@ -16,27 +16,28 @@
 class TreeGen
 {
 public:
-	TreeGen(std::vector<Vertex> _vertexCol, 
-		const int _numPoints, const int _maxLevel, const float _r, glm::vec3 _position);
+	TreeGen(std::vector<Vertex> _vertexCol,
+		const float _trunkHeight, const float _trunkRadius, glm::vec3 _position);
 	TreeGen(std::vector<Vertex> _vertexCol, std::vector<unsigned int> _indexCol, glm::vec3 _position);
 	~TreeGen();
 
 	void Configure();
 	void Draw(Camera*& _camera, Light*& _dirLight);
 
-	std::vector<Vertex> CreateTree(const float _trunkH, const float _trunkR, 
-		const int _numPoints, const int _maxLevel, const float _r);
-	void ComputeBranch(
-		float _r, int _depth, float _angle, 
-		float _x0, float _y0, float _z0, 
-		float _x1, float _y1, float _z1, 
-		float& _x2, float& _y2, float& _z2);
-	void RecurComputeBranch(
-		std::vector<Vertex>& _vertexCollection,
-		float _r, int _maxLevel, int _depth,
-		int _index, float _angle,
-		std::vector<glm::vec3> _basePts, 
-		std::vector<glm::vec3> _brPts);
+	std::vector<Vertex> CreateTree(const float _trunkH, const float _trunkR);
+	void CreateBranch(std::vector<Vertex>& _vertexCollection, 
+		const float _branchH, const float _branchW, const float _branchR, bool _xDir = true);
+	//void ComputeBranch(
+	//	float _r, int _depth, float _angle, 
+	//	float _x0, float _y0, float _z0, 
+	//	float _x1, float _y1, float _z1, 
+	//	float& _x2, float& _y2, float& _z2);
+	//void RecurComputeBranch(
+	//	std::vector<Vertex>& _vertexCollection,
+	//	float _r, int _maxLevel, int _depth,
+	//	int _index, float _angle,
+	//	std::vector<glm::vec3> _basePts, 
+	//	std::vector<glm::vec3> _brPts);
 
 
 	void Clear();
