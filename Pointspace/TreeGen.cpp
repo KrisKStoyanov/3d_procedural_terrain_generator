@@ -33,7 +33,6 @@ TreeGen::TreeGen(std::vector<Vertex> _vertexCol, float _heightThreshold,
 	CreateBranch(m_VertexCollection, branchHeight, -branchWidth, branchRadius);
 	CreateBranch(m_VertexCollection, branchHeight, branchWidth, branchRadius, false);
 	CreateBranch(m_VertexCollection, branchHeight, -branchWidth, branchRadius, false);
-	//m_IndexCollection = indexCollection;
 
 	m_Transform = new Transform(_position);
 
@@ -60,18 +59,11 @@ void TreeGen::Configure()
 	glGenVertexArrays(1, &m_VAO);
 	glGenBuffers(1, &m_VBO);
 	glGenBuffers(1, &m_IBO);
-	//glGenBuffers(1, &m_InstanceBO);
 
 	glBindVertexArray(m_VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 	glBufferData(GL_ARRAY_BUFFER, m_VertexCollection.size() * sizeof(Vertex), m_VertexCollection.data(), GL_STATIC_DRAW);
-
-	//glBindBuffer(GL_ARRAY_BUFFER, m_InstanceBO);
-	//glBufferData(GL_ARRAY_BUFFER, 10 * sizeof(glm::vec3), &m_InstancedPositions[0], GL_STATIC_DRAW);
-
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_IndexCollection.size() * sizeof(unsigned int), m_IndexCollection.data(), GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(m_VertexCollection[0]), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -79,17 +71,12 @@ void TreeGen::Configure()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(m_VertexCollection[0]), (GLvoid*)(sizeof(m_VertexCollection[0].Coords) + sizeof(m_VertexCollection[0].Normal)));
 	glEnableVertexAttribArray(2);
-	//glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	//glEnableVertexAttribArray(3);
-	//glVertexAttribDivisor(3, 1);
 
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
-	//glDisableVertexAttribArray(3);
 
 	m_Shader = new Shader(m_VertexShaderSource, m_FragmentShaderSource);
 }
