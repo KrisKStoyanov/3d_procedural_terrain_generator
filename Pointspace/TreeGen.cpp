@@ -1,13 +1,22 @@
 #include "TreeGen.h"
 
-TreeGen::TreeGen(std::vector<Vertex> _vertexCol, 
+TreeGen::TreeGen(std::vector<Vertex> _vertexCol, float _heightThreshold,
 	const float _trunkHeight, const float _trunkRadius, glm::vec3 _position)
 {
 	if (_vertexCol.size() > 10) {
-		for (int i = 0; i < 10; ++i) {
+		int instanceID = 0;
+		int countBoundary = 10;
+		for (int i = 0; i < countBoundary; ++i) {
 			int randId = static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_vertexCol.size()));
 			glm::vec3 randCoords = glm::vec3(_vertexCol[randId].Coords.x, _vertexCol[randId].Coords.y, _vertexCol[randId].Coords.z);
-			m_InstancedPositions[i] = randCoords;
+			if (randCoords.y > _heightThreshold) {
+				m_InstancedPositions[instanceID] = randCoords;
+				instanceID++;
+			}
+			else {
+				_heightThreshold -= 1.0f;
+				countBoundary++;
+			}
 		}
 	}
 

@@ -53,7 +53,7 @@ void Renderer::Init(const char* _Title, const int _Width, const int _Height)
 	m_GrassGen = new GrassGen(m_TerrainGen->m_VertexCollection, m_TerrainGen->m_IndexCollection, glm::vec3(0.0f, 0.0f, 0.0f));
 	m_CloudGen = new CloudGen(33, 3.0f, 0.1f, glm::vec3(0.0f, 20.0f, 0.0f));
 
-	m_TreeGen = new TreeGen(m_TerrainGen->m_VertexCollection, 3.0f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
+	m_TreeGen = new TreeGen(m_TerrainGen->m_VertexCollection, 1.0f, 3.0f, 0.25f, glm::vec3(0.0f, 0.0f, 0.0f));
 
 	m_Skybox = new Skybox();
 

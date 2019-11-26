@@ -16,7 +16,7 @@
 class TreeGen
 {
 public:
-	TreeGen(std::vector<Vertex> _vertexCol,
+	TreeGen(std::vector<Vertex> _vertexCol, float _heightThreshold,
 		const float _trunkHeight, const float _trunkRadius, glm::vec3 _position);
 	TreeGen(std::vector<Vertex> _vertexCol, std::vector<unsigned int> _indexCol, glm::vec3 _position);
 	~TreeGen();
