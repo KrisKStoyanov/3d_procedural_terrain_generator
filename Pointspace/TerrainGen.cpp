@@ -1,10 +1,5 @@
 #include "TerrainGen.h"
 
-
-//#define MY_MACRO(a) class MyClass_ ## a {};
-//
-//MY_MACRO(testName)
-
 TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position,
 	const char* _snowTexPath,
 	const char* _rockTexPath,
@@ -31,9 +26,8 @@ TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position,
 	}
 
 	//Perform Diamond Square Algorithm
-	//Seed based on personal preference
-	//Change to srand(time(NULL)) for procedural random time based seed
-	srand(450);
+	//Change to rand seed to 450 for an accurate terrain demo
+	srand(time(NULL));
 
 	int stepSize = _mapSize - 1;
 	int iterations = log2(_mapSize);
