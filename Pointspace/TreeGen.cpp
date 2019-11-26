@@ -20,8 +20,10 @@ TreeGen::TreeGen(std::vector<Vertex> _vertexCol, float _heightThreshold,
 		}
 	}
 
-	const float trunkHeight = _trunkHeight;
-	const float trunkRadius = _trunkRadius;
+	const float halfTrunkHeight = _trunkHeight / 2.0f;
+	const float halfTrunkRadius = _trunkRadius / 2.0f;
+	const float trunkHeight = halfTrunkHeight + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_trunkHeight - halfTrunkHeight));
+	const float trunkRadius = halfTrunkRadius + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_trunkRadius - halfTrunkRadius));
 
 	const float branchHeight = trunkHeight - trunkRadius;
 	const float branchWidth = trunkHeight / 2.0f;
