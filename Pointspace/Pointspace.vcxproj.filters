@@ -175,5 +175,20 @@
     <None Include="..\Shaders\TerrainTEShader.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\Shaders\LeafFragmentShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\LeafGeometryShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\LeafVertexShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\LeafTCShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\LeafTEShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

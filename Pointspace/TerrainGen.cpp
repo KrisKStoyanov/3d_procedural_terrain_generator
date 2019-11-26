@@ -1,5 +1,10 @@
 #include "TerrainGen.h"
 
+
+//#define MY_MACRO(a) class MyClass_ ## a {};
+//
+//MY_MACRO(testName)
+
 TerrainGen::TerrainGen(int _mapSize, float _randomRange, glm::vec3 _position,
 	const char* _snowTexPath,
 	const char* _rockTexPath,

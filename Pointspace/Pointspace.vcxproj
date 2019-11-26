@@ -62,6 +62,11 @@
     <None Include="..\Shaders\GrassTCShader.glsl" />
     <None Include="..\Shaders\GrassTEShader.glsl" />
     <None Include="..\Shaders\GrassVertexShader.glsl" />
+    <None Include="..\Shaders\LeafFragmentShader.glsl" />
+    <None Include="..\Shaders\LeafGeometryShader.glsl" />
+    <None Include="..\Shaders\LeafTCShader.glsl" />
+    <None Include="..\Shaders\LeafTEShader.glsl" />
+    <None Include="..\Shaders\LeafVertexShader.glsl" />
     <None Include="..\Shaders\SkyboxFragmentShader.glsl" />
     <None Include="..\Shaders\SkyboxVertexShader.glsl" />
     <None Include="..\Shaders\TerrainFragmentShader.glsl" />

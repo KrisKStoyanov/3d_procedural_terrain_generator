@@ -1,6 +1,6 @@
 #include "TreeGen.h"
 
-TreeGen::TreeGen(std::vector<Vertex> _vertexCol, float _heightThreshold,
+TreeGen::TreeGen(std::vector<Vertex> _vertexCol, const int _trunkLevels, float _heightThreshold,
 	const float _trunkHeight, const float _trunkRadius, glm::vec3 _position)
 {
 	if (_vertexCol.size() > 10) {
@@ -14,7 +14,7 @@ TreeGen::TreeGen(std::vector<Vertex> _vertexCol, float _heightThreshold,
 				instanceID++;
 			}
 			else {
-				_heightThreshold -= 1.0f;
+				_heightThreshold -= 0.25f;
 				countBoundary++;
 			}
 		}
@@ -22,19 +22,31 @@ TreeGen::TreeGen(std::vector<Vertex> _vertexCol, float _heightThreshold,
 
 	const float halfTrunkHeight = _trunkHeight / 2.0f;
 	const float halfTrunkRadius = _trunkRadius / 2.0f;
-	const float trunkHeight = halfTrunkHeight + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_trunkHeight - halfTrunkHeight));
-	const float trunkRadius = halfTrunkRadius + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_trunkRadius - halfTrunkRadius));
+	float trunkHeight = halfTrunkHeight + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_trunkHeight - halfTrunkHeight));
+	float trunkRadius = halfTrunkRadius + static_cast <float> (rand()) / static_cast <float> (RAND_MAX / (_trunkRadius - halfTrunkRadius));
 
 	const float branchHeight = trunkHeight - trunkRadius;
 	const float branchWidth = trunkHeight / 2.0f;
 	const float branchRadius = trunkRadius / 2.0f;
 	
-	m_VertexCollection = CreateTree(trunkHeight, trunkRadius);
-	
-	CreateBranch(m_VertexCollection, branchHeight, branchWidth, branchRadius);
-	CreateBranch(m_VertexCollection, branchHeight, -branchWidth, branchRadius);
-	CreateBranch(m_VertexCollection, branchHeight, branchWidth, branchRadius, false);
-	CreateBranch(m_VertexCollection, branchHeight, -branchWidth, branchRadius, false);
+	for (int i = 0; i < _trunkLevels; ++i) {
+		CreateTrunk(m_VertexCollection, i * trunkHeight, trunkHeight + i * trunkHeight, trunkRadius);
+		CreateBranch(m_VertexCollection, trunkHeight + i * trunkHeight, branchWidth, trunkRadius);
+		CreateBranch(m_VertexCollection, trunkHeight + i * trunkHeight, -branchWidth, -trunkRadius);
+		CreateBranch(m_VertexCollection, trunkHeight + i * trunkHeight, branchWidth, trunkRadius, false);
+		CreateBranch(m_VertexCollection, trunkHeight + i * trunkHeight, -branchWidth, -trunkRadius, false);
+		CreateTrunk(m_VertexCollection, (i+1) * trunkHeight, trunkHeight + (i+1) * trunkHeight, trunkRadius);
+		if (trunkHeight > trunkRadius * 2.0f) {
+			trunkHeight -= i * (trunkRadius - (int)trunkRadius);
+		}
+
+		if (trunkRadius >= 0.05f) {
+			trunkRadius -= trunkRadius * (trunkRadius - (int)trunkRadius);
+		}
+		else {
+			trunkRadius += trunkRadius * (trunkRadius - (int)trunkRadius);
+		}
+	}
 
 	m_Transform = new Transform(_position);
 
@@ -103,30 +115,28 @@ void TreeGen::Draw(Camera*& _camera, Light*& _dirLight)
 	glBindVertexArray(m_VAO);
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, m_VertexCollection.size(), 10);
 	glBindVertexArray(0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-std::vector<Vertex> TreeGen::CreateTree(const float _trunkH, const float _trunkR)
+void TreeGen::CreateTrunk(std::vector<Vertex>& _vertexCol, const float _trunkStartH, const float _trunkEndH, const float _trunkR)
 {
-	std::vector<Vertex> trunkVertexCollection;
 	float height = 4.0f;
 	float radius = 0.25f;
 	float doublePI = 2 * 3.14159265f;
 	int slices = 20;
 	float edgeScalar = doublePI * (1.f / slices);
 	for (size_t i = 0; i < slices; ++i) {		
-		trunkVertexCollection.push_back(Vertex(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)));
-		trunkVertexCollection.push_back(
-			Vertex(glm::vec4(_trunkR * cos(i * edgeScalar), 0.0f, _trunkR * sin(i * edgeScalar), 1.0f)));
-		trunkVertexCollection.push_back(
-			Vertex(glm::vec4(_trunkR * cos((i + 1) * edgeScalar), 0.0f, _trunkR * sin((i + 1) * edgeScalar), 1.0f)));
-		trunkVertexCollection.push_back(
-			Vertex(glm::vec4(_trunkR * cos(i * edgeScalar), _trunkH, _trunkR * sin(i * edgeScalar), 1.0f)));
-		trunkVertexCollection.push_back(
-			Vertex(glm::vec4(_trunkR * cos((i + 1) * edgeScalar), _trunkH, _trunkR * sin((i + 1) * edgeScalar), 1.0f)));
-		trunkVertexCollection.push_back(Vertex(glm::vec4(0.0f, _trunkH, 0.0f, 1.0f)));
+		_vertexCol.push_back(Vertex(glm::vec4(0.0f, _trunkStartH, 0.0f, 1.0f)));
+		_vertexCol.push_back(
+			Vertex(glm::vec4(_trunkR * cos(i * edgeScalar), _trunkStartH, _trunkR * sin(i * edgeScalar), 1.0f)));
+		_vertexCol.push_back(
+			Vertex(glm::vec4(_trunkR * cos((i + 1) * edgeScalar), _trunkStartH, _trunkR * sin((i + 1) * edgeScalar), 1.0f)));
+		_vertexCol.push_back(
+			Vertex(glm::vec4(_trunkR * cos(i * edgeScalar), _trunkEndH, _trunkR * sin(i * edgeScalar), 1.0f)));
+		_vertexCol.push_back(
+			Vertex(glm::vec4(_trunkR * cos((i + 1) * edgeScalar), _trunkEndH, _trunkR * sin((i + 1) * edgeScalar), 1.0f)));
+		_vertexCol.push_back(Vertex(glm::vec4(0.0f, _trunkEndH, 0.0f, 1.0f)));
 	}
-	return trunkVertexCollection;
 }
 
 void TreeGen::CreateBranch(std::vector<Vertex>& _vertexCollection, const float _branchH, const float _branchW, const float _branchR, bool _xDir)

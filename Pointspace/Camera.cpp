@@ -6,7 +6,7 @@ Camera::Camera(glm::vec3 _Position, float _FOV, float _ProjWidth, float _ProjHei
 
 	Yaw = -90.0f;
 	Pitch = 0.0f;
-	MovementSpeed = 5.f;
+	MovementSpeed = 3.f;
 	MouseSensitivity = 0.1f;
 
 	ProjectionMatrix = glm::perspective(glm::radians(_FOV), _ProjWidth * (1.f / _ProjHeight), 0.1f, 9000.0f);

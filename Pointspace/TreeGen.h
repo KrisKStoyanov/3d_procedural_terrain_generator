@@ -16,7 +16,7 @@
 class TreeGen
 {
 public:
-	TreeGen(std::vector<Vertex> _vertexCol, float _heightThreshold,
+	TreeGen(std::vector<Vertex> _vertexCol, const int _trunkLevels, float _heightThreshold,
 		const float _trunkHeight, const float _trunkRadius, glm::vec3 _position);
 	TreeGen(std::vector<Vertex> _vertexCol, std::vector<unsigned int> _indexCol, glm::vec3 _position);
 	~TreeGen();
@@ -24,7 +24,7 @@ public:
 	void Configure();
 	void Draw(Camera*& _camera, Light*& _dirLight);
 
-	std::vector<Vertex> CreateTree(const float _trunkH, const float _trunkR);
+	void CreateTrunk(std::vector<Vertex>& _vertexCol, const float _trunkStartH, const float _trunkEndH, const float _trunkR);
 	void CreateBranch(std::vector<Vertex>& _vertexCollection, 
 		const float _branchH, const float _branchW, const float _branchR, bool _xDir = true);
 	//void ComputeBranch(
