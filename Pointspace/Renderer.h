@@ -31,24 +31,19 @@ public:
 	void OnUpdate();
 	void Terminate();
 
-	GLFWwindow* m_Window = NULL;
+	GLFWwindow*		m_Window;
 
-	TerrainGen* m_TerrainGen = NULL;
-	WaterGen* m_WaterGen = NULL;
-	CloudGen* m_CloudGen = NULL;
-	TreeGen* m_TreeGen = NULL;
-	GrassGen* m_GrassGen = NULL;
+	TerrainGen*		m_TerrainGen;
+	WaterGen*		m_WaterGen;
+	CloudGen*		m_CloudGen;
+	TreeGen*		m_TreeGen;
+	GrassGen*		m_GrassGen;
 
-	Skybox* m_Skybox = NULL;
-	Camera* m_Camera = NULL;
-	Light* m_DirLight = NULL;
+	Skybox*			m_Skybox;
+	Camera*			m_Camera;
+	Light*			m_DirLight;
 
 	double m_CursorPosX, m_CursorPosY;
-	float m_LastFrameTime = 0.0f;
-
-	const int m_HW_GeoSetOutputComp = 4;
-	int m_HW_GeoMaxOutputComp;
-	int m_HW_MaxGeoVertexCount;
-	int m_HW_MaxTessVertsPerPatch;
+	float m_LastFrameTime;
 };
 

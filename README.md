@@ -1,2 +1,1 @@
-# 322COM_PG
-Coursework Assignment 2
+# 3D Procedural Terrain Generator powered by OpenGL and GLSL

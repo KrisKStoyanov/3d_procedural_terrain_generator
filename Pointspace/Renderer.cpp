@@ -1,6 +1,18 @@
 #include "Renderer.h"
 
-Renderer::Renderer()
+Renderer::Renderer() : 
+	m_Window(NULL)
+	, m_TerrainGen(NULL)
+	, m_WaterGen(NULL)
+	, m_CloudGen(NULL)
+	, m_TreeGen(NULL)
+	, m_GrassGen(NULL)
+	, m_Skybox(NULL)
+	, m_Camera(NULL)
+	, m_DirLight(NULL)
+	, m_CursorPosX(0.0)
+	, m_CursorPosY(0.0)
+	, m_LastFrameTime(0.0f)
 {
 }
 
